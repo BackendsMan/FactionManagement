@@ -1,0 +1,1359 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Illegal Faction Spins</title>
+<link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+@font-face{font-family:AnotherDanger;src:url("./Another Danger Slanted - Demo.otf") format("opentype");font-display:swap}
+@font-face{font-family:BrotherSignature;src:url("./Brother Signature.otf") format("opentype");font-display:swap}
+:root{--bg:#05060a;--panel:#11121a;--panel2:#171821;--line:#292b38;--red:#e8000d;--red2:#a8000a;--green:#18e782;--text:#f7f8ff;--muted:#979baa;--soft:rgba(255,255,255,.055);--glow:0 0 32px rgba(232,0,13,.5);--panelOpacity:1;--rgbTrailOpacity:.52}
+body.light{--bg:#eef0f6;--panel:#fff;--panel2:#f5f6fb;--line:#d5d8e3;--text:#13151d;--muted:#646b7b;--soft:rgba(0,0,0,.045)}
+body.dim{--bg:#101118;--panel:#1a1c25;--panel2:#222431;--line:#393c4c;--text:#f3f4fb;--muted:#b0b4c4;--soft:rgba(255,255,255,.07)}
+*{box-sizing:border-box;margin:0;padding:0}body{min-height:100vh;background:var(--bg);color:var(--text);font-family:Rajdhani,Arial,sans-serif;overflow:hidden;letter-spacing:.3px}button,input{font-family:inherit;color:inherit}.pageBgVideo{position:fixed;inset:0;width:100vw;height:100vh;object-fit:cover;z-index:-4;filter:brightness(.82) contrast(1.18) saturate(1.12);transform:translateZ(0);pointer-events:none}.ambient{position:fixed;inset:0;z-index:-3;background:radial-gradient(circle at 40% 0,rgba(232,0,13,.10),transparent 34%),radial-gradient(circle at 100% 45%,rgba(232,0,13,.07),transparent 28%),linear-gradient(180deg,rgba(5,6,10,.34),rgba(2,3,7,.48));pointer-events:none}body.light .ambient{background:linear-gradient(180deg,rgba(245,246,251,.86),rgba(233,235,243,.92))}.app{height:100vh;display:grid;grid-template-columns:88px 1fr}.rail{background:rgba(13,14,22,.62);border-right:1px solid rgba(255,255,255,.05);padding:16px 10px;display:flex;flex-direction:column;align-items:center;gap:18px}body.light .rail{background:#fff}.brand{width:60px;height:60px;border-radius:18px;display:grid;place-items:center;background:linear-gradient(145deg,rgba(232,0,13,.18),rgba(255,255,255,.05));border:1px solid rgba(232,0,13,.45);box-shadow:var(--glow)}.brand img{width:92%;height:92%;object-fit:contain}.navBtn{width:60px;height:60px;border-radius:16px;border:1px solid transparent;background:transparent;color:#b8bbc9;font-size:12px;font-weight:900;letter-spacing:1px;cursor:pointer;display:grid;place-items:center;gap:3px;text-transform:uppercase;transition:transform .18s ease,border-color .22s ease,background .22s ease,box-shadow .22s ease;will-change:transform}.navBtn .ico{font-size:24px}.navBtn.active,.navBtn:hover{background:linear-gradient(145deg,rgba(232,0,13,.23),rgba(255,255,255,.04));border-color:rgba(232,0,13,.55);color:#fff;box-shadow:0 0 22px rgba(232,0,13,.24)}body.light .navBtn.active,body.light .navBtn:hover{color:#111}.spacer{flex:1}.main{padding:16px 18px;overflow:hidden}.topbar{height:48px;background:rgba(14,15,22,.68);border:1px solid var(--line);border-radius:16px;display:flex;align-items:center;justify-content:space-between;padding:0 14px;margin-bottom:14px;box-shadow:0 10px 30px rgba(0,0,0,.35)}body.light .topbar{background:#fff;box-shadow:0 8px 22px rgba(0,0,0,.08)}.topLeft,.topRight{display:flex;align-items:center;gap:12px}.status{width:12px;height:12px;border-radius:50%;background:var(--green);box-shadow:0 0 14px var(--green)}.tiny{font-size:13px;font-weight:800;color:var(--muted)}.appTitle{font-size:16px;font-weight:900;letter-spacing:1.6px;text-transform:uppercase;background:linear-gradient(120deg,#fff 0%,#9fa3af 18%,#ffffff 35%,#5e6475 52%,#e9edf7 70%,#b8bdca 100%);-webkit-background-clip:text;background-clip:text;color:transparent;text-shadow:0 0 14px rgba(232,0,13,.35),0 1px 0 rgba(0,0,0,.75);filter:drop-shadow(0 0 7px rgba(255,255,255,.06));animation:metalShine 5s linear infinite;background-size:220% auto}.manager{display:flex;align-items:center;gap:8px;font-size:13px;font-weight:900;color:var(--text)}.manager .status{width:9px;height:9px}.soundBtn{border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.06);border-radius:10px;padding:9px 13px;font-weight:900;font-size:12px;letter-spacing:1px;cursor:pointer}.soundBtn:hover{border-color:var(--red);box-shadow:0 0 18px rgba(232,0,13,.25)}body.light .soundBtn{background:#f4f5fa;border-color:#d9dce8}.view{display:none;height:calc(100vh - 78px);overflow:hidden}.view.active{display:block}.layout{height:100%;display:grid;grid-template-columns:minmax(760px,1fr) 390px;gap:18px;overflow:hidden}.leftPane,.rightPane{overflow:hidden}.welcome{height:38px;display:flex;align-items:center;justify-content:space-between;font-size:18px}.welcome b{font-weight:900}.script{font-family:BrotherSignature;font-size:24px;text-shadow:0 0 12px rgba(232,0,13,.45)}.hero{height:330px;border-radius:18px;position:relative;overflow:hidden;background:rgba(6,7,13,.72);border:2px solid #2a2c3b;box-shadow:inset 0 0 90px rgba(0,0,0,.55),0 0 35px rgba(232,0,13,.08)}.dotCanvas{position:absolute;inset:0;width:100%;height:100%;z-index:0;background:radial-gradient(circle at 50% 50%,rgba(232,0,13,.055),transparent 46%),linear-gradient(135deg,rgba(7,8,14,.98),rgba(17,18,28,.92));}.dotShade{background:radial-gradient(circle at var(--mx,50%) var(--my,50%),rgba(232,0,13,.055),transparent 22%),linear-gradient(90deg,rgba(0,0,0,.50),rgba(0,0,0,.05),rgba(0,0,0,.50));transition:background .08s linear}.heroShade{position:absolute;inset:0;background:radial-gradient(circle at 50% 44%,rgba(232,0,13,.22),transparent 42%),linear-gradient(90deg,rgba(0,0,0,.55),rgba(0,0,0,.2),rgba(0,0,0,.55));z-index:1}.centerLaunch{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:340px;text-align:center;z-index:3}.launchBtn{width:100%;padding:18px 18px 14px;border:0;border-radius:13px;cursor:pointer;background:linear-gradient(180deg,#ff2833,#b9000b);box-shadow:0 0 35px rgba(232,0,13,.55),inset 0 1px rgba(255,255,255,.25);font-family:AnotherDanger,Rajdhani;font-size:30px;letter-spacing:2px;text-shadow:0 2px 0 rgba(0,0,0,.25)}.launchBtn:hover{transform:translateY(-2px);filter:brightness(1.08)}.setup{height:120px;margin-top:14px;border-radius:16px;background:rgba(17,18,26,.72);border:1px solid var(--line);display:grid;grid-template-columns:330px 1fr;gap:22px;padding:18px}.setupBlock{display:flex;gap:12px;align-items:center}.setupIcon{width:48px;height:48px;border-radius:12px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);display:grid;place-items:center;font-size:20px;font-weight:900;color:var(--red)}.fieldLabel{font-size:13px;font-weight:900;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px}.groupInput{height:50px;width:240px;border-radius:11px;border:1px solid var(--line);background:rgba(0,0,0,.22);padding:0 14px;font-size:16px;font-weight:800;outline:none}.groupInput:focus{border-color:var(--red);box-shadow:0 0 18px rgba(232,0,13,.2)}.tiers{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}.tierTab{height:70px;border-radius:11px;border:1px solid rgba(255,255,255,.08);background:transparent;color:#9da1b0;font-weight:900;letter-spacing:1px;font-size:14px;cursor:pointer;text-transform:uppercase;transition:transform .18s ease,border-color .22s ease,background .22s ease,box-shadow .22s ease;will-change:transform}.tierTab small{display:block;margin-top:4px;color:var(--muted);font-size:13px}.tierTab.active,.tierTab:hover{background:rgba(232,0,13,.15);color:#fff;border-color:rgba(232,0,13,.6)}.sectionHead{height:50px;display:flex;align-items:end;justify-content:space-between;padding-bottom:8px}.sectionHead h2{font-size:18px;letter-spacing:1px}.filters{display:flex;gap:8px;flex-wrap:wrap}.chip{border:1px solid rgba(255,255,255,.11);background:rgba(255,255,255,.055);color:#bfc2cf;padding:8px 12px;border-radius:10px;font-size:12px;font-weight:900;text-transform:uppercase;letter-spacing:1px;cursor:pointer;transition:transform .16s ease,border-color .22s ease,background .22s ease;will-change:transform}.chip.active,.chip:hover{background:rgba(232,0,13,.16);border-color:rgba(232,0,13,.5);color:#fff}.items{height:calc(100vh - 640px);min-height:150px;overflow:auto;display:grid;grid-template-columns:repeat(2,minmax(245px,1fr));gap:14px;padding-right:4px}.card{height:138px;border-radius:14px;background:linear-gradient(135deg,rgba(24,25,35,.98),rgba(11,12,19,.96));border:1px solid rgba(255,255,255,.08);display:grid;grid-template-columns:130px 1fr;overflow:hidden;position:relative;animation:dropReveal .36s ease both;content-visibility:auto;contain-intrinsic-size:138px;transition:transform .18s ease,border-color .2s ease,box-shadow .2s ease}.card:hover{transform:translateY(-3px);border-color:rgba(232,0,13,.45);box-shadow:0 12px 28px rgba(0,0,0,.28),0 0 22px rgba(232,0,13,.12)}.card:before{content:"";position:absolute;inset:0;background:radial-gradient(circle at 15% 50%,rgba(232,0,13,.16),transparent 45%);opacity:.7}.thumb{display:grid;place-items:center;position:relative}.thumb img{max-width:112px;max-height:92px;object-fit:contain;filter:drop-shadow(0 0 14px rgba(232,0,13,.25));animation:float 4s ease-in-out infinite}.thumb .emoji{font-size:56px}.cardInfo{position:relative;padding:18px 14px 14px}.itemName{font-size:22px;font-weight:900;line-height:.95;text-transform:uppercase}.itemCat{margin-top:7px;color:var(--muted);font-weight:800;text-transform:uppercase;font-size:12px;letter-spacing:1.4px}.badges{display:flex;gap:7px;flex-wrap:wrap;margin-top:13px}.badge{font-size:11px;font-weight:900;text-transform:uppercase;letter-spacing:1px;padding:4px 9px;border-radius:7px;border:1px solid rgba(255,255,255,.14);background:rgba(255,255,255,.055)}.common{border-color:#aaa!important}.uncommon{border-color:#19e882!important;color:#19e882}.rare{border-color:#458cff!important;color:#77aaff}.epic{border-color:#b85cff!important;color:#d69bff}.legendary{border-color:#ff2330!important;color:#ffcf36;box-shadow:0 0 14px rgba(232,0,13,.24)}.rightPane{padding-top:38px;display:flex;flex-direction:column;gap:14px}.panel{background:rgba(17,18,26,.72);border:1px solid var(--line);border-radius:16px;padding:15px;box-shadow:0 20px 35px rgba(0,0,0,.25)}body.light .panel,body.light .setup,body.light .card{background:#fff}.panelTitle{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}.panelTitle h3{font-size:18px}.online{font-size:12px;color:var(--green);font-weight:900}.spinTypes{display:grid;gap:10px}.spinType{min-height:88px;text-align:left;border-radius:12px;border:1px solid rgba(255,255,255,.08);background:linear-gradient(135deg,rgba(255,255,255,.06),rgba(255,255,255,.025));padding:12px 14px;cursor:pointer;transition:transform .18s ease,border-color .22s ease,background .22s ease,box-shadow .22s ease;will-change:transform;overflow:hidden;display:flex;flex-direction:column;justify-content:center;align-items:flex-start;gap:5px}.spinType.active,.spinType:hover{border-color:rgba(232,0,13,.6);box-shadow:0 0 22px rgba(232,0,13,.16)}.spinType b{display:block;font-family:AnotherDanger,Rajdhani;font-size:18px;line-height:1.08;letter-spacing:1.4px;text-transform:uppercase}.spinType span{display:block;max-height:3.3em;font-size:12px;line-height:1.32;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:1px;white-space:normal}.rules{display:grid;gap:9px}.rule{display:flex;justify-content:space-between;gap:8px;padding:10px;background:rgba(255,255,255,.045);border-radius:10px;color:#c9cbd5;font-size:13px;font-weight:800}.rule b{color:var(--text)}.appearance{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.themeBtn{height:50px;border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.045);border-radius:11px;cursor:pointer;font-weight:900;text-transform:uppercase;transition:transform .18s ease,border-color .22s ease,background .22s ease,box-shadow .22s ease;will-change:transform}.themeBtn.active,.themeBtn:hover{border-color:var(--red);box-shadow:0 0 16px rgba(232,0,13,.22)}.historyLayout{height:100%;display:grid;grid-template-columns:320px 1fr;gap:18px}.historySide,.historyTableBox{background:rgba(17,18,26,.72);border:1px solid var(--line);border-radius:18px;padding:18px;overflow:hidden}.historyTitle{font-size:28px;font-family:AnotherDanger;letter-spacing:2px;margin-bottom:8px}.groupList{display:grid;gap:9px;max-height:calc(100vh - 235px);overflow:auto}.groupRow{border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.045);border-radius:12px;padding:12px;text-align:left;cursor:pointer;transition:transform .16s ease,border-color .22s ease,background .22s ease;will-change:transform}.groupRow.active,.groupRow:hover{border-color:rgba(232,0,13,.55);background:rgba(232,0,13,.12)}.groupRow b{display:block;text-transform:uppercase}.groupRow span{color:var(--muted);font-size:12px;font-weight:900}.tableTools{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px}.tableTools h2{font-size:24px}.tableWrap{height:calc(100vh - 175px);overflow:auto;border:1px solid var(--line);border-radius:14px}table{width:100%;border-collapse:collapse;min-width:850px}th,td{padding:13px 14px;border-bottom:1px solid rgba(255,255,255,.07);font-size:14px;text-align:left}th{position:sticky;top:0;background:#11121a;color:#cdd0dc;text-transform:uppercase;font-size:12px;letter-spacing:1px;z-index:1}body.light th{background:#fff}.miniImg{width:42px;height:32px;object-fit:contain;vertical-align:middle;margin-right:8px}.danger{background:rgba(232,0,13,.1);border:1px solid rgba(232,0,13,.45);border-radius:10px;padding:9px 12px;cursor:pointer;font-weight:900}.modal{position:fixed;inset:0;background:rgba(3,4,8,.82);display:none;align-items:center;justify-content:center;z-index:10;backdrop-filter:blur(10px)}.modal.open{display:flex}.spinBox,.resultBox{width:min(700px,94vw);border-radius:22px;background:linear-gradient(180deg,rgba(22,23,33,.98),rgba(8,9,15,.98));border:1px solid rgba(232,0,13,.45);box-shadow:0 0 70px rgba(232,0,13,.28);padding:20px}.modalTop{display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--line);padding-bottom:14px;margin-bottom:16px}.modalTop h2{font-family:AnotherDanger;font-size:34px;letter-spacing:2px}.close{border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.06);border-radius:10px;padding:10px 16px;cursor:pointer;font-weight:900}.reel{height:360px;overflow:hidden;border-radius:16px;border:1px solid rgba(255,255,255,.09);background:rgba(0,0,0,.34);position:relative}.reel:before,.reel:after{content:"";position:absolute;left:0;right:0;height:120px;z-index:2;pointer-events:none}.reel:before{top:0;background:linear-gradient(#080910,transparent)}.reel:after{bottom:0;background:linear-gradient(transparent,#080910)}.line{position:absolute;left:0;right:0;top:50%;height:3px;background:var(--red);box-shadow:0 0 20px var(--red);z-index:3}.track{display:flex;flex-direction:column}.reelItem{height:120px;display:flex;align-items:center;justify-content:center;gap:18px;border-bottom:1px solid rgba(255,255,255,.05);font-size:24px;font-weight:900;text-transform:uppercase}.reelItem img{width:90px;height:90px;object-fit:contain}.reelItem .emoji{font-size:60px}.resultGrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(145px,1fr));gap:12px}.resultCard{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:14px;text-align:center;padding:14px}.resultCard img{width:115px;height:80px;object-fit:contain}.resultCard .emoji{font-size:54px;height:80px}.collect{margin-top:16px;width:100%;height:48px;border:0;border-radius:12px;background:linear-gradient(180deg,#ff2632,#aa000a);font-size:16px;font-weight:900;letter-spacing:2px;cursor:pointer}.typewriter{position:fixed;inset:0;background:#000;z-index:20;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:14px;cursor:pointer;transition:.8s}.typewriter.hide{opacity:0;visibility:hidden}.typeTitle{font-family:AnotherDanger;font-size:clamp(2.2rem,5vw,5.5rem);letter-spacing:4px;text-shadow:0 0 35px rgba(232,0,13,.75)}.typeSub{font-size:13px;color:#979baa;font-weight:900;letter-spacing:4px;text-transform:uppercase}
+.view.active{animation:viewDrop .32s cubic-bezier(.2,.8,.2,1) both}.panel{animation:dropReveal .32s ease both}.clicked{animation:clickPop .28s ease both}.choiceOpen{animation:dropChoice .34s cubic-bezier(.2,.8,.2,1) both}.rowShow{animation:dropReveal .28s ease both}.spinType span,.rule span,.groupRow span{display:block;overflow:hidden;transition:max-height .32s ease,opacity .24s ease,transform .24s ease}.spinType span{max-height:3.3em;opacity:1;transform:translateY(0)}.spinType.active span,.spinType:hover span{max-height:3.3em;opacity:1;transform:translateY(0)}.rule span,.groupRow span{max-height:0;opacity:0;transform:translateY(-6px)}.rule:hover span,.groupRow.active span,.groupRow:hover span{max-height:42px;opacity:1;transform:translateY(0)}.tierTab small{max-height:0;opacity:0;transform:translateY(-5px);overflow:hidden;transition:max-height .28s ease,opacity .22s ease,transform .22s ease}.tierTab.active small,.tierTab:hover small{max-height:26px;opacity:1;transform:translateY(0)}button:active{transform:scale(.985)}@keyframes metalShine{0%{background-position:0% center}100%{background-position:220% center}}@keyframes dropReveal{from{opacity:0;transform:translateY(-10px) scale(.985)}to{opacity:1;transform:translateY(0) scale(1)}}@keyframes dropChoice{0%{opacity:.2;transform:translateY(-8px);filter:blur(2px)}100%{opacity:1;transform:translateY(0);filter:blur(0)}}@keyframes clickPop{0%{transform:scale(1)}42%{transform:scale(.965)}100%{transform:scale(1)}}@keyframes viewDrop{from{opacity:0;transform:translateY(-12px)}to{opacity:1;transform:translateY(0)}}#confettiCanvas{position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:9999}.reelItem{backface-visibility:hidden;transform:translateZ(0);will-change:transform,filter,opacity}.track{will-change:transform;transform:translate3d(0,0,0);backface-visibility:hidden}.track.spinMotion .reelItem{animation:reelBlur .16s linear infinite}.track.settled .reelItem:nth-child(56){animation:winnerLock .48s cubic-bezier(.2,.9,.2,1) both}.items.poolReveal .card{animation-name:dropReveal}.tierTab.clicked,.spinType.clicked,.chip.clicked{animation:clickPop .28s ease both}.thumb img,.resultCard img{animation:itemFloat 3.4s ease-in-out infinite;will-change:transform}.card:nth-child(2n) .thumb img{animation-delay:.35s}.card:nth-child(3n) .thumb img{animation-delay:.75s}.card:nth-child(4n) .thumb img{animation-delay:1.05s}.reelItem img{animation:reelFloat 2.8s ease-in-out infinite;will-change:transform}.view.active{animation:viewFadeIn .32s ease both}.view.fadeOut{display:block;animation:viewFadeOut .22s ease both}.panel,.setup,.hero,.historySide,.historyTableBox{transition:transform .22s ease,border-color .22s ease,box-shadow .22s ease}.panel:hover,.setup:hover,.hero:hover,.historySide:hover,.historyTableBox:hover{border-color:rgba(232,0,13,.42);box-shadow:0 20px 42px rgba(0,0,0,.32),0 0 26px rgba(232,0,13,.055)}@keyframes reelBlur{0%{filter:blur(0);opacity:.92}50%{filter:blur(1.15px);opacity:.72}100%{filter:blur(0);opacity:.92}}@keyframes itemFloat{0%,100%{transform:translate3d(0,0,0) rotate(0deg)}50%{transform:translate3d(0,-10px,0) rotate(-1.2deg)}}@keyframes reelFloat{0%,100%{transform:translate3d(0,0,0)}50%{transform:translate3d(0,-5px,0)}}@keyframes winnerLock{0%{transform:scale(.98);filter:brightness(1)}55%{transform:scale(1.08);filter:brightness(1.45) drop-shadow(0 0 20px rgba(232,0,13,.75))}100%{transform:scale(1);filter:brightness(1)}}@keyframes viewFadeIn{from{opacity:0;transform:translateY(12px) scale(.995);filter:blur(4px)}to{opacity:1;transform:translateY(0) scale(1);filter:blur(0)}}@keyframes viewFadeOut{from{opacity:1;transform:translateY(0);filter:blur(0)}to{opacity:0;transform:translateY(-8px);filter:blur(4px)}}@media (prefers-reduced-motion: reduce){*,*::before,*::after{animation:none!important;transition:none!important}}
+@keyframes float{0%,100%{translate:0 0}50%{translate:0 -12px}}.madeByNas{font-family:BrotherSignature;font-size:18px;letter-spacing:.4px;opacity:.92;text-shadow:0 0 10px rgba(232,0,13,.42),0 0 16px rgba(255,255,255,.08)}
+
+.topLeft{display:flex;align-items:center;overflow:visible}
+.appTitle{display:inline-block;padding:0 10px 2px 12px;font-family:AnotherDanger,Rajdhani,sans-serif;font-size:22px;letter-spacing:1px;line-height:1.12;text-transform:uppercase;white-space:nowrap;overflow:visible;background:linear-gradient(90deg,var(--red) 0 16%,#fff 16% 34%,var(--red) 34% 52%,#fff 52% 70%,var(--red) 70% 86%,#fff 86% 100%);background-size:260% 100%;background-position:0% 50%;-webkit-background-clip:text;background-clip:text;color:transparent;text-shadow:0 0 12px rgba(232,0,13,.24),0 0 18px rgba(255,255,255,.12);animation:appTitleReflect 5.2s linear infinite}
+body.light .appTitle{background:none!important;-webkit-background-clip:border-box!important;background-clip:border-box!important;color:#111!important;text-shadow:1px 0 0 rgba(232,0,13,.92),0 0 8px rgba(232,0,13,.12)}
+@keyframes appTitleReflect{0%{background-position:0% 50%}100%{background-position:260% 50%}}
+
+@media(max-width:1100px){body{overflow:auto}.app{min-height:100vh;height:auto}.main,.view,.layout{height:auto;overflow:visible}.layout,.historyLayout{grid-template-columns:1fr}.items{height:auto}.rightPane{padding-top:0}.setup{grid-template-columns:1fr;height:auto}.app{grid-template-columns:70px 1fr}.brand,.navBtn{width:50px;height:50px}.topbar{height:auto;flex-wrap:wrap;padding:10px}.topRight{flex-wrap:wrap}.centerLaunch{width:270px}}
+
+/* stronger true-vertical slot motion */
+.track{will-change:transform;transform:translate3d(0,0,0);backface-visibility:hidden;}
+.reelItem{will-change:transform,opacity,filter;}
+.track.spinMotion .reelItem{animation:slotMotionBlur .11s linear infinite;}
+.track.settled .reelItem:nth-child(56){animation:winnerLock .55s cubic-bezier(.16,.84,.24,1) both;}
+@keyframes slotMotionBlur{0%{filter:blur(0);opacity:.95;transform:translateZ(0) scale(1)}50%{filter:blur(1.15px);opacity:.68;transform:translateZ(0) scale(.985)}100%{filter:blur(0);opacity:.95;transform:translateZ(0) scale(1)}}
+@keyframes winnerLock{0%{filter:brightness(1);transform:scale(.96)}55%{filter:brightness(1.55) drop-shadow(0 0 18px rgba(232,0,13,.75));transform:scale(1.08)}100%{filter:brightness(1.1);transform:scale(1)}}
+
+
+
+/* === Final animative polish: cascading pool loads + animated tier underline === */
+.tiers{position:relative}
+.tierTab{position:relative;overflow:hidden;transform:translateZ(0)}
+.tierTab::after{content:"";position:absolute;left:14%;right:14%;bottom:8px;height:3px;border-radius:999px;background:linear-gradient(90deg,transparent,#fff,var(--red),#fff,transparent);box-shadow:0 0 14px rgba(232,0,13,.9);transform:scaleX(0);transform-origin:left;opacity:0;transition:transform .34s cubic-bezier(.18,.9,.18,1),opacity .22s ease}
+.tierTab.active::after{transform:scaleX(1);opacity:1;animation:underlinePulse 1.8s ease-in-out infinite}
+.tierTab.active{background:linear-gradient(180deg,rgba(232,0,13,.22),rgba(232,0,13,.08));box-shadow:0 0 22px rgba(232,0,13,.22),inset 0 -20px 38px rgba(232,0,13,.06)}
+.tierTab.clicked::before,.spinType.clicked::before,.chip.clicked::before,.navBtn.clicked::before{content:"";position:absolute;inset:0;background:linear-gradient(120deg,transparent,rgba(255,255,255,.18),transparent);transform:translateX(-120%);animation:sweepClick .55s ease forwards;pointer-events:none}
+.items{position:relative;perspective:900px;transition:opacity .18s ease,filter .18s ease,transform .18s ease}
+.items.loading{opacity:.38;filter:blur(3px);transform:translateY(8px)}
+.items.poolReveal .card{animation:dropCascade .62s cubic-bezier(.16,.95,.18,1) both}
+.card{transform-origin:top center;will-change:transform,opacity,filter}
+.card .thumb{overflow:hidden}
+.card .thumb img,.card .thumb .emoji{animation:itemHoverFloat 3.3s ease-in-out infinite;will-change:transform}
+.card:nth-child(2n) .thumb img,.card:nth-child(2n) .thumb .emoji{animation-delay:.25s}
+.card:nth-child(3n) .thumb img,.card:nth-child(3n) .thumb .emoji{animation-delay:.55s}
+.card:nth-child(4n) .thumb img,.card:nth-child(4n) .thumb .emoji{animation-delay:.85s}
+.panel,.setup,.sectionHead,.hero{animation:softDropIn .55s cubic-bezier(.16,.95,.18,1) both}
+.panel:nth-child(2){animation-delay:.06s}.panel:nth-child(3){animation-delay:.12s}.panel:nth-child(4){animation-delay:.18s}
+.view.active .historySide{animation:slideFadeLeft .42s cubic-bezier(.16,.95,.18,1) both}.view.active .historyTableBox{animation:slideFadeUp .48s cubic-bezier(.16,.95,.18,1) both .06s}
+.groupRow{animation:dropCascade .36s cubic-bezier(.16,.95,.18,1) both}
+.groupRow:nth-child(2){animation-delay:.035s}.groupRow:nth-child(3){animation-delay:.07s}.groupRow:nth-child(4){animation-delay:.105s}.groupRow:nth-child(5){animation-delay:.14s}.groupRow:nth-child(6){animation-delay:.175s}
+.reelItem{transform:translateZ(0)}
+.track.spinMotion{filter:drop-shadow(0 0 12px rgba(232,0,13,.18))}
+.track.spinMotion .reelItem{animation:reelMotionBlur .12s linear infinite}
+@keyframes dropCascade{0%{opacity:0;transform:translateY(-32px) rotateX(-8deg) scale(.97);filter:blur(7px)}58%{opacity:1;transform:translateY(6px) rotateX(1deg) scale(1.01);filter:blur(0)}100%{opacity:1;transform:translateY(0) rotateX(0) scale(1);filter:blur(0)}}
+@keyframes softDropIn{from{opacity:0;transform:translateY(-18px);filter:blur(4px)}to{opacity:1;transform:translateY(0);filter:blur(0)}}
+@keyframes underlinePulse{0%,100%{box-shadow:0 0 12px rgba(232,0,13,.65)}50%{box-shadow:0 0 24px rgba(232,0,13,1),0 0 10px rgba(255,255,255,.45)}}
+@keyframes sweepClick{to{transform:translateX(120%)}}
+@keyframes itemHoverFloat{0%,100%{transform:translate3d(0,0,0) rotate(0)}50%{transform:translate3d(0,-12px,0) rotate(-1.5deg)}}
+@keyframes slideFadeLeft{from{opacity:0;transform:translateX(-26px);filter:blur(5px)}to{opacity:1;transform:translateX(0);filter:blur(0)}}
+@keyframes slideFadeUp{from{opacity:0;transform:translateY(24px);filter:blur(5px)}to{opacity:1;transform:translateY(0);filter:blur(0)}}
+@keyframes reelMotionBlur{0%{opacity:.95;filter:blur(.3px)}50%{opacity:.68;filter:blur(1.4px)}100%{opacity:.95;filter:blur(.3px)}}
+
+
+/* ===== ANIMATION POLISH PACK: UI ONLY — reel + confetti untouched ===== */
+:root{--easeOut:cubic-bezier(.16,.84,.24,1);--easeBounce:cubic-bezier(.68,-.35,.265,1.35)}
+.topbar,.welcome,.hero,.setup,.sectionHead,.rightPane .panel,.historySide,.historyTableBox{animation:uiDropIn .52s var(--easeOut) both;will-change:transform,opacity,filter}
+.topbar{animation-delay:20ms}.welcome{animation-delay:70ms}.hero{animation-delay:115ms}.setup{animation-delay:165ms}.sectionHead{animation-delay:215ms}.rightPane .panel:nth-child(1){animation-delay:125ms}.rightPane .panel:nth-child(2){animation-delay:185ms}.rightPane .panel:nth-child(3){animation-delay:245ms}
+@keyframes uiDropIn{0%{opacity:0;transform:translate3d(0,-28px,0) scale(.985);filter:blur(6px)}62%{opacity:1;transform:translate3d(0,5px,0) scale(1.004);filter:blur(0)}100%{opacity:1;transform:translate3d(0,0,0) scale(1);filter:blur(0)}}
+.navBtn,.tierTab,.spinType,.chip,.themeBtn,.soundBtn,.launchBtn,.danger,.collect,.close{position:relative;overflow:hidden;isolation:isolate}
+.navBtn::before,.tierTab::before,.spinType::before,.chip::before,.themeBtn::before,.soundBtn::before,.launchBtn::before,.danger::before,.collect::before,.close::before{content:"";position:absolute;inset:0;background:linear-gradient(120deg,transparent 0%,rgba(255,255,255,.16) 42%,rgba(255,255,255,.24) 50%,rgba(255,255,255,.10) 58%,transparent 100%);transform:translateX(-125%);pointer-events:none;z-index:-1}
+.navBtn:hover::before,.tierTab:hover::before,.spinType:hover::before,.chip:hover::before,.themeBtn:hover::before,.soundBtn:hover::before,.launchBtn:hover::before,.danger:hover::before,.collect:hover::before,.close:hover::before{animation:shineSweep .72s ease forwards}
+@keyframes shineSweep{to{transform:translateX(125%)}}
+.tierTab,.spinType,.chip,.themeBtn{transition:transform .22s var(--easeOut),border-color .26s ease,background .26s ease,box-shadow .26s ease,color .26s ease}
+.tierTab:hover,.spinType:hover,.chip:hover,.themeBtn:hover{transform:translateY(-3px)}
+.tierTab:active,.spinType:active,.chip:active,.themeBtn:active,.navBtn:active,.launchBtn:active{transform:scale(.97)}
+.tierTab::after,.spinType::after,.chip::after,.navBtn[data-view]::after{content:"";position:absolute;left:13%;right:13%;bottom:7px;height:3px;border-radius:999px;background:linear-gradient(90deg,transparent,#fff,var(--red),#fff,transparent);box-shadow:0 0 14px rgba(232,0,13,.9);transform:scaleX(0);transform-origin:left;opacity:0;transition:transform .38s var(--easeOut),opacity .22s ease}
+.tierTab.active::after,.spinType.active::after,.chip.active::after,.navBtn.active::after{transform:scaleX(1);opacity:1;animation:underlineGlow 1.8s ease-in-out infinite}
+@keyframes underlineGlow{0%,100%{filter:brightness(1);box-shadow:0 0 10px rgba(232,0,13,.7)}50%{filter:brightness(1.35);box-shadow:0 0 22px rgba(232,0,13,1),0 0 8px rgba(255,255,255,.55)}}
+.items{perspective:900px;transform-style:preserve-3d}.items.loading{opacity:.42;transform:translate3d(0,-10px,0);transition:opacity .18s ease,transform .18s ease}.items.poolReveal .card{animation:itemCascade .5s var(--easeOut) both}.card:nth-child(1){animation-delay:20ms!important}.card:nth-child(2){animation-delay:75ms!important}.card:nth-child(3){animation-delay:130ms!important}.card:nth-child(4){animation-delay:185ms!important}.card:nth-child(5){animation-delay:240ms!important}.card:nth-child(6){animation-delay:295ms!important}.card:nth-child(7){animation-delay:350ms!important}.card:nth-child(8){animation-delay:405ms!important}
+@keyframes itemCascade{0%{opacity:0;transform:translate3d(0,-34px,0) rotateX(-10deg) scale(.96);filter:blur(7px)}55%{opacity:1;transform:translate3d(0,6px,0) rotateX(2deg) scale(1.01);filter:blur(0)}100%{opacity:1;transform:translate3d(0,0,0) rotateX(0) scale(1);filter:blur(0)}}
+.card{transition:transform .24s var(--easeOut),border-color .24s ease,box-shadow .24s ease}.card::after{content:"";position:absolute;left:0;right:0;top:0;height:3px;background:linear-gradient(90deg,transparent,var(--red),#fff,var(--red),transparent);transform:scaleX(0);opacity:0;transition:transform .3s ease,opacity .22s ease}.card:hover{transform:translateY(-8px) scale(1.018)!important;border-color:rgba(232,0,13,.72)!important;box-shadow:0 16px 38px rgba(0,0,0,.38),0 0 26px rgba(232,0,13,.28)!important}.card:hover::after{transform:scaleX(1);opacity:1}.thumb img,.resultCard img,.miniImg{animation:weaponFloat 3.6s ease-in-out infinite;will-change:transform}.card:nth-child(even) .thumb img{animation-delay:.35s}.card:nth-child(3n) .thumb img{animation-delay:.72s}@keyframes weaponFloat{0%,100%{transform:translate3d(0,0,0) rotate(0deg)}50%{transform:translate3d(0,-11px,0) rotate(-1.4deg)}}
+.clicked{animation:clickPulse .34s var(--easeBounce) both!important}@keyframes clickPulse{0%{transform:scale(1)}45%{transform:scale(.94)}100%{transform:scale(1)}}
+.spinType span,.rule span,.groupRow span{overflow:hidden;transition:max-height .34s var(--easeOut),opacity .24s ease,transform .24s ease}.spinType span{max-height:3.3em;opacity:1;transform:none}.spinType.active span,.spinType:hover span{max-height:3.3em;opacity:1;transform:none}.rule span,.groupRow span{max-height:0;opacity:0;transform:translateY(-7px)}.rule:hover span,.groupRow.active span,.groupRow:hover span{max-height:50px;opacity:1;transform:translateY(0)}
+.modal.open .spinBox,.modal.open .resultBox{animation:modalDrop .34s var(--easeOut) both}@keyframes modalDrop{0%{opacity:0;transform:translateY(-22px) scale(.97);filter:blur(5px)}100%{opacity:1;transform:translateY(0) scale(1);filter:blur(0)}}
+.resultCard{animation:resultPop .36s var(--easeOut) both}.resultCard:nth-child(1){animation-delay:40ms}.resultCard:nth-child(2){animation-delay:90ms}.resultCard:nth-child(3){animation-delay:140ms}.resultCard:nth-child(4){animation-delay:190ms}@keyframes resultPop{0%{opacity:0;transform:translateY(18px) scale(.94);filter:blur(5px)}75%{opacity:1;transform:translateY(-3px) scale(1.015);filter:blur(0)}100%{opacity:1;transform:translateY(0) scale(1)}}
+.view.active{animation:viewSmoothIn .36s var(--easeOut) both!important}.view.fadeOut{display:block;animation:viewSmoothOut .24s ease both!important}@keyframes viewSmoothIn{from{opacity:0;transform:translate3d(0,-18px,0);filter:blur(5px)}to{opacity:1;transform:translate3d(0,0,0);filter:blur(0)}}@keyframes viewSmoothOut{from{opacity:1;transform:translate3d(0,0,0);filter:blur(0)}to{opacity:0;transform:translate3d(0,12px,0);filter:blur(5px)}}
+.app.themeSwitch{animation:themeSmoothSwitch .42s var(--easeOut) 1 both!important}.themeBtn.themeBlink{animation:themeButtonBlink .34s var(--easeOut) 1 both}@keyframes themeSmoothSwitch{0%{opacity:.58;transform:translate3d(0,-14px,0) scale(.994);filter:blur(4px)}72%{opacity:1;transform:translate3d(0,2px,0) scale(1.001);filter:blur(0)}100%{opacity:1;transform:translate3d(0,0,0) scale(1);filter:blur(0)}}@keyframes themeButtonBlink{0%{box-shadow:0 0 0 rgba(232,0,13,0);filter:brightness(1)}50%{box-shadow:0 0 16px rgba(232,0,13,.28);filter:brightness(1.16)}100%{box-shadow:0 0 16px rgba(232,0,13,.22);filter:brightness(1)}}
+.historySide,.historyTableBox{animation:slideUpClean .46s var(--easeOut) both}.historyTableBox{animation-delay:80ms}@keyframes slideUpClean{from{opacity:0;transform:translateY(22px);filter:blur(5px)}to{opacity:1;transform:translateY(0);filter:blur(0)}}
+.groupRow,tr{animation:rowReveal .32s var(--easeOut) both}@keyframes rowReveal{from{opacity:0;transform:translateY(-10px)}to{opacity:1;transform:translateY(0)}}
+
+/* Tier changes now use the same smooth fade/drop transition as the Spins ↔ History switch */
+.items.tierSwitchOut{animation:viewSmoothOut .24s ease both!important;pointer-events:none}
+.items.tierSwitchIn{animation:viewSmoothIn .36s var(--easeOut) both!important}
+.tierTab{position:relative}
+.tierTab.active{background:linear-gradient(145deg,rgba(232,0,13,.23),rgba(255,255,255,.04))!important;border-color:rgba(232,0,13,.55)!important;color:#fff!important;box-shadow:0 0 22px rgba(232,0,13,.24)!important}
+.tierTab.active::after{transform:scaleX(1)!important;opacity:1!important;animation:underlineGlow 1.8s ease-in-out infinite!important}
+
+@media (prefers-reduced-motion: reduce){.track.spinMotion .reelItem{animation:none!important}}
+
+
+/* === FIX: make every drop item float up and down === */
+.thumb img,
+.thumb .emoji,
+.resultCard img,
+.resultCard .emoji,
+.reelItem img,
+.reelItem .emoji,
+.miniImg{
+  animation:dropItemFloat 3.2s ease-in-out infinite !important;
+  will-change:transform;
+}
+
+.card:nth-child(2n) .thumb img,
+.card:nth-child(2n) .thumb .emoji{animation-delay:.25s!important}
+.card:nth-child(3n) .thumb img,
+.card:nth-child(3n) .thumb .emoji{animation-delay:.55s!important}
+.card:nth-child(4n) .thumb img,
+.card:nth-child(4n) .thumb .emoji{animation-delay:.85s!important}
+
+@keyframes dropItemFloat{
+  0%,100%{transform:translate3d(0,0,0) rotate(0deg)}
+  50%{transform:translate3d(0,calc(var(--floatAmt,12px) * -1),0) rotate(-1.2deg)}
+}
+
+
+/* === FULL SETTINGS PANEL === */
+.settingsLayout{height:100%;overflow:auto;padding-right:6px;display:grid;grid-template-columns:1fr;gap:16px}
+.settingsHero{border:1px solid rgba(232,0,13,.38);background:linear-gradient(135deg,rgba(232,0,13,.16),rgba(17,18,26,.72));border-radius:18px;padding:20px;box-shadow:0 18px 42px rgba(0,0,0,.28),0 0 28px rgba(232,0,13,.10)}
+.settingsTitle{font-family:AnotherDanger,Rajdhani;font-size:34px;letter-spacing:2px;text-transform:uppercase}
+.settingsSub{margin-top:6px;color:var(--muted);font-weight:800;letter-spacing:1px;text-transform:uppercase;font-size:12px}
+.settingsGrid{display:grid;grid-template-columns:repeat(2,minmax(320px,1fr));gap:16px}
+.settingsCard{background:rgba(17,18,26,.72);border:1px solid var(--line);border-radius:16px;padding:16px;box-shadow:0 18px 34px rgba(0,0,0,.25);animation:uiDropIn .45s var(--easeOut) both}
+.settingsCard h3{font-size:20px;margin-bottom:12px;text-transform:uppercase;letter-spacing:1px}
+.settingRow{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:11px 0;border-bottom:1px solid rgba(255,255,255,.07)}
+.settingRow:last-child{border-bottom:0}
+.settingInfo b{display:block;font-size:14px;text-transform:uppercase;letter-spacing:1px}
+.settingInfo span{display:block;font-size:12px;color:var(--muted);font-weight:800;margin-top:3px}
+.rangeControl{width:190px;accent-color:#e8000d}
+.settingsInput{height:42px;width:100%;border-radius:11px;border:1px solid var(--line);background:rgba(0,0,0,.24);padding:0 12px;font-size:14px;font-weight:800;outline:none}
+.settingsInput:focus{border-color:var(--red);box-shadow:0 0 18px rgba(232,0,13,.2)}
+.settingsStack{display:grid;gap:10px}
+.settingsActions{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+.settingBtn{height:44px;border-radius:11px;border:1px solid rgba(255,255,255,.11);background:rgba(255,255,255,.055);cursor:pointer;font-weight:900;text-transform:uppercase;letter-spacing:1px}
+.settingBtn:hover,.settingBtn.active{border-color:rgba(232,0,13,.62);box-shadow:0 0 18px rgba(232,0,13,.22)}
+.settingBtn.dangerBtn{background:rgba(232,0,13,.12);border-color:rgba(232,0,13,.45)}
+.toggleSwitch{position:relative;width:56px;height:30px;flex:0 0 auto}
+.toggleSwitch input{display:none}
+.toggleKnob{position:absolute;inset:0;border-radius:999px;background:rgba(255,255,255,.13);border:1px solid rgba(255,255,255,.15);cursor:pointer;transition:.22s}
+.toggleKnob:before{content:"";position:absolute;width:22px;height:22px;left:4px;top:3px;border-radius:50%;background:#fff;transition:.22s;box-shadow:0 3px 12px rgba(0,0,0,.35)}
+.toggleSwitch input:checked + .toggleKnob{background:rgba(232,0,13,.72);border-color:rgba(232,0,13,.85);box-shadow:0 0 18px rgba(232,0,13,.3)}
+.toggleSwitch input:checked + .toggleKnob:before{transform:translateX(25px)}
+.musicSearchBox{display:grid;grid-template-columns:1fr auto;gap:10px;margin-top:10px}
+.musicResults{display:grid;gap:8px;margin-top:10px;max-height:180px;overflow:auto}
+.musicResult{border:1px solid rgba(255,255,255,.09);background:rgba(255,255,255,.045);border-radius:10px;padding:10px;text-align:left;cursor:pointer}
+.musicResult b{display:block;text-transform:uppercase}
+.musicResult span{font-size:12px;color:var(--muted);font-weight:800}
+.versionBox{text-align:center;border:1px dashed rgba(232,0,13,.45);border-radius:14px;padding:14px;color:var(--muted);font-weight:900;letter-spacing:1px}
+.mediaStatus{margin-top:10px;min-height:18px;font-size:12px;font-weight:800;letter-spacing:.6px;text-transform:uppercase;color:var(--muted)}
+.mediaStatus.error{color:#ff9b9b}
+.mediaStatus.success{color:#9dffca}
+body.hideBgVideo .pageBgVideo{display:none!important}
+body.hideParticles .dotCanvas,body.hideParticles .dotShade{display:none!important}
+body.hideFloating .thumb img,body.hideFloating .thumb .emoji,body.hideFloating .resultCard img,body.hideFloating .resultCard .emoji{animation:none!important}
+body.noConfetti #confettiCanvas{display:none!important}
+body.lowMotion *{animation:none!important;transition:none!important}
+@media(max-width:1100px){.settingsGrid{grid-template-columns:1fr}.musicSearchBox{grid-template-columns:1fr}.settingsActions{grid-template-columns:1fr}}
+
+body::before,body::after{content:"";position:fixed;inset:10px;border-radius:24px;pointer-events:none;z-index:-1;opacity:var(--rgbTrailOpacity);transition:opacity .24s ease}
+body::before{background:linear-gradient(120deg,rgba(255,0,76,.16),rgba(0,212,255,.12),rgba(120,255,0,.12),rgba(255,170,0,.12),rgba(255,0,76,.16));background-size:280% 280%;filter:blur(16px);animation:rgbTrail 12s linear infinite}
+body::after{inset:4px;border:1px solid rgba(255,255,255,.08);box-shadow:0 0 22px rgba(255,0,76,.1),0 0 30px rgba(0,212,255,.08),0 0 40px rgba(120,255,0,.06)}
+body.hideRgbTrail::before,body.hideRgbTrail::after{opacity:0}
+.setupIcon{overflow:hidden}.setupIcon img{width:88%;height:88%;object-fit:contain}
+.rarityPeek{overflow:hidden;max-height:0;opacity:0;transform:translateY(-10px);transition:max-height .34s cubic-bezier(.16,.84,.24,1),opacity .24s ease,transform .24s ease;margin-top:0}.rarityPeek.open{max-height:420px;opacity:1;transform:translateY(0);margin-top:14px}.rarityPeekInner{padding:12px;border:1px solid var(--line);border-radius:18px;background:linear-gradient(135deg,rgba(255,255,255,.05),rgba(255,255,255,.025))}.rarityPeekLabel{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;font-size:13px;font-weight:900;letter-spacing:1px;text-transform:uppercase;color:var(--muted)}.rarityPeekList{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:10px}.rarityPeekCard{display:flex;gap:10px;align-items:center;padding:10px 12px;border-radius:14px;border:1px solid var(--line);background:linear-gradient(135deg,rgba(255,255,255,.06),rgba(255,255,255,.025))}.rarityPeekCard img{width:48px;height:48px;object-fit:contain}.rarityPeekCard .emoji{width:48px;height:48px;display:grid;place-items:center}.rarityPeekText strong{display:block;font-size:15px}.rarityPeekText span{display:block;font-size:12px;color:var(--muted);font-weight:800}
+.topbar,.setup,.hero,.panel,.settingsHero,.settingsCard,.historySide,.historyTableBox,.spinBox,.resultBox,.card,.rarityPeekInner{background-color:rgba(17,18,26,calc(.72 * var(--panelOpacity)))}
+body.light .topbar,body.light .setup,body.light .hero,body.light .panel,body.light .settingsHero,body.light .settingsCard,body.light .historySide,body.light .historyTableBox,body.light .spinBox,body.light .resultBox,body.light .card,body.light .rarityPeekInner{background-color:rgba(255,255,255,calc(.94 * var(--panelOpacity)))}
+.hero{background-color:rgba(17,18,26,calc(.72 * var(--panelOpacity)))!important}
+body.light .hero{background-color:rgba(255,255,255,calc(.94 * var(--panelOpacity)))!important}
+.heroShade{opacity:.78;transition:opacity .24s ease}
+body.hideHeroPanel .hero{background-color:transparent!important;border-color:transparent!important;box-shadow:none!important}
+body.hideHeroPanel .heroShade,body.hideHeroPanel .dotCanvas{opacity:0!important}
+@keyframes rgbTrail{0%{background-position:0% 50%}100%{background-position:280% 50%}}
+
+/* final fixes: scroll access + visible viewport rgb border */
+body{overflow-y:auto!important;overflow-x:hidden!important}
+.app{min-height:100vh;height:auto!important}
+.rail{position:sticky;top:0;height:100vh}
+.main{height:100vh;overflow-y:auto!important;overflow-x:hidden!important;padding-bottom:28px}
+.view,.layout,.leftPane,.rightPane,.items{height:auto!important;overflow:visible!important}
+.rarityPeekList{max-height:320px;overflow:auto}
+body::before{inset:0!important;padding:2px;border-radius:0!important;background:linear-gradient(90deg,red,orange,yellow,lime,cyan,blue,violet,red)!important;background-size:400% 400%!important;animation:rgbTrail 8s linear infinite!important;pointer-events:none!important;z-index:9999!important;opacity:.9!important;filter:none!important;mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0)!important;-webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0)!important;mask-composite:exclude!important;-webkit-mask-composite:xor!important;box-shadow:0 0 18px rgba(255,255,255,.35),0 0 26px rgba(255,0,102,.22)!important}
+body::after{content:none!important}
+
+/* final polish: scoped ui opacity, circular rainbow trail, lighter animation cost */
+.topbar,.hero,.setup,.panel,.settingsHero,.settingsCard,.historySide,.historyTableBox,.spinBox,.resultBox,.card,.rarityPeekInner{background-color:rgba(17,18,26,calc(.72 * var(--panelOpacity)))!important}
+body.light .topbar,body.light .hero,body.light .setup,body.light .panel,body.light .settingsHero,body.light .settingsCard,body.light .historySide,body.light .historyTableBox,body.light .spinBox,body.light .resultBox,body.light .card,body.light .rarityPeekInner{background-color:rgba(255,255,255,calc(.94 * var(--panelOpacity)))!important}
+.hero{background-color:rgba(17,18,26,calc(.72 * var(--panelOpacity)))!important}
+body.light .hero{background-color:rgba(255,255,255,calc(.94 * var(--panelOpacity)))!important}
+body::before,body::after{content:"";position:fixed;inset:0;pointer-events:none;z-index:9998;transition:opacity .24s ease}
+body::before{padding:2px!important;border-radius:0!important;opacity:var(--rgbTrailOpacity)!important;background:conic-gradient(from 0deg,rgba(255,0,0,0) 0deg,rgba(255,0,0,.92) 24deg,rgba(255,136,0,.88) 60deg,rgba(255,230,0,.84) 100deg,rgba(80,255,0,.86) 145deg,rgba(0,220,255,.88) 205deg,rgba(60,110,255,.9) 255deg,rgba(160,70,255,.9) 315deg,rgba(255,0,120,.88) 345deg,rgba(255,0,0,0) 360deg)!important;animation:rgbOrbit 7.5s linear infinite!important;filter:drop-shadow(0 0 10px rgba(255,255,255,.16)) drop-shadow(0 0 18px rgba(0,212,255,.14))!important;mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0)!important;-webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0)!important;mask-composite:exclude!important;-webkit-mask-composite:xor!important;box-shadow:none!important}
+body::after{z-index:9997;opacity:calc(var(--rgbTrailOpacity) * .42);background:radial-gradient(circle at 50% 0,rgba(255,80,80,.16),transparent 26%),radial-gradient(circle at 100% 50%,rgba(0,220,255,.14),transparent 24%),radial-gradient(circle at 50% 100%,rgba(120,255,0,.14),transparent 26%),radial-gradient(circle at 0 50%,rgba(140,70,255,.14),transparent 24%)}
+body.hideRgbTrail::before,body.hideRgbTrail::after{opacity:0!important}
+@keyframes rgbOrbit{0%{transform:rotate(0deg)}100%{transform:rotate(360deg)}}
+html{scroll-behavior:smooth}
+.pageBgVideo{backface-visibility:hidden;transform:translateZ(0)}
+.items.poolReveal .card{animation:itemCascadeLite .42s var(--easeOut) both!important}
+.groupRow{animation:rowRevealLite .28s var(--easeOut) both!important}
+.resultCard{animation:resultPopLite .3s var(--easeOut) both!important}
+@keyframes itemCascadeLite{0%{opacity:0;transform:translate3d(0,-24px,0) scale(.97)}60%{opacity:1;transform:translate3d(0,4px,0) scale(1.01)}100%{opacity:1;transform:translate3d(0,0,0) scale(1)}}
+@keyframes rowRevealLite{0%{opacity:0;transform:translateY(-8px)}100%{opacity:1;transform:translateY(0)}}
+@keyframes resultPopLite{0%{opacity:0;transform:translateY(14px) scale(.95)}70%{opacity:1;transform:translateY(-2px) scale(1.01)}100%{opacity:1;transform:translateY(0) scale(1)}}
+.topbar,.welcome,.hero,.setup,.sectionHead,.rightPane .panel,.historySide,.historyTableBox,.card,.resultCard,.rarityPeek,.spinType,.tierTab,.chip,.settingBtn,.toggleKnob{will-change:transform,opacity}
+.reelItem,.track{will-change:transform}
+.soundBtn,.settingBtn,.toggleKnob,.rangeControl{transition:transform .18s ease,box-shadow .22s ease,background-color .22s ease,border-color .22s ease,filter .22s ease}
+.rangeControl:hover{filter:brightness(1.04)}
+@media (prefers-reduced-motion: reduce){body::before,body::after,.items.poolReveal .card,.groupRow,.resultCard,.thumb img,.thumb .emoji,.resultCard img,.resultCard .emoji,.reelItem img,.reelItem .emoji,.miniImg{animation:none!important}.soundBtn,.settingBtn,.toggleKnob,.rangeControl,.rarityPeek,.spinType,.tierTab,.chip{transition:none!important}}
+
+.typewriter{cursor:default}.gatePanel{width:min(92vw,420px);display:grid;gap:10px;justify-items:center}.gateInput{width:100%;height:52px;border-radius:14px;border:1px solid rgba(255,255,255,.14);background:rgba(255,255,255,.04);padding:0 16px;color:#fff;font-size:16px;font-weight:800;letter-spacing:2px;text-transform:uppercase;text-align:center;outline:none}.gateInput:focus{border-color:rgba(232,0,13,.75);box-shadow:0 0 0 3px rgba(232,0,13,.16)}.gateBtn{width:100%;height:48px;border:1px solid rgba(232,0,13,.65);border-radius:12px;background:linear-gradient(180deg,#ff2431,#b3000c);color:#fff;font-size:16px;font-weight:900;letter-spacing:2px;text-transform:uppercase;cursor:pointer}.gateError{min-height:18px;font-size:12px;color:#ff9aa1;font-weight:900;letter-spacing:1px;text-transform:uppercase;text-align:center}
+
+</style>
+</head>
+<body class="dark">
+<video id="bgVideo" class="pageBgVideo" autoplay muted playsinline><source src="./mp4/Music1.mp4" type="video/mp4"></video><div class="ambient"></div>
+<div class="typewriter" id="gate"><div class="typeTitle" id="typeTitle"></div><div class="typeSub">Enter passcode to access spins</div><div class="gatePanel"><input class="gateInput" id="gateCode" type="password" placeholder="Enter passcode" autocomplete="off" spellcheck="false"><button class="gateBtn" id="gateEnterBtn" type="button">Enter Spins</button><div class="gateError" id="gateError"></div></div></div>
+<audio id="music" preload="auto"><source src="./mp3/Music1.mp3" type="audio/mpeg"></audio>
+<div class="app">
+  <aside class="rail">
+    <div class="brand"><img src="./Images/TFB Logo.png" alt="Faction"></div>
+    <button class="navBtn active" data-view="spin"><span class="ico">◇</span><span>Spins</span></button>
+    <button class="navBtn" data-view="history"><span class="ico">↺</span><span>History</span></button>
+    <div class="spacer"></div>
+    <button class="navBtn" data-view="settings"><span class="ico">⚙</span><span>Settings</span></button>
+  </aside>
+  <main class="main">
+    <div class="topbar">
+      <div class="topLeft"><span class="appTitle">Illegal Faction Spins</span></div>
+      <div class="topRight"><button class="soundBtn" id="playBtn">♫ Start Music</button><button class="soundBtn" id="prevBtn">Previous</button><button class="soundBtn" id="nextBtn">Next</button><button class="soundBtn" id="muteBtn">Mute</button><span class="manager">Faction Management <span class="status"></span></span></div>
+    </div>
+
+    <section class="view active" id="spinView">
+      <div class="layout">
+        <section class="leftPane">
+          <div class="welcome"><span>Welcome Back, <b>Faction Management</b></span><span class="script madeByNas">Made By Nas</span></div>
+          <div class="hero">
+            <canvas id="dotCanvas" class="dotCanvas"></canvas><div class="heroShade dotShade"></div>
+            <div class="centerLaunch"><button class="launchBtn" id="dropBtn">START SPIN</button></div>
+          </div>
+          <div class="setup">
+            <div class="setupBlock"><div class="setupIcon"><img src="./Images/TFB Logo.png" alt="TFB"></div><div><div class="fieldLabel">Select Group</div><input class="groupInput" id="groupInput" placeholder="Type group name"></div></div>
+            <div><div class="fieldLabel">Select Tier</div><div class="tiers" id="tierTabs"><button class="tierTab active" data-tier="test">Test<small>2 Rewards</small></button><button class="tierTab" data-tier="t1">Tier 1<small>4 Rewards</small></button><button class="tierTab" data-tier="t1.5">Tier 1.5<small>5 Rewards</small></button><button class="tierTab" data-tier="t2">Tier 2<small>8 Rewards</small></button></div></div>
+          </div>
+          <div class="sectionHead"><h2>Possible Drops <span id="poolCount">0 items</span></h2><div class="filters" id="filterChips"><button class="chip active" data-filter="all">All</button><button class="chip" data-filter="common">Common</button><button class="chip" data-filter="uncommon">Uncommon</button><button class="chip" data-filter="rare">Rare</button><button class="chip" data-filter="epic">Epic</button><button class="chip" data-filter="legendary">Legendary</button></div></div>
+          <div class="rarityPeek" id="rarityPeek"><div class="rarityPeekInner"><div class="rarityPeekLabel"><span id="rarityPeekTitle">All Visible Items</span><span id="rarityPeekCount">0 matches</span></div><div class="rarityPeekList" id="rarityPeekList"></div></div></div>
+          <div class="items" id="items"></div>
+        </section>
+        <aside class="rightPane">
+          <div class="panel"><div class="panelTitle"><h3>Spin Type</h3><span class="online">Active</span></div><div class="spinTypes" id="spinTypes"><button class="spinType active" data-type="gun"><b>Gun Spins</b><span>Official illegal faction weapon pool for your tier</span></button><button class="spinType" data-type="bullet"><b>Bullet Spins</b><span>Ammo rewards based on tier access</span></button><button class="spinType" data-type="accessory"><b>Accessory Spin</b><span>Attachments and utility rewards from your tier pool</span></button></div></div>
+          <div class="panel"><div class="panelTitle"><h3>Tier Rules</h3><span class="tiny" id="ruleTier">TEST</span></div><div class="rules"><div class="rule"><b>Test</b><span>Official test pool • 2 rewards</span></div><div class="rule"><b>Tier 1</b><span>Official Tier 1 pool • 4 rewards</span></div><div class="rule"><b>Tier 1.5</b><span>Tier 1.5 pool • 5 rewards</span></div><div class="rule"><b>Tier 2</b><span>Tier 2 pool + all switches • 8 rewards</span></div></div></div>
+          <div class="panel" id="appearancePanel"><div class="panelTitle"><h3>Appearance</h3><span class="tiny" id="themeLabel">DARK</span></div><div class="appearance"><button class="themeBtn" data-theme="light">Light</button><button class="themeBtn" data-theme="dim">Dim</button><button class="themeBtn active" data-theme="dark">Dark</button></div></div>
+        </aside>
+      </div>
+    </section>
+
+
+    <section class="view" id="settingsView">
+      <div class="settingsLayout">
+        <div class="settingsHero">
+          <div class="settingsTitle">Settings</div>
+          <div class="settingsSub">Control audio, visuals, spin behavior, background, history, and admin branding.</div>
+        </div>
+
+        <div class="settingsGrid">
+          <div class="settingsCard">
+            <h3>Appearance</h3>
+            <div class="appearance">
+              <button class="themeBtn" data-theme="light">Light</button>
+              <button class="themeBtn" data-theme="dim">Dim</button>
+              <button class="themeBtn active" data-theme="dark">Dark</button>
+            </div>
+            <div class="settingRow">
+              <div class="settingInfo"><b>Background Opacity</b><span>Low / medium / high feel through the page overlay.</span></div>
+              <input class="rangeControl" id="setBgOpacity" type="range" min="15" max="80" value="48">
+            </div>
+            <div class="settingRow">
+              <div class="settingInfo"><b>Video Brightness</b><span>Make the background video darker or brighter.</span></div>
+              <input class="rangeControl" id="setVideoBrightness" type="range" min="25" max="120" value="82">
+            </div>
+            <div class="settingRow">
+              <div class="settingInfo"><b>Video Blur</b><span>Add or remove blur from the background video.</span></div>
+              <input class="rangeControl" id="setVideoBlur" type="range" min="0" max="8" value="0">
+            </div>
+            <div class="settingRow">
+              <div class="settingInfo"><b>Weapon Animation Strength</b><span>Controls the floating item animation intensity.</span></div>
+              <input class="rangeControl" id="setFloatStrength" type="range" min="0" max="25" value="12">
+            </div>
+            <div class="settingRow">
+              <div class="settingInfo"><b>Panel Opacity</b><span>Controls the opacity of all UI panels and cards globally.</span></div>
+              <input class="rangeControl" id="setPanelOpacity" type="range" min="0" max="100" value="100">
+            </div>
+            <div class="settingRow">
+              <div class="settingInfo"><b>Hide Hero Box Panel</b><span>Removes the big background box behind the Start Spin button.</span></div>
+              <label class="toggleSwitch"><input id="setHideHeroPanel" type="checkbox"><span class="toggleKnob"></span></label>
+            </div>
+            <div class="settingRow">
+              <div class="settingInfo"><b>RGB Border Trail</b><span>Toggle the subtle rainbow reflection around the viewport.</span></div>
+              <label class="toggleSwitch"><input id="setShowRgbTrail" type="checkbox" checked><span class="toggleKnob"></span></label>
+            </div>
+          </div>
+
+          <div class="settingsCard">
+            <h3>Background</h3>
+            <div class="settingRow">
+              <div class="settingInfo"><b>Show Background Video</b><span>Hide or show the full page background video.</span></div>
+              <label class="toggleSwitch"><input id="setShowBgVideo" type="checkbox" checked><span class="toggleKnob"></span></label>
+            </div>
+            <div class="settingRow">
+              <div class="settingInfo"><b>Show Floating Weapons</b><span>Toggle the floating animation on item visuals.</span></div>
+              <label class="toggleSwitch"><input id="setShowFloating" type="checkbox" checked><span class="toggleKnob"></span></label>
+            </div>
+            <div class="settingRow">
+              <div class="settingInfo"><b>Show Particle Effects</b><span>Hide or show the reactive dot canvas.</span></div>
+              <label class="toggleSwitch"><input id="setShowParticles" type="checkbox" checked><span class="toggleKnob"></span></label>
+            </div>
+          </div>
+
+          <div class="settingsCard">
+            <h3>Spin Settings</h3>
+            <div class="settingsActions">
+              <button class="settingBtn spinSpeed active" data-speed="normal">Normal Spin</button>
+              <button class="settingBtn spinSpeed" data-speed="fast">Fast Spin</button>
+              <button class="settingBtn spinSpeed" data-speed="cinematic">Cinematic Spin</button>
+              <button class="settingBtn" id="setSkipAnimations">Skip Animations</button>
+            </div>
+            <div class="settingRow">
+              <div class="settingInfo"><b>Auto Collect Rewards</b><span>Automatically saves drops after a spin.</span></div>
+              <label class="toggleSwitch"><input id="setAutoCollect" type="checkbox"><span class="toggleKnob"></span></label>
+            </div>
+          </div>
+
+          <div class="settingsCard">
+            <h3>History</h3>
+            <div class="settingsActions">
+              <button class="settingBtn" id="settingsExportHistory">Export CSV</button>
+              <button class="settingBtn dangerBtn" id="settingsClearHistory">Clear Spin History</button>
+              <button class="settingBtn dangerBtn" id="settingsClearLocal">Clear Local Data</button>
+              <button class="settingBtn dangerBtn" id="settingsReset">Reset Settings</button>
+            </div>
+          </div>
+
+          <div class="settingsCard">
+            <h3>Notifications</h3>
+            <div class="settingRow">
+              <div class="settingInfo"><b>Winner Popups</b><span>Show drops won result popup.</span></div>
+              <label class="toggleSwitch"><input id="setWinnerPopups" type="checkbox" checked><span class="toggleKnob"></span></label>
+            </div>
+            <div class="settingRow">
+              <div class="settingInfo"><b>Confetti Effects</b><span>Show confetti when saving drops.</span></div>
+              <label class="toggleSwitch"><input id="setConfetti" type="checkbox" checked><span class="toggleKnob"></span></label>
+            </div>
+            <div class="settingRow">
+              <div class="settingInfo"><b>Legendary Reward Alert</b><span>Special alert when legendary items drop.</span></div>
+              <label class="toggleSwitch"><input id="setLegendaryAlert" type="checkbox" checked><span class="toggleKnob"></span></label>
+            </div>
+            <div class="settingRow">
+              <div class="settingInfo"><b>Sound Alerts</b><span>Allow alert sounds placeholder.</span></div>
+              <label class="toggleSwitch"><input id="setSoundAlerts" type="checkbox" checked><span class="toggleKnob"></span></label>
+            </div>
+          </div>
+
+          <div class="settingsCard">
+            <h3>Admin</h3>
+            <div class="settingsStack">
+              <input class="settingsInput" id="setManagerName" placeholder="Manager name" value="Faction Management">
+              <input class="settingsInput" id="setMadeByText" placeholder="Made by text" value="Made By Nas">
+              <input class="settingsInput" id="setLogoUrl" placeholder="Custom logo image URL">
+              <input class="settingsInput" id="setBgVideoUrl" placeholder="Custom background video URL">
+              <button class="settingBtn" id="applyAdminSettings">Apply Admin Changes</button>
+              <button class="settingBtn" id="exitCustomVideoBtn">Exit Custom Video</button>
+              <div class="mediaStatus" id="mediaStatus"></div>
+            </div>
+          </div>
+
+          <div class="settingsCard">
+            <h3>Live Preview</h3>
+            <div class="versionBox">
+              ━━━━━━━━━━━━━━━━━━<br>
+              ILLEGAL FACTION SPINS v2.0<br>
+              <span id="previewMadeBy">Made By Nas</span><br>
+              ━━━━━━━━━━━━━━━━━━
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+
+    <section class="view" id="historyView">
+      <div class="historyLayout">
+        <aside class="historySide"><div class="historyTitle">Spin History</div><div class="tiny" style="margin-bottom:14px">Click a group to see every item they spun.</div><div class="groupList" id="groupList"></div><button class="clear danger" id="clearHistoryBtn" style="margin-top:14px;width:100%">CLEAR ALL HISTORY</button></aside>
+        <div class="historyTableBox"><div class="tableTools"><div><h2 id="historyHeading">All Groups</h2><div class="tiny" id="historySub">Every saved spin is stored here.</div></div><button class="danger" id="exportBtn">EXPORT CSV</button></div><div class="tableWrap"><table><thead><tr><th>Time</th><th>Group</th><th>Tier</th><th>Spin Type</th><th>Item Won</th><th>Category</th><th>Rarity</th></tr></thead><tbody id="historyRows"></tbody></table></div></div>
+      </div>
+    </section>
+  </main>
+</div>
+<canvas id="confettiCanvas"></canvas>
+<div class="modal" id="spinModal"><div class="spinBox"><div class="modalTop"><div><h2>Rolling Drop</h2><div class="tiny" id="rollText">ROLL 1 OF 2</div></div><button class="close" id="closeSpin">Close</button></div><div class="reel"><div class="line"></div><div class="track" id="track"></div></div></div></div>
+<div class="modal" id="resultModal"><div class="resultBox"><div class="modalTop"><h2>Drops Won</h2><button class="close" id="closeResult">Close</button></div><div class="resultGrid" id="results"></div><button class="collect" id="collectBtn">COLLECT ALL + SAVE HISTORY</button></div></div>
+<script>
+const ITEMS=[
+{name:"T850",rarity:"common",category:"official test drop",type:"gun",image:"./Images/WEAPON_T850.png",weight:18},
+{name:"G2C",rarity:"common",category:"official test drop",type:"gun",image:"./Images/WEAPON_TG2C.png",weight:17},
+{name:"P226",rarity:"common",category:"official test drop",type:"gun",image:"./Images/WEAPON_P226.png",weight:16},
+{name:"P80",rarity:"uncommon",category:"official test drop",type:"gun",image:"./Images/WEAPON_P80.png",weight:14},
+{name:"P320 SIG",rarity:"uncommon",category:"official test drop",type:"gun",image:"./Images/WEAPON_P320SIG.png",weight:13},
+{name:"G17G3 P80",rarity:"uncommon",category:"official test drop",type:"gun",image:"./Images/WEAPON_G17G3P80.png",weight:12},
+{name:"FN502 Tactical",rarity:"rare",category:"tier 1 pistols",type:"gun",image:"./Images/WEAPON_FN502T.png",weight:11},
+{name:"G45 AV",rarity:"rare",category:"tier 1 pistols",type:"gun",image:"./Images/WEAPON_G45AV.png",weight:10},
+{name:"KG43X",rarity:"rare",category:"tier 1 pistols",type:"gun",image:"./Images/WEAPON_KG43X.png",weight:10},
+{name:"G45 CAMO",rarity:"uncommon",category:"tier 1 pistols",type:"gun",image:"./Images/WEAPON_G45CAMO.png",weight:12},
+{name:"G19X COYOTE",rarity:"uncommon",category:"tier 1 pistols",type:"gun",image:"./Images/WEAPON_G19XCOYOTE.png",weight:11},
+{name:"M&P 9 2.0",rarity:"rare",category:"tier 1 pistols",type:"gun",image:"./Images/WEAPON_MP920.png",weight:9},
+{name:"SD40 TACTICAL",rarity:"rare",category:"tier 1 pistols",type:"gun",image:"./Images/WEAPON_SD40T.png",weight:9},
+{name:"G17 BINARY",rarity:"rare",category:"tier 1 pistols",type:"gun",image:"./Images/WEAPON_G17BINARY.png",weight:8},
+{name:"PSAD Half N Half",rarity:"epic",category:"tier 1.5 pistols",type:"gun",image:"./Images/WEAPON_PSADHALFNHALF.png",weight:8},
+{name:"PSA FN57",rarity:"epic",category:"tier 1.5 pistols",type:"gun",image:"./Images/WEAPON_PSAFN57.png",weight:7},
+{name:"G20 CGFLEX",rarity:"epic",category:"tier 1.5 pistols",type:"gun",image:"./Images/WEAPON_G20CGFLEX.png",weight:7},
+{name:"MP20FRT",rarity:"legendary",category:"tier 2 rifle",type:"gun",image:"./Images/WEAPON_MP20FRT.png",weight:6},
+{name:"G19 Gen 5 MOS Switch",rarity:"legendary",category:"tier 2 switches",type:"gun",image:"./Images/WEAPON_G19G5MOSSWITCH.png",weight:5},
+{name:"G23 Gen 5 Switch",rarity:"legendary",category:"tier 2 switches",type:"gun",image:"./Images/WEAPON_G23G5SWITCHG.png",weight:5},
+{name:"G24 Switch",rarity:"legendary",category:"tier 2 switches",type:"gun",image:"./Images/WEAPON_G24SWITCHI.png",weight:5},
+{name:"G22 Gen 4 Switch Blue",rarity:"legendary",category:"tier 2 switches",type:"gun",image:"./Images/WEAPON_G22G4SB.png",weight:4},
+{name:"G22 Gen 4 Switch Green",rarity:"legendary",category:"tier 2 switches",type:"gun",image:"./Images/WEAPON_G22G4SG.png",weight:4},
+{name:"G22 Gen 4 Switch Pink",rarity:"legendary",category:"tier 2 switches",type:"gun",image:"./Images/WEAPON_G22G4SP.png",weight:4},
+{name:"G22 Gen 4 Switch Red",rarity:"legendary",category:"tier 2 switches",type:"gun",image:"./Images/WEAPON_G22G4SR.png",weight:4},
+{name:"G31 Gen 5 Gold Switch",rarity:"legendary",category:"tier 2 switches",type:"gun",image:"./Images/WEAPON_G31G5GS.png",weight:4},
+{name:"PSA P80 G19 Switch",rarity:"legendary",category:"tier 2 switches",type:"gun",image:"./Images/WEAPON_PSAP80G19SWITCH.png",weight:4},
+{name:"9mm Ammo",rarity:"common",category:"basic pistol ammo",type:"bullet",image:"./Images/ammo-9.png",weight:72},
+{name:".22 Ammo",rarity:"common",category:"basic pistol ammo",type:"bullet",image:"./Images/ammo-22.png",weight:70},
+{name:".40 Ammo",rarity:"uncommon",category:"better pistol ammo",type:"bullet",image:"./Images/ammo-40.png",weight:58},
+{name:".45 Ammo",rarity:"uncommon",category:"better pistol ammo",type:"bullet",image:"./Images/ammo-45.png",weight:54},
+{name:"10mm Ammo",rarity:"rare",category:"better pistol ammo",type:"bullet",image:"./Images/ammo-10.png",weight:42},
+{name:".357 Sig Ammo",rarity:"rare",category:"better pistol ammo",type:"bullet",image:"./Images/ammo-357s.png",weight:38},
+{name:"5.7x28 Ammo",rarity:"rare",category:"rifle ammo",type:"bullet",image:"./Images/ammo-57x28.png",weight:36},
+{name:"Rifle Ammo",rarity:"epic",category:"rifle ammo",type:"bullet",image:"./Images/ammo-rifle.png",weight:22},
+{name:"AR Ammo",rarity:"legendary",category:"strong rifle ammo",type:"bullet",image:"./Images/ammo-rifle2.png",weight:12},
+{name:"Glock Extended Mag",rarity:"uncommon",category:"extended mags",type:"accessory",image:"./Images/glockextendedmag2.png",weight:46},
+{name:"Glock Extended Mag Tan",rarity:"rare",category:"extended mags",type:"accessory",image:"./Images/glockextendedmagtan.png",weight:36},
+{name:"Klane Extended Mag",rarity:"rare",category:"extended mags",type:"accessory",image:"./Images/klaneextendedmag.png",weight:34},
+{name:"Klane Vector Mag",rarity:"rare",category:"high-capacity mags",type:"accessory",image:"./Images/klanevectormag.png",weight:30},
+{name:"Klane Vector Mag Tan",rarity:"epic",category:"high-capacity mags",type:"accessory",image:"./Images/klanevectormagt.png",weight:20},
+{name:"Klane Vector Mag White",rarity:"epic",category:"high-capacity mags",type:"accessory",image:"./Images/klanevectormagw.png",weight:18},
+{name:"Tactical Drum Mag",rarity:"epic",category:"high-capacity mags",type:"accessory",image:"./Images/tacticaldrummag.png",weight:16},
+{name:"Tactical Extended Mag",rarity:"uncommon",category:"extended mags",type:"accessory",image:"./Images/tacticalextendedmag.png",weight:44},
+{name:"Tactical Extended Mag 2",rarity:"rare",category:"extended mags",type:"accessory",image:"./Images/tacticalextendedmag2.png",weight:34},
+{name:"Tactical Extended Mag 3",rarity:"rare",category:"extended mags",type:"accessory",image:"./Images/tacticalextendedmag3.png",weight:32},
+{name:"Tactical Extended Mag 4",rarity:"epic",category:"high-capacity mags",type:"accessory",image:"./Images/tacticalextendedmag4.png",weight:20},
+{name:"Tactical Extended Mag Clear",rarity:"epic",category:"high-capacity mags",type:"accessory",image:"./Images/tacticalextendedmagclear.png",weight:18},
+{name:"Tactical Extended Mag Tan",rarity:"rare",category:"extended mags",type:"accessory",image:"./Images/tacticalextendedmagtan.png",weight:28},
+{name:"Tactical Extended Mag Alt",rarity:"rare",category:"extended mags",type:"accessory",image:"./Images/tactiaclextendedmag2.png",weight:26},
+{name:"UTG Windowed Mag",rarity:"legendary",category:"rare weapon accessories",type:"accessory",image:"./Images/utgwindowedmag.png",weight:10},
+{name:"AR Shell Catcher",rarity:"epic",category:"rare weapon accessories",type:"accessory",image:"./Images/arshellcatcher.png",weight:16},
+{name:"Black Pistol Grip",rarity:"common",category:"basic attachments",type:"accessory",image:"./Images/at_blackpistolgrip.png",weight:56},
+{name:"Blue Pistol Grip",rarity:"common",category:"basic attachments",type:"accessory",image:"./Images/at_bluepistolgrip.png",weight:54},
+{name:"Camo Pistol Grip",rarity:"uncommon",category:"basic attachments",type:"accessory",image:"./Images/at_camogrip.png",weight:48},
+{name:"Camo Pistol Grip Pink",rarity:"rare",category:"rare weapon accessories",type:"accessory",image:"./Images/at_camogripp.png",weight:30},
+{name:"Camo Pistol Grip Tan",rarity:"rare",category:"rare weapon accessories",type:"accessory",image:"./Images/at_camogript.png",weight:28},
+{name:"Dark Green Pistol Grip",rarity:"common",category:"basic attachments",type:"accessory",image:"./Images/at_darkgreenpistolgrip.png",weight:50},
+{name:"Green Beam",rarity:"epic",category:"rare weapon accessories",type:"accessory",image:"./Images/at_gbeam.png",weight:18},
+{name:"Goon Tape",rarity:"common",category:"basic attachments",type:"accessory",image:"./Images/at_goontape.png",weight:52},
+{name:"Goon Tape Blue",rarity:"uncommon",category:"basic attachments",type:"accessory",image:"./Images/at_goontapeb.png",weight:44},
+{name:"Goon Tape Tan",rarity:"uncommon",category:"basic attachments",type:"accessory",image:"./Images/at_goontapet.png",weight:42},
+{name:"Gray Pistol Grip",rarity:"common",category:"basic attachments",type:"accessory",image:"./Images/at_graypistolgrip.png",weight:50},
+{name:"Green Pistol Grip",rarity:"common",category:"basic attachments",type:"accessory",image:"./Images/at_greenpistolgrip.png",weight:48},
+{name:"Hogue Pistol Grip",rarity:"common",category:"basic attachments",type:"accessory",image:"./Images/at_hoguepistolgrip.png",weight:48},
+{name:"Hogue Pistol Grip Green",rarity:"uncommon",category:"basic attachments",type:"accessory",image:"./Images/at_hoguepistolgripg.png",weight:42},
+{name:"Hogue Pistol Grip Tan",rarity:"uncommon",category:"basic attachments",type:"accessory",image:"./Images/at_hoguepistolgript.png",weight:40},
+{name:"OL Beam Blue",rarity:"epic",category:"rare weapon accessories",type:"accessory",image:"./Images/at_olbeamb.png",weight:16},
+{name:"OL Beam Green",rarity:"epic",category:"rare weapon accessories",type:"accessory",image:"./Images/at_olbeamg.png",weight:16},
+{name:"OL Beam Pink",rarity:"epic",category:"rare weapon accessories",type:"accessory",image:"./Images/at_olbeamp.png",weight:16},
+{name:"OL Beam Red",rarity:"epic",category:"rare weapon accessories",type:"accessory",image:"./Images/at_olbeamr.png",weight:16},
+{name:"OL Beam BG",rarity:"legendary",category:"rare weapon accessories",type:"accessory",image:"./Images/at_olbeambg.png",weight:8},
+{name:"OL Beam BGB",rarity:"legendary",category:"rare weapon accessories",type:"accessory",image:"./Images/at_olbeambgb.png",weight:8},
+{name:"OL Beam BGG",rarity:"legendary",category:"rare weapon accessories",type:"accessory",image:"./Images/at_olbeambgg.png",weight:8},
+{name:"OL Beam BGP",rarity:"legendary",category:"rare weapon accessories",type:"accessory",image:"./Images/at_olbeambgp.png",weight:8},
+{name:"OL Beam BGR",rarity:"legendary",category:"rare weapon accessories",type:"accessory",image:"./Images/at_olbeambgr.png",weight:8},
+{name:"OL Flashlight",rarity:"epic",category:"rare weapon accessories",type:"accessory",image:"./Images/at_olflashlight.png",weight:18},
+{name:"Pink Pistol Grip",rarity:"rare",category:"rare weapon accessories",type:"accessory",image:"./Images/at_pinkpistolgrip.png",weight:24},
+{name:"Purple Pistol Grip",rarity:"rare",category:"rare weapon accessories",type:"accessory",image:"./Images/at_purplepistolgrip.png",weight:24},
+{name:"Red Pistol Grip",rarity:"rare",category:"rare weapon accessories",type:"accessory",image:"./Images/at_redpistolgrip.png",weight:24},
+{name:"Rubber Bands",rarity:"common",category:"utility items",type:"accessory",image:"./Images/at_rubberbands.png",weight:60},
+{name:"Tan Pistol Grip",rarity:"common",category:"basic attachments",type:"accessory",image:"./Images/at_tanpistolgrip.png",weight:50}
+];
+const TEST_GUNS=["T850","G2C","P226","P80","P320 SIG","G17G3 P80"];
+const TIER1_GUNS=[...TEST_GUNS,"FN502 Tactical","G45 AV","KG43X","G45 CAMO","G19X COYOTE","M&P 9 2.0","SD40 TACTICAL","G17 BINARY"];
+const TIER15_GUNS=["P320 SIG","G17G3 P80","FN502 Tactical","G45 AV","KG43X","G45 CAMO","G19X COYOTE","M&P 9 2.0","SD40 TACTICAL","G17 BINARY","PSAD Half N Half","PSA FN57","G20 CGFLEX"];
+const SWITCH_GUNS=["G19 Gen 5 MOS Switch","G23 Gen 5 Switch","G24 Switch","G22 Gen 4 Switch Blue","G22 Gen 4 Switch Green","G22 Gen 4 Switch Pink","G22 Gen 4 Switch Red","G31 Gen 5 Gold Switch","PSA P80 G19 Switch"];
+const WEAPON_POOLS={
+  test:new Set(TEST_GUNS),
+  t1:new Set(TIER1_GUNS),
+  "t1.5":new Set(TIER15_GUNS),
+  t2:new Set([...new Set([...TIER15_GUNS,"MP20FRT",...SWITCH_GUNS])])
+};
+const TIERS={test:{label:"TEST",rewards:2,rarities:["common","uncommon"]},t1:{label:"TIER 1",rewards:4,rarities:["common","uncommon","rare"]},"t1.5":{label:"TIER 1.5",rewards:5,rarities:["common","uncommon","rare","epic"]},t2:{label:"TIER 2",rewards:8,rarities:["common","uncommon","rare","epic","legendary"]}};
+const MUSIC_TRACKS=[
+  {name:"Keke - Headtapp Gz",mp3:"./mp3/Music1.mp3",mp4:"./mp4/Music1.mp4"},
+  {name:"Strictly 4 The Fans - Rennytherapper",mp3:"./mp3/Music2.mp3",mp4:"./mp4/Music2.mp4"},
+  {name:"Forget You - Kdot B",mp3:"./mp3/Music3.mp3",mp4:"./mp4/Music3.mp4"},
+  {name:"Clock It - Dotty B",mp3:"./mp3/Music4.mp3",mp4:"./mp4/Music4.mp4"}
+];
+const SPEEDS={fast:3000,normal:4650,cinematic:5800};
+const STORAGE_KEYS={history:"illegalFactionSpinHistory",legacyHistory:"phillySpinHistory",settings:"illegalFactionSpinSettings",legacySettings:"phillySpinSettings",theme:"illegalFactionTheme",legacyTheme:"phillyTheme",track:"illegalFactionTrackIndex"};
+const ITEM_H=138, WIN_IDX=62;
+const ITEM_KEYS=new Set(ITEMS.map(item=>`${item.type}:${item.name}`));
+function sanitizeHistoryRows(rows){
+  if(!Array.isArray(rows))return [];
+  return rows.filter(entry=>ITEM_KEYS.has(`${entry.spinType}:${entry.item}`));
+}
+const rawHistory=JSON.parse(localStorage.getItem(STORAGE_KEYS.history)||localStorage.getItem(STORAGE_KEYS.legacyHistory)||"[]");
+let history=sanitizeHistoryRows(rawHistory);
+if(history.length!==rawHistory.length){
+  localStorage.setItem(STORAGE_KEYS.history,JSON.stringify(history));
+}
+const itemsEl=document.getElementById('items'), poolCount=document.getElementById('poolCount'), track=document.getElementById('track');
+const elements={
+  groupInput:document.getElementById('groupInput'),
+  dropBtn:document.getElementById('dropBtn'),
+  playBtn:document.getElementById('playBtn'),
+  prevBtn:document.getElementById('prevBtn'),
+  nextBtn:document.getElementById('nextBtn'),
+  muteBtn:document.getElementById('muteBtn'),
+  closeSpin:document.getElementById('closeSpin'),
+  closeResult:document.getElementById('closeResult'),
+  collectBtn:document.getElementById('collectBtn'),
+  spinModal:document.getElementById('spinModal'),
+  resultModal:document.getElementById('resultModal'),
+  track,
+  rollText:document.getElementById('rollText'),
+  results:document.getElementById('results'),
+  rarityPeek:document.getElementById('rarityPeek'),
+  rarityPeekTitle:document.getElementById('rarityPeekTitle'),
+  rarityPeekCount:document.getElementById('rarityPeekCount'),
+  rarityPeekList:document.getElementById('rarityPeekList')
+};
+const state={
+  tier:'test',
+  spinType:'gun',
+  filter:'all',
+  spinning:false,
+  pending:[],
+  pendingGroup:'',
+  settings:{spinSpeed:'normal'},
+  trackIndex:Number(localStorage.getItem(STORAGE_KEYS.track)||0)||0,
+  usingCustomMusic:false,
+  usingCustomVideo:false,
+  rarityPeekFilter:'all',
+  mediaSyncTimer:null,
+  settingsInitialized:false,
+  playlistSnapshot:null,
+  customVideoUrl:'',
+  customVideoToken:0,
+  trackLoadToken:0
+};
+function escapeHtml(value){return String(value).replace(/[&<>"']/g,ch=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[ch]))}
+function allowed(t,item){
+  if(item.type==='gun')return WEAPON_POOLS[t].has(item.name);
+  return TIERS[t].rarities.includes(item.rarity);
+}
+function getVisiblePool(ignoreFilter=false){
+  return ITEMS.filter(item=>allowed(state.tier,item)&&item.type===state.spinType&&(ignoreFilter||state.filter==='all'||item.rarity===state.filter));
+}
+function pool(ignoreFilter=false){return getVisiblePool(ignoreFilter)}
+function visual(i){return i.image?`<img src="${i.image}" alt="${escapeHtml(i.name)}">`:`<div class="emoji">${i.emoji||'◆'}</div>`}
+function renderRarityPeek(){
+  const peekPool=getVisiblePool(true).filter(item=>state.rarityPeekFilter==='all'||item.rarity===state.rarityPeekFilter);
+  elements.rarityPeekTitle.textContent=state.rarityPeekFilter==='all'?'All Visible Items':`${state.rarityPeekFilter} Items`;
+  elements.rarityPeekCount.textContent=`${peekPool.length} match${peekPool.length===1?'':'es'}`;
+  elements.rarityPeekList.innerHTML=peekPool.map(item=>`<div class="rarityPeekCard">${visual(item)}<div class="rarityPeekText"><strong>${escapeHtml(item.name)}</strong><span>${escapeHtml(item.category)}</span></div></div>`).join('')||'<div class="tiny">No matching items for this rarity.</div>';
+  elements.rarityPeek.classList.add('open');
+}
+let renderTimer=null;
+let renderSeq=0;
+function buildPoolHTML(p){
+  return p.map((i,idx)=>`<div class="card" style="animation-delay:${Math.min(idx,10)*42}ms"><div class="thumb">${visual(i)}</div><div class="cardInfo"><div class="itemName">${i.name}</div><div class="itemCat">${i.category}</div><div class="badges"><span class="badge ${i.rarity}">${i.rarity}</span><span class="badge">${state.spinType}</span></div></div></div>`).join('')||`<div class="tiny" style="animation:dropCascade .28s ease both">No ${state.spinType} drops available for this tier/filter.</div>`;
+}
+function render(){
+  const seq=++renderSeq;
+  const p=pool();
+  poolCount.textContent=`${p.length} items`;
+  document.getElementById('ruleTier').textContent=TIERS[state.tier].label;
+  clearTimeout(renderTimer);
+
+  // Fast render: no delayed loading state, so switching Tier 2 -> Test does not stutter.
+  itemsEl.classList.remove('poolReveal','tierSwitchIn','tierSwitchOut','loading');
+  itemsEl.innerHTML=buildPoolHTML(p);
+  requestAnimationFrame(()=>{
+    if(seq!==renderSeq)return;
+    itemsEl.classList.add('poolReveal');
+  });
+  renderRarityPeek();
+
+  // Only rebuild the history table while the history view is visible.
+  if(document.getElementById('historyView')?.classList.contains('active')) renderHistory();
+}
+function getConsecutiveCount(name){
+  let count=0;
+  for(let i=state.pending.length-1;i>=0;i--){
+    if(state.pending[i]?.name===name) count++;
+    else break;
+  }
+  return count;
+}
+function weightedPick(pool, previousName) {
+  const adjusted = pool.map((item) => ({
+    ...item,
+    effectiveWeight:
+      previousName && item.name === previousName
+        ? Math.max(1, item.weight * 0.3)
+        : item.weight,
+  }));
+
+  const total = adjusted.reduce((sum, item) => sum + item.effectiveWeight, 0);
+  let roll = Math.random() * total;
+
+  for (const item of adjusted) {
+    roll -= item.effectiveWeight;
+    if (roll <= 0) return item;
+  }
+
+  return adjusted[adjusted.length - 1];
+}
+function reelItems(pool, winner) {
+  const output = [];
+
+  for (let index = 0; index < WIN_IDX; index++) {
+    output.push(pool[Math.floor(Math.random() * pool.length)]);
+  }
+
+  output.push(winner);
+
+  for (let index = 0; index < 10; index++) {
+    output.push(pool[Math.floor(Math.random() * pool.length)]);
+  }
+
+  return output;
+}
+function fillReel(reelPool) {
+  elements.track.classList.remove("spinMotion", "settled");
+  elements.track.style.transform = "translate3d(0,0,0)";
+
+  elements.track.innerHTML = reelPool
+    .map(
+      (item, index) => `
+      <div class="reelItem" data-name="${escapeHtml(item.name)}" data-index="${index}">
+        ${visual(item)}
+        <div class="reelText">
+          <strong>${escapeHtml(item.name)}</strong>
+          <div class="tiny">${escapeHtml(item.category)}</div>
+        </div>
+      </div>
+    `
+    )
+    .join("");
+}
+const wait=ms=>new Promise(r=>setTimeout(r,ms));
+  function openModal(node){node.classList.add('open')}
+  function closeModal(node){node.classList.remove('open')}
+  function renderResults(){showResults()}
+  function playSpinChime(){if(appSettings.spinSfx===false)return}
+async function animateReelToWinner(winnerName) {
+  const targetY = -(WIN_IDX * ITEM_H - 154);
+
+  elements.track.classList.add("spinMotion");
+
+  const animation = elements.track.animate(
+    [
+      { transform: "translate3d(0,0,0)", offset: 0 },
+      { transform: `translate3d(0, ${targetY * 0.22}px, 0)`, offset: 0.18 },
+      { transform: `translate3d(0, ${targetY * 0.58}px, 0)`, offset: 0.55 },
+      { transform: `translate3d(0, ${targetY - 120}px, 0)`, offset: 0.88 },
+      { transform: `translate3d(0, ${targetY + 32}px, 0)`, offset: 0.96 },
+      { transform: `translate3d(0, ${targetY}px, 0)`, offset: 1 },
+    ],
+    {
+      duration: SPEEDS[state.settings.spinSpeed],
+      easing: "cubic-bezier(.16,.84,.24,1)",
+      fill: "forwards",
+    }
+  );
+
+  try {
+    await animation.finished;
+  } catch {
+    return;
+  }
+
+  elements.track.classList.remove("spinMotion");
+  elements.track.classList.add("settled");
+  elements.track.style.transform = `translate3d(0, ${targetY}px, 0)`;
+
+  [...elements.track.querySelectorAll(".reelItem")].forEach((node) => {
+    node.classList.toggle("winner", node.dataset.name === winnerName);
+  });
+}
+async function startSpin() {
+  if (state.spinning) return;
+
+  const group = elements.groupInput.value.trim();
+  if (!group) {
+    alert("Type the group name before spinning.");
+    elements.groupInput.focus();
+    return;
+  }
+
+  const pool = getVisiblePool(true).filter((item) =>
+    state.filter === "all" || item.rarity === state.filter
+  );
+
+  if (!pool.length) {
+    alert(`No ${state.spinType} drops available for ${TIERS[state.tier].label}.`);
+    return;
+  }
+
+  state.spinning = true;
+  state.pending = [];
+  state.pendingGroup = group;
+
+  elements.dropBtn.disabled = true;
+  elements.closeSpin.disabled = true;
+  openModal(elements.spinModal);
+
+  try {
+    for (let roll = 1; roll <= TIERS[state.tier].rewards; roll++) {
+      elements.rollText.textContent = `ROLL ${roll} OF ${TIERS[state.tier].rewards}`;
+
+      const winner = weightedPick(pool, state.pending[state.pending.length - 1]?.name);
+      state.pending.push(winner);
+
+      fillReel(reelItems(pool, winner));
+      await animateReelToWinner(winner.name);
+
+      playSpinChime(winner.rarity);
+      launchConfetti("small");
+      await wait(240);
+    }
+
+    renderResults();
+    closeModal(elements.spinModal);
+    openModal(elements.resultModal);
+  } finally {
+    state.spinning = false;
+    elements.dropBtn.disabled = false;
+    elements.closeSpin.disabled = false;
+  }
+}
+function showResults(){document.getElementById('resultModal').classList.remove('open');void document.getElementById('resultModal').offsetWidth;document.getElementById('results').innerHTML=state.pending.map(i=>`<div class="resultCard">${visual(i)}<div class="itemName" style="font-size:18px;margin-top:8px">${i.name}</div><div class="tiny">${state.pendingGroup}</div><div class="badges" style="justify-content:center"><span class="badge ${i.rarity}">${i.rarity}</span></div></div>`).join('');document.getElementById('resultModal').classList.add('open')}
+function launchConfetti(){
+  if(window.appSettings && appSettings.confetti===false)return;
+  const canvas=document.getElementById('confettiCanvas'); if(!canvas)return;
+  const ctx=canvas.getContext('2d');
+  canvas.width=innerWidth; canvas.height=innerHeight;
+  const colors=['#e8000d','#ff3333','#ffffff','#0b0b0f','#bf0010','#d9d9df'];
+  const parts=Array.from({length:190},()=>({
+    x:Math.random()*canvas.width,
+    y:Math.random()*canvas.height*.38-canvas.height*.22,
+    w:Math.random()*10+4,
+    h:Math.random()*6+3,
+    c:colors[Math.floor(Math.random()*colors.length)],
+    s:Math.random()*3+1.6,
+    d:(Math.random()-.5)*2.8,
+    r:Math.random()*6,
+    rs:(Math.random()-.5)*.2
+  }));
+  let start=null; const dur=3600, fade=2600;
+  function frame(t){
+    if(!start)start=t;
+    const e=t-start, a=e>fade?1-(e-fade)/(dur-fade):1;
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+    parts.forEach(p=>{
+      p.y+=p.s; p.x+=p.d; p.r+=p.rs;
+      ctx.save(); ctx.globalAlpha=Math.max(0,a); ctx.translate(p.x,p.y); ctx.rotate(p.r); ctx.fillStyle=p.c; ctx.fillRect(-p.w/2,-p.h/2,p.w,p.h); ctx.restore();
+    });
+    if(e<dur)requestAnimationFrame(frame); else ctx.clearRect(0,0,canvas.width,canvas.height);
+  }
+  requestAnimationFrame(frame);
+}
+function saveResults(){const now=new Date();const rows=state.pending.map(i=>({time:now.toLocaleString(),ts:Date.now(),group:state.pendingGroup,tier:TIERS[state.tier].label,spinType:state.spinType,item:i.name,category:i.category,rank:i.rarity,image:i.image||'',emoji:i.emoji||''}));history.unshift(...rows);localStorage.setItem(STORAGE_KEYS.history,JSON.stringify(history));state.pending=[];document.getElementById('resultModal').classList.remove('open');launchConfetti();render()}
+let selectedGroup='all';function escJS(s){return String(s).replace(/\\/g,'\\\\').replace(/'/g,"\\'")}function renderHistory(){const groups=[...new Set(history.map(h=>h.group))];document.getElementById('groupList').innerHTML=`<button class="groupRow ${selectedGroup==='all'?'active':''}" onclick="selectGroup('all')"><b>All Groups</b><span>${history.length} total drops</span></button>`+groups.map(g=>{let c=history.filter(h=>h.group===g).length;return `<button class="groupRow ${selectedGroup===g?'active':''}" onclick="selectGroup('${escJS(g)}')"><b>${g}</b><span>${c} drops spun</span></button>`}).join('');let rows=selectedGroup==='all'?history:history.filter(h=>h.group===selectedGroup);document.getElementById('historyHeading').textContent=selectedGroup==='all'?'All Groups':selectedGroup;document.getElementById('historySub').textContent=`${rows.length} saved drops`;document.getElementById('historyRows').innerHTML=rows.map(h=>`<tr><td>${h.time}</td><td><b>${h.group}</b></td><td>${h.tier}</td><td>${h.spinType}</td><td>${h.image?`<img class="miniImg" src="${h.image}">`:h.emoji||'◆'} <b>${h.item}</b></td><td>${h.category}</td><td><span class="badge ${h.rank}">${h.rank}</span></td></tr>`).join('')||`<tr><td colspan="7" class="tiny">No history saved yet.</td></tr>`}
+window.selectGroup=(g)=>{selectedGroup=g;renderHistory()};
+let viewSwitching=false;
+function setView(v){
+  if(viewSwitching)return;
+  const targetView=v==='spins'?'spin':v;
+  const next=document.getElementById(targetView+'View');
+  if(!next)return;
+  const current=document.querySelector('.view.active');
+  if(current===next)return;
+  viewSwitching=true;
+  document.querySelectorAll('.navBtn[data-view]').forEach(b=>b.classList.toggle('active',b.dataset.view===targetView));
+  if(current){
+    current.classList.add('fadeOut');
+    setTimeout(()=>{
+      current.classList.remove('active','fadeOut');
+      next.classList.add('active');
+      renderHistory();
+      setTimeout(()=>{viewSwitching=false},260);
+    },210);
+  }else{
+    next.classList.add('active');
+    renderHistory();
+    viewSwitching=false;
+  }
+}
+function exportCSV(){let rows=[['Time','Group','Tier','Spin Type','Item Won','Category','Rarity'],...history.map(h=>[h.time,h.group,h.tier,h.spinType,h.item,h.category,h.rank])];let csv=rows.map(r=>r.map(x=>`"${String(x).replaceAll('"','""')}"`).join(',')).join('\n');let a=document.createElement('a');a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv'}));a.download='illegal-faction-spin-history.csv';a.click()}
+
+function clickAnimate(el){if(!el)return;el.classList.remove('clicked','choiceOpen');void el.offsetWidth;el.classList.add('clicked','choiceOpen');setTimeout(()=>el.classList.remove('clicked','choiceOpen'),360)}
+document.addEventListener('click',e=>{const t=e.target.closest('button,.card,.groupRow');if(t)clickAnimate(t)},{passive:true});
+document.getElementById('dropBtn').onclick=startSpin;document.getElementById('closeSpin').onclick=()=>{if(!state.spinning)document.getElementById('spinModal').classList.remove('open')};document.getElementById('closeResult').onclick=()=>document.getElementById('resultModal').classList.remove('open');document.getElementById('collectBtn').onclick=saveResults;document.getElementById('clearHistoryBtn').onclick=()=>{if(confirm('Clear all spin history?')){history=[];localStorage.setItem(STORAGE_KEYS.history,'[]');selectedGroup='all';renderHistory()}};document.getElementById('exportBtn').onclick=exportCSV;
+document.querySelectorAll('.navBtn[data-view]').forEach(b=>b.onclick=()=>setView(b.dataset.view));
+function clickFX(b){b.classList.remove('clicked');void b.offsetWidth;b.classList.add('clicked');setTimeout(()=>b.classList.remove('clicked'),650)}
+let tierSwitching=false;
+function tierSwitchAnimation(nextTier,btn){
+  clickFX(btn);
+  if(nextTier===state.tier || tierSwitching)return;
+  tierSwitching=true;
+  const box=document.getElementById('items');
+  document.querySelectorAll('.tierTab').forEach(x=>x.classList.remove('active'));
+  btn.classList.add('active');
+
+  // Same smooth active-button animation, but instant data swap for no lag.
+  box.classList.remove('tierSwitchIn','tierSwitchOut','poolReveal');
+  box.classList.add('tierSwitchOut');
+  requestAnimationFrame(()=>{
+    state.tier=nextTier;
+    render();
+    box.classList.remove('tierSwitchOut');
+    void box.offsetWidth;
+    box.classList.add('tierSwitchIn');
+    setTimeout(()=>{
+      box.classList.remove('tierSwitchIn');
+      tierSwitching=false;
+    },260);
+  });
+}
+document.querySelectorAll('.tierTab').forEach(b=>b.onclick=()=>tierSwitchAnimation(b.dataset.tier,b));
+document.querySelectorAll('.spinType').forEach(b=>b.onclick=()=>{state.spinType=b.dataset.type;state.rarityPeekFilter=state.filter;clickFX(b);document.querySelectorAll('.spinType').forEach(x=>x.classList.remove('active'));b.classList.add('active');render()});document.querySelectorAll('.chip').forEach(b=>b.onclick=()=>{state.filter=b.dataset.filter;state.rarityPeekFilter=b.dataset.filter;clickFX(b);document.querySelectorAll('.chip').forEach(x=>x.classList.remove('active'));b.classList.add('active');render()});
+let themeSwitching=false;
+function applyTheme(t,animate=true,clickedBtn=null){
+  const app=document.querySelector('.app');
+  if(animate && app && !themeSwitching){
+    themeSwitching=true;
+    app.classList.remove('themeSwitch');
+    void app.offsetWidth;
+    app.classList.add('themeSwitch');
+    setTimeout(()=>{app.classList.remove('themeSwitch');themeSwitching=false},430);
+  }
+  document.body.className=t;
+  localStorage.setItem(STORAGE_KEYS.theme,t);
+  document.getElementById('themeLabel').textContent=t.toUpperCase();
+  document.querySelectorAll('.themeBtn').forEach(b=>{
+    b.classList.toggle('active',b.dataset.theme===t);
+    b.classList.remove('themeBlink');
+  });
+  if(clickedBtn){
+    void clickedBtn.offsetWidth;
+    clickedBtn.classList.add('themeBlink');
+    setTimeout(()=>clickedBtn.classList.remove('themeBlink'),360);
+  }
+}
+document.querySelectorAll('.themeBtn').forEach(b=>b.onclick=()=>applyTheme(b.dataset.theme,true,b));applyTheme(localStorage.getItem(STORAGE_KEYS.theme)||localStorage.getItem(STORAGE_KEYS.legacyTheme)||'dark',false);
+const music=document.getElementById('music'),playBtn=document.getElementById('playBtn'),muteBtn=document.getElementById('muteBtn'),bgVideo=document.getElementById('bgVideo');
+function currentTrack(){return MUSIC_TRACKS[((state.trackIndex%MUSIC_TRACKS.length)+MUSIC_TRACKS.length)%MUSIC_TRACKS.length]}
+function updateTrackButton(){const trackInfo=state.usingCustomVideo?"Custom Video":(state.usingCustomMusic?"Custom Music":currentTrack().name);const isPaused=state.usingCustomVideo?bgVideo.paused:music.paused;playBtn.textContent=`${isPaused?'♫ Start Music':'♫ Pause Music'} • ${trackInfo}`}
+function setMuteButton(){const muted=state.usingCustomVideo?bgVideo.muted:music.muted;muteBtn.textContent=muted?'Unmute':'Mute'}
+function setMediaStatus(message,type=''){
+  const node=document.getElementById('mediaStatus');
+  if(!node)return;
+  node.textContent=message||'';
+  node.className=`mediaStatus${type?` ${type}`:''}`;
+}
+function safeSetCurrentTime(media,time){
+  if(!media || !isFinite(time) || time<0)return;
+  try{media.currentTime=time}catch(e){}
+}
+function waitForMediaReady(media){
+  if(!media)return Promise.resolve();
+  if(media.readyState>=1)return Promise.resolve();
+  return new Promise(resolve=>{
+    const done=()=>resolve();
+    media.addEventListener('loadedmetadata',done,{once:true});
+    media.addEventListener('canplay',done,{once:true});
+    media.addEventListener('loadeddata',done,{once:true});
+  });
+}
+function syncMediaTimes(source,target){
+  if(!source || !target || !isFinite(source.currentTime))return;
+  const targetDuration=isFinite(target.duration)&&target.duration>0?target.duration:null;
+  const desired=targetDuration?source.currentTime%targetDuration:source.currentTime;
+  if(Math.abs((target.currentTime||0)-desired)>.25)safeSetCurrentTime(target,desired);
+}
+function forceVideoResync(attempts=8,delay=250){
+  let remaining=attempts;
+  const run=()=>{
+    syncBgVideoToMusic();
+    if(music && !music.paused)keepVideoPlaying();
+    remaining-=1;
+    if(remaining>0)window.setTimeout(run,delay);
+  };
+  run();
+}
+function pauseMediaPair(){
+  music.pause();
+  bgVideo.pause();
+  updateTrackButton();
+}
+function snapshotPlaylistState(){
+  return {
+    trackIndex:state.trackIndex,
+    audioSrc:music.currentSrc,
+    videoSrc:bgVideo.currentSrc,
+    audioTime:music.currentTime||0,
+    videoTime:bgVideo.currentTime||0,
+    musicMuted:music.muted,
+    videoMuted:bgVideo.muted,
+    wasPlaying:!music.paused
+  };
+}
+function isSameOriginMediaUrl(url){
+  try{
+    const resolved=new URL(url,window.location.href);
+    return resolved.origin===window.location.origin;
+  }catch(e){
+    return false;
+  }
+}
+async function preflightCustomVideo(url){
+  if(!isSameOriginMediaUrl(url))return {ok:true};
+  return new Promise(resolve=>{
+    try{
+      const request=new XMLHttpRequest();
+      request.open('HEAD',url,true);
+      request.onreadystatechange=()=>{
+        if(request.readyState!==4)return;
+        resolve({ok:request.status>=200&&request.status<400,status:request.status});
+      };
+      request.onerror=()=>resolve({ok:false,status:request.status||0});
+      request.send();
+    }catch(error){
+      resolve({ok:false,error});
+    }
+  });
+}
+function restorePlaylistSnapshot(){
+  const snapshot=state.playlistSnapshot;
+  state.usingCustomVideo=false;
+  state.customVideoUrl='';
+  state.customVideoToken+=1;
+  bgVideo.muted=true;
+  if(!snapshot){
+    setTrack(state.trackIndex,{autoplay:false,resetTime:true});
+    updateTrackButton();
+    setMuteButton();
+    return Promise.resolve();
+  }
+  music.muted=snapshot.musicMuted;
+  bgVideo.muted=true;
+  setTrack(snapshot.trackIndex,{autoplay:snapshot.wasPlaying,resetTime:true});
+  if(!snapshot.wasPlaying){
+    pauseMediaPair();
+    setMuteButton();
+  }
+  state.playlistSnapshot=null;
+  return Promise.resolve();
+}
+async function activateCustomVideo(url){
+  const trimmed=url.trim();
+  if(!trimmed)return Promise.resolve(false);
+  const preflight=await preflightCustomVideo(trimmed);
+  if(!preflight.ok){
+    setMediaStatus('Custom video failed to load. The playlist is still playing.','error');
+    return false;
+  }
+  const previousSnapshot=state.playlistSnapshot||snapshotPlaylistState();
+  const previousUrl=state.customVideoUrl;
+  const shouldResume=state.usingCustomVideo?!bgVideo.paused:!music.paused;
+  const resumeTime=state.usingCustomVideo?(bgVideo.currentTime||0):Math.max(music.currentTime||0,bgVideo.currentTime||0);
+  const source=bgVideo.querySelector('source');
+  if(!source)return Promise.resolve(false);
+  const activationToken=state.customVideoToken+1;
+  state.customVideoToken=activationToken;
+  state.playlistSnapshot=previousSnapshot;
+  state.usingCustomVideo=true;
+  state.customVideoUrl=trimmed;
+  pauseMediaPair();
+  safeSetCurrentTime(music,previousSnapshot.audioTime);
+  source.src=trimmed;
+  bgVideo.muted=false;
+  bgVideo.load();
+  setMediaStatus('Loading custom video...');
+  return new Promise(resolve=>{
+    let settled=false;
+    let failTimer=0;
+    const cleanup=()=>{
+      if(failTimer)clearTimeout(failTimer);
+      bgVideo.removeEventListener('loadedmetadata',onLoaded);
+      bgVideo.removeEventListener('error',onError);
+    };
+    const isStale=()=>activationToken!==state.customVideoToken;
+    const succeed=()=>{
+      if(settled||isStale())return;
+      settled=true;
+      cleanup();
+      safeSetCurrentTime(bgVideo,resumeTime);
+      const playAttempt=shouldResume?bgVideo.play():Promise.resolve();
+      Promise.resolve(playAttempt).then(()=>{
+        if(!shouldResume)bgVideo.pause();
+        updateTrackButton();
+        setMuteButton();
+        setMediaStatus('Custom video active. Clear the URL to return to the playlist.','success');
+        resolve(true);
+      }).catch(()=>{
+        if(shouldResume){
+          setMediaStatus('Custom video loaded, but autoplay was blocked. Press Start Music to play it.','error');
+        }
+        updateTrackButton();
+        setMuteButton();
+        resolve(true);
+      });
+    };
+    const onLoaded=()=>{
+      if(isStale())return;
+      const hasVideo=bgVideo.videoWidth>0 || bgVideo.readyState>=1;
+      if(!hasVideo){onError();return}
+      succeed();
+    };
+    const onError=()=>{
+      if(settled||isStale())return;
+      settled=true;
+      cleanup();
+      source.src=previousUrl || (previousSnapshot.videoSrc || currentTrack().mp4);
+      bgVideo.load();
+      state.usingCustomVideo=false;
+      state.customVideoUrl=previousUrl;
+      state.customVideoToken+=1;
+      restorePlaylistSnapshot().finally(()=>{
+        setMediaStatus('Custom video failed to load. The playlist is still playing.','error');
+        resolve(false);
+      });
+    };
+    bgVideo.addEventListener('loadedmetadata',onLoaded,{once:true});
+    bgVideo.addEventListener('error',onError,{once:true});
+    failTimer=window.setTimeout(onError,4500);
+  });
+}
+function clearCustomVideoMode(){
+  if(!state.usingCustomVideo){
+    state.customVideoUrl='';
+    setMediaStatus('');
+    return Promise.resolve();
+  }
+  return restorePlaylistSnapshot().finally(()=>{
+    setMediaStatus('Returned to the playlist video.','success');
+  });
+}
+function keepVideoPlaying(){
+  if(bgVideo && bgVideo.paused) bgVideo.play().catch(()=>{});
+}
+function startMediaSyncLoop(){
+  if(state.mediaSyncTimer)return;
+  state.mediaSyncTimer=setInterval(()=>{
+    if(music.paused)return;
+    keepVideoPlaying();
+    syncMediaTimes(music,bgVideo);
+  },500);
+}
+function resumeMediaPair(){
+  if(state.usingCustomVideo){
+    return bgVideo.play().then(()=>{
+      updateTrackButton();
+    });
+  }
+  return Promise.all([waitForMediaReady(music),waitForMediaReady(bgVideo)]).then(()=>{
+    syncMediaTimes(music,bgVideo);
+    keepVideoPlaying();
+    return music.play().then(()=>{
+      keepVideoPlaying();
+      syncMediaTimes(music,bgVideo);
+      updateTrackButton();
+    });
+  });
+}
+function setTrack(index,{autoplay=false,resetTime=true,keepTime=false}={}){
+  if(state.usingCustomMusic || state.usingCustomVideo)return;
+  const loadToken=state.trackLoadToken+1;
+  state.trackLoadToken=loadToken;
+  state.trackIndex=((index%MUSIC_TRACKS.length)+MUSIC_TRACKS.length)%MUSIC_TRACKS.length;
+  localStorage.setItem(STORAGE_KEYS.track,String(state.trackIndex));
+  const trackInfo=currentTrack();
+  const audioSource=music.querySelector('source');
+  const videoSource=bgVideo.querySelector('source');
+  const preservedTime=keepTime?Math.max(music.currentTime||0,bgVideo.currentTime||0):0;
+  if(audioSource)audioSource.src=trackInfo.mp3;
+  if(videoSource)videoSource.src=trackInfo.mp4;
+  music.load();
+  bgVideo.load();
+  if(resetTime){safeSetCurrentTime(music,0);safeSetCurrentTime(bgVideo,0)}
+  else if(keepTime){safeSetCurrentTime(music,preservedTime);safeSetCurrentTime(bgVideo,preservedTime)}
+  updateTrackButton();
+  if(autoplay){
+    Promise.all([waitForMediaReady(music),waitForMediaReady(bgVideo)]).then(()=>{
+      if(loadToken!==state.trackLoadToken)return;
+      return resumeMediaPair();
+    }).catch(()=>{})
+  }
+}
+function previousTrack(autoplay=true){setTrack(state.trackIndex-1,{autoplay,resetTime:true})}
+function nextTrack(autoplay=true){setTrack(state.trackIndex+1,{autoplay,resetTime:true})}
+function safeVideoTime(){
+  return (bgVideo && isFinite(bgVideo.currentTime)) ? bgVideo.currentTime : 0;
+}
+function syncMusicToBgVideo(){
+  if(!bgVideo || !music || !isFinite(safeVideoTime())) return;
+  syncMediaTimes(bgVideo,music);
+}
+function syncBgVideoToMusic(){
+  if(!bgVideo || !music || !isFinite(music.currentTime)) return;
+  syncMediaTimes(music,bgVideo);
+}
+music.addEventListener('play',()=>{keepVideoPlaying();syncBgVideoToMusic();updateTrackButton()});
+music.addEventListener('pause',()=>{if(!bgVideo.paused)bgVideo.pause();updateTrackButton()});
+music.addEventListener('seeking',syncBgVideoToMusic);
+music.addEventListener('seeked',syncBgVideoToMusic);
+music.addEventListener('timeupdate',()=>{if(!music.paused)syncBgVideoToMusic()});
+bgVideo.addEventListener('play',()=>{if(state.usingCustomVideo){updateTrackButton();return}if(music.paused&&document.getElementById('gate')?.classList.contains('hide'))syncBgVideoToMusic()});
+bgVideo.addEventListener('seeking',()=>{if(music.paused)syncMusicToBgVideo()});
+bgVideo.addEventListener('pause',()=>{if(state.usingCustomVideo)updateTrackButton()});
+bgVideo.addEventListener('ended',()=>{if(state.usingCustomVideo){safeSetCurrentTime(bgVideo,0);bgVideo.play().catch(()=>{});return}if(state.usingCustomMusic){safeSetCurrentTime(bgVideo,0);if(!music.paused)keepVideoPlaying();return}syncBgVideoToMusic();keepVideoPlaying()});
+music.addEventListener('ended',()=>{if(state.usingCustomMusic){safeSetCurrentTime(music,0);resumeMediaPair().catch(()=>{});return}nextTrack(true)});
+startMediaSyncLoop();
+playBtn.onclick=()=>{
+  if(state.usingCustomVideo){
+    if(bgVideo.paused)bgVideo.play().then(()=>updateTrackButton()).catch(()=>alert('Click the intro screen or allow video audio, then press Start Music.'));
+    else{bgVideo.pause();updateTrackButton();}
+  }else if(music.paused){
+    resumeMediaPair().catch(()=>alert('Click the intro screen or allow audio, then press Start Music.'))
+  }else{
+    pauseMediaPair();
+  }
+};
+elements.nextBtn.onclick=()=>{
+  if(state.usingCustomVideo){setMediaStatus('Custom video is active. Clear the URL to return to the playlist.','error');return}
+  nextTrack(!music.paused)
+};
+elements.prevBtn.onclick=()=>{
+  if(state.usingCustomVideo){setMediaStatus('Custom video is active. Exit custom video before changing playlist tracks.','error');return}
+  previousTrack(!music.paused)
+};
+muteBtn.onclick=()=>{
+  if(state.usingCustomVideo){
+    bgVideo.muted=!bgVideo.muted;
+  }else{
+    music.muted=!music.muted;
+    if(!music.muted)syncMusicToBgVideo();
+  }
+  setMuteButton();
+};
+let txt='ILLEGAL FACTION SPINS',idx=0,title=document.getElementById('typeTitle');let timer=setInterval(()=>{title.textContent=txt.slice(0,++idx);if(idx>=txt.length)clearInterval(timer)},135);const gate=document.getElementById('gate'),gateCode=document.getElementById('gateCode'),gateError=document.getElementById('gateError'),gateEnterBtn=document.getElementById('gateEnterBtn');function enterSpins(){gate.classList.add('hide');Promise.all([waitForMediaReady(music),waitForMediaReady(bgVideo)]).then(()=>{keepVideoPlaying();syncMusicToBgVideo();if(music){return resumeMediaPair()}}).catch(()=>{})}function submitGateCode(){const code=(gateCode?.value||'').trim().toUpperCase();if(code==='TFBFM22'){if(gateError)gateError.textContent='';enterSpins();return}if(gateError)gateError.textContent='Incorrect passcode';if(gateCode){gateCode.value='';gateCode.focus()}}if(gateEnterBtn)gateEnterBtn.onclick=submitGateCode;if(gateCode)gateCode.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();submitGateCode()}});if(gateCode)window.setTimeout(()=>gateCode.focus(),120);
+
+function initReactiveDots(){
+  const canvas=document.getElementById('dotCanvas');
+  const hero=document.querySelector('.hero');
+  if(!canvas||!hero) return;
+  const ctx=canvas.getContext('2d',{alpha:true});
+  let w=0,h=0,dpr=1,pts=[],mx=-9999,my=-9999,raf=0;
+  function resize(){
+    const r=canvas.getBoundingClientRect();
+    dpr=Math.min(window.devicePixelRatio||1,2);
+    w=Math.max(1,Math.floor(r.width)); h=Math.max(1,Math.floor(r.height));
+    canvas.width=Math.floor(w*dpr); canvas.height=Math.floor(h*dpr);
+    ctx.setTransform(dpr,0,0,dpr,0,0);
+    pts=[];
+    const gap=28;
+    for(let y=18;y<h;y+=gap){for(let x=18;x<w;x+=gap){pts.push({x,y,p:Math.random()*Math.PI*2});}}
+    draw();
+  }
+  function draw(t=0){
+    ctx.clearRect(0,0,w,h);
+    for(const pt of pts){
+      const dx=pt.x-mx,dy=pt.y-my,dist=Math.sqrt(dx*dx+dy*dy);
+      const heat=Math.max(0,1-dist/120);
+      const pulse=(Math.sin((t*.002)+pt.p)+1)*.5;
+      const size=0.95+heat*1.15+pulse*.12;
+      const whiteAlpha=.075+heat*.10;
+      const redAlpha=heat*.10;
+      ctx.beginPath();
+      ctx.fillStyle=heat>.05?`rgba(255,255,255,${whiteAlpha})`:`rgba(255,255,255,.13)`;
+      ctx.shadowColor=`rgba(232,0,13,${redAlpha})`;
+      ctx.shadowBlur=heat*4;
+      ctx.arc(pt.x,pt.y,size,0,Math.PI*2);
+      ctx.fill();
+      ctx.shadowBlur=0;
+    }
+    raf=requestAnimationFrame(draw);
+  }
+  hero.addEventListener('pointermove',e=>{
+    const r=hero.getBoundingClientRect();
+    mx=e.clientX-r.left; my=e.clientY-r.top;
+    hero.style.setProperty('--mx',`${(mx/w)*100}%`); hero.style.setProperty('--my',`${(my/h)*100}%`);
+  },{passive:true});
+  hero.addEventListener('pointerleave',()=>{mx=-9999;my=-9999;hero.style.setProperty('--mx','50%');hero.style.setProperty('--my','50%')},{passive:true});
+  window.addEventListener('resize',resize,{passive:true});
+  resize(); cancelAnimationFrame(raf); raf=requestAnimationFrame(draw);
+}
+initReactiveDots();
+
+/* === FULL SETTINGS LOGIC === */
+const savedSettings=JSON.parse(localStorage.getItem(STORAGE_KEYS.settings)||localStorage.getItem(STORAGE_KEYS.legacySettings)||"{}");
+const defaultSettings={
+  musicVolume:60,bgOpacity:48,videoBrightness:82,videoBlur:0,floatStrength:12,panelOpacity:100,
+  showBgVideo:true,showFloating:true,showParticles:true,showRgbTrail:true,spinSfx:true,typingSfx:true,
+  hideHeroPanel:false,
+  autoCollect:false,winnerPopups:true,confetti:true,legendaryAlert:true,soundAlerts:true,
+  spinSpeed:"normal",managerName:"Faction Management",madeByText:"Made By Nas",
+  logoUrl:"",bgVideoUrl:"",musicUrl:""
+};
+let appSettings={...defaultSettings,...savedSettings}; window.appSettings=appSettings; state.settings=appSettings;
+function saveSettings(){localStorage.setItem(STORAGE_KEYS.settings,JSON.stringify(appSettings))}
+function applyVisualSettings(){
+  const bg=document.getElementById("bgVideo");
+  const ambient=document.querySelector(".ambient");
+  const music=document.getElementById("music");
+  if(music){music.volume=(appSettings.musicVolume||60)/100}
+  if(bg){
+    bg.style.filter=`brightness(${(appSettings.videoBrightness||82)/100}) contrast(1.18) saturate(1.12) blur(${appSettings.videoBlur||0}px)`;
+    bg.volume=(appSettings.musicVolume||60)/100;
+  }
+  if(ambient){
+    const o=(appSettings.bgOpacity||48)/100;
+    ambient.style.background=`radial-gradient(circle at 40% 0,rgba(232,0,13,.10),transparent 34%),radial-gradient(circle at 100% 45%,rgba(232,0,13,.07),transparent 28%),linear-gradient(180deg,rgba(5,6,10,${o*.72}),rgba(2,3,7,${o}))`;
+  }
+  document.body.classList.toggle("hideBgVideo",!appSettings.showBgVideo);
+  document.body.classList.toggle("hideFloating",!appSettings.showFloating);
+  document.body.classList.toggle("hideParticles",!appSettings.showParticles);
+  document.body.classList.toggle("hideRgbTrail",!appSettings.showRgbTrail);
+  document.body.classList.toggle("hideHeroPanel",!!appSettings.hideHeroPanel);
+  document.body.classList.toggle("noConfetti",!appSettings.confetti);
+  document.documentElement.style.setProperty("--floatAmt",(appSettings.floatStrength||12)+"px");
+  const panelRatio=Math.min(1,Math.max(0,(appSettings.panelOpacity??100)/100));
+  document.documentElement.style.setProperty("--panelOpacity",String(panelRatio));
+  document.querySelectorAll(".manager").forEach(el=>{
+    const status=el.querySelector(".status");
+    el.childNodes[0].nodeValue=(appSettings.managerName||"Faction Management")+" ";
+    if(status && !el.contains(status)) el.appendChild(status);
+  });
+  document.querySelectorAll(".welcome b").forEach(el=>el.textContent=appSettings.managerName||"Faction Management");
+  document.querySelectorAll(".madeByNas").forEach(el=>el.textContent=appSettings.madeByText||"Made By Nas");
+  const prev=document.getElementById("previewMadeBy"); if(prev)prev.textContent=appSettings.madeByText||"Made By Nas";
+  const brand=document.querySelector(".brand img");
+  if(brand && appSettings.logoUrl) brand.src=appSettings.logoUrl;
+  if(appSettings.musicUrl){
+    state.usingCustomMusic=true;
+    const source=document.querySelector("#music source");
+    const audio=document.getElementById("music");
+    if(source && audio && source.getAttribute("src")!==appSettings.musicUrl){
+      const resumeTime=Math.max(audio.currentTime||0,bg.currentTime||0);
+      const shouldResume=!audio.paused;
+      source.src=appSettings.musicUrl;
+      audio.load();
+      audio.addEventListener('loadedmetadata',()=>{
+        safeSetCurrentTime(audio,resumeTime);
+        if(shouldResume)resumeMediaPair().catch(()=>{});
+      },{once:true});
+    }
+  }else if(state.usingCustomMusic){
+    state.usingCustomMusic=false;
+    setTrack(state.trackIndex,{autoplay:!music.paused,resetTime:false,keepTime:true});
+  }
+  if(!appSettings.bgVideoUrl && !state.usingCustomVideo)setMediaStatus('');
+  state.settings=appSettings;
+  updateTrackButton();
+  setMuteButton();
+}
+function initSettingsPanel(){
+  if(state.settingsInitialized)return;
+  state.settingsInitialized=true;
+  const byId=id=>document.getElementById(id);
+  [["setBgOpacity","bgOpacity"],["setVideoBrightness","videoBrightness"],["setVideoBlur","videoBlur"],["setFloatStrength","floatStrength"],["setPanelOpacity","panelOpacity"]].forEach(([id,key])=>{
+    const el=byId(id); if(!el)return;
+    el.value=appSettings[key];
+    el.oninput=()=>{appSettings[key]=Number(el.value);saveSettings();applyVisualSettings()};
+  });
+  [["setShowBgVideo","showBgVideo"],["setShowFloating","showFloating"],["setShowParticles","showParticles"],["setShowRgbTrail","showRgbTrail"],["setHideHeroPanel","hideHeroPanel"],["setSpinSfx","spinSfx"],["setTypingSfx","typingSfx"],["setAutoCollect","autoCollect"],["setWinnerPopups","winnerPopups"],["setConfetti","confetti"],["setLegendaryAlert","legendaryAlert"],["setSoundAlerts","soundAlerts"]].forEach(([id,key])=>{
+    const el=byId(id); if(!el)return;
+    el.checked=!!appSettings[key];
+    el.onchange=()=>{appSettings[key]=el.checked;saveSettings();applyVisualSettings()};
+  });
+  const manager=byId("setManagerName"); if(manager){manager.value=appSettings.managerName; manager.oninput=()=>{appSettings.managerName=manager.value||"Faction Management";saveSettings();applyVisualSettings()}}
+  const made=byId("setMadeByText"); if(made){made.value=appSettings.madeByText; made.oninput=()=>{appSettings.madeByText=made.value||"Made By Nas";saveSettings();applyVisualSettings()}}
+  const logo=byId("setLogoUrl"); if(logo){logo.value=appSettings.logoUrl||""}
+  const bgurl=byId("setBgVideoUrl"); if(bgurl){bgurl.value=appSettings.bgVideoUrl||""}
+  const applyAdmin=byId("applyAdminSettings");
+  const exitCustomVideoBtn=byId("exitCustomVideoBtn");
+  if(applyAdmin)applyAdmin.onclick=async()=>{
+    appSettings.logoUrl=logo?.value.trim()||"";
+    const nextCustomVideoUrl=bgurl?.value.trim()||"";
+    saveSettings();applyVisualSettings();
+    if(nextCustomVideoUrl){
+      const applied=await activateCustomVideo(nextCustomVideoUrl);
+      if(applied){
+        appSettings.bgVideoUrl=nextCustomVideoUrl;
+        saveSettings();
+      }else{
+        appSettings.bgVideoUrl="";
+        if(bgurl)bgurl.value=appSettings.bgVideoUrl;
+        saveSettings();
+      }
+    }else{
+      appSettings.bgVideoUrl="";
+      await clearCustomVideoMode();
+      saveSettings();
+    }
+  };
+  if(exitCustomVideoBtn)exitCustomVideoBtn.onclick=async()=>{
+    if(!state.usingCustomVideo){setMediaStatus('Custom video is not active.','error');return}
+    appSettings.bgVideoUrl="";
+    if(bgurl)bgurl.value="";
+    await clearCustomVideoMode();
+    saveSettings();
+  };
+  document.querySelectorAll(".spinSpeed").forEach(btn=>{
+    btn.classList.toggle("active",btn.dataset.speed===appSettings.spinSpeed);
+    btn.onclick=()=>{
+      document.querySelectorAll(".spinSpeed").forEach(b=>b.classList.remove("active"));
+      btn.classList.add("active");
+      appSettings.spinSpeed=btn.dataset.speed;saveSettings();applyVisualSettings();
+    };
+  });
+  const skip=byId("setSkipAnimations");
+  if(skip)skip.onclick=()=>{document.body.classList.toggle("lowMotion");skip.classList.toggle("active")};
+  const sExport=byId("settingsExportHistory"); if(sExport)sExport.onclick=exportCSV;
+  const sClear=byId("settingsClearHistory"); if(sClear)sClear.onclick=()=>{if(confirm("Clear all spin history?")){history=[];localStorage.setItem(STORAGE_KEYS.history,"[]");selectedGroup="all";renderHistory()}};
+  const sLocal=byId("settingsClearLocal"); if(sLocal)sLocal.onclick=()=>{if(confirm("Clear all saved local data?")){localStorage.clear();location.reload()}};
+  const sReset=byId("settingsReset"); if(sReset)sReset.onclick=()=>{if(confirm("Reset all settings?")){appSettings={...defaultSettings};window.appSettings=appSettings;saveSettings();location.reload()}};
+  applyVisualSettings();
+  if(appSettings.bgVideoUrl){activateCustomVideo(appSettings.bgVideoUrl).then(applied=>{if(!applied){appSettings.bgVideoUrl="";saveSettings();if(bgurl)bgurl.value="";}else if(bgurl){bgurl.value=appSettings.bgVideoUrl;}})}
+}
+initSettingsPanel();
+
+setTrack(state.trackIndex,{autoplay:false,resetTime:true});
+setMuteButton();
+render();fillReel(reelItems(ITEMS,ITEMS[0]));
+</script>
+</body>
+</html>
+
+
