@@ -1149,7 +1149,7 @@ body.hideFloating .weaponFloat,body.hideFloating .itemImg,body.hideFloating .thu
 
 </head>
 <body class="dark">
-<video id="bgVideo" class="pageBgVideo" autoplay muted playsinline><source src="./mp4/Music1.mp4" type="video/mp4"></video><div class="ambient"></div>
+<video id="bgVideo" class="pageBgVideo" autoplay muted playsinline><source src="Music1.mp4" type="video/mp4"></video><div class="ambient"></div>
 <div class="typewriter" id="gate"><div class="typeTitle" id="typeTitle"></div><div class="typeSub">Enter passcode to access spins</div><div class="gatePanel"><input class="gateInput" id="gateCode" type="password" placeholder="Enter passcode" autocomplete="off" spellcheck="false"><button class="gateBtn" id="gateEnterBtn" type="button">Enter Spins</button><div class="gateError" id="gateError"></div></div></div>
 <audio id="music" preload="auto"><source src="./mp3/Music1.mp3" type="audio/mpeg"></audio>
 <div class="app">
@@ -1481,7 +1481,7 @@ const MUSIC_TRACKS=[
 ].map(track=>({
   ...track,
   mp3:`./mp3/Music${track.id}.mp3`,
-  mp4:`./mp4/Music${track.id}.mp4`,
+  mp4:`Music${track.id}.mp4`,
   mp3Sources:[
     `./mp3/Music${track.id}.mp3`,
     `./mp3/Music ${track.id}.mp3`,
@@ -1491,11 +1491,17 @@ const MUSIC_TRACKS=[
     `mp3/Music ${track.id}.mp3`
   ],
   mp4Sources:[
+    `Music${track.id}.mp4`,
+    `./Music${track.id}.mp4`,
+    `Music ${track.id}.mp4`,
+    `./Music ${track.id}.mp4`,
+    `music${track.id}.mp4`,
+    `./music${track.id}.mp4`,
+    `music ${track.id}.mp4`,
+    `./music ${track.id}.mp4`,
     `./mp4/Music${track.id}.mp4`,
-    `./mp4/Music ${track.id}.mp4`,
-    `./mp4/music${track.id}.mp4`,
-    `./mp4/music ${track.id}.mp4`,
     `mp4/Music${track.id}.mp4`,
+    `./mp4/Music ${track.id}.mp4`,
     `mp4/Music ${track.id}.mp4`
   ]
 }));
@@ -2288,7 +2294,8 @@ function resumeMediaPair(){
       updateTrackButton();
     });
   }
-  return Promise.all([waitForMediaReady(music),waitForMediaReady(bgVideo)]).then(()=>{
+  // Do not let a missing/broken MP4 block the MP3. Audio is the master.
+  return waitForMediaReady(music).then(()=>{
     syncMediaTimes(music,bgVideo);
     keepVideoPlaying();
     return music.play().then(()=>{
@@ -2348,7 +2355,7 @@ function setTrack(index,{autoplay=false,resetTime=true,keepTime=false}={}){
   else if(keepTime){safeSetCurrentTime(music,preservedTime);safeSetCurrentTime(bgVideo,preservedTime)}
   updateTrackButton();
   if(autoplay){
-    Promise.all([waitForMediaReady(music),waitForMediaReady(bgVideo)]).then(()=>{
+    waitForMediaReady(music).then(()=>{
       if(loadToken!==state.trackLoadToken)return;
       return resumeMediaPair();
     }).catch(()=>{})
@@ -2377,7 +2384,7 @@ bgVideo.addEventListener('seeking',()=>{if(music.paused)syncMusicToBgVideo()});
 bgVideo.addEventListener('pause',()=>{if(state.usingCustomVideo)updateTrackButton()});
 bgVideo.addEventListener('ended',()=>{if(state.usingCustomVideo){safeSetCurrentTime(bgVideo,0);bgVideo.play().catch(()=>{});return}if(state.usingCustomMusic){safeSetCurrentTime(bgVideo,0);if(!music.paused)keepVideoPlaying();return}syncBgVideoToMusic();keepVideoPlaying()});
 music.addEventListener('error',()=>{if(state.usingCustomMusic||state.usingCustomVideo)return;if(tryNextMediaSource(music,'audio/mpeg','MP3'))return;setMediaStatus('Could not load this MP3 on GitHub. Check mp3 filename/case and that the file is real audio: '+currentTrack().name+'.','error')});
-bgVideo.addEventListener('error',()=>{if(state.usingCustomVideo)return;if(tryNextMediaSource(bgVideo,'video/mp4','MP4'))return;setMediaStatus('Could not load this MP4 on GitHub. Check mp4 filename/case and that the file is real video: '+currentTrack().name+'.','error')});
+bgVideo.addEventListener('error',()=>{if(state.usingCustomVideo)return;if(tryNextMediaSource(bgVideo,'video/mp4','MP4'))return;setMediaStatus('MP4 background missing/broken for '+currentTrack().name+'. MP3 audio will keep playing. Check root Music#.mp4 filename/case.','error');if(!music.paused)updateTrackButton()});
 music.addEventListener('ended',()=>{if(state.usingCustomMusic){safeSetCurrentTime(music,0);resumeMediaPair().catch(()=>{});return}nextTrack(true)});
 startMediaSyncLoop();
 playBtn.onclick=()=>{
@@ -2407,7 +2414,7 @@ muteBtn.onclick=()=>{
   }
   setMuteButton();
 };
-let txt='ILLEGAL FACTION SPINS',idx=0,title=document.getElementById('typeTitle');let timer=setInterval(()=>{title.textContent=txt.slice(0,++idx);if(idx>=txt.length)clearInterval(timer)},135);const gate=document.getElementById('gate'),gateCode=document.getElementById('gateCode'),gateError=document.getElementById('gateError'),gateEnterBtn=document.getElementById('gateEnterBtn');function enterSpins(){gate.classList.add('hide');Promise.all([waitForMediaReady(music),waitForMediaReady(bgVideo)]).then(()=>{keepVideoPlaying();syncMusicToBgVideo();if(music){return resumeMediaPair()}}).catch(()=>{})}function submitGateCode(){const code=(gateCode?.value||'').trim().toUpperCase();if(code==='TFBFM22'){if(gateError)gateError.textContent='';enterSpins();return}if(gateError)gateError.textContent='Incorrect passcode';if(gateCode){gateCode.value='';gateCode.focus()}}if(gateEnterBtn)gateEnterBtn.onclick=submitGateCode;if(gateCode)gateCode.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();submitGateCode()}});if(gateCode)window.setTimeout(()=>gateCode.focus(),120);
+let txt='ILLEGAL FACTION SPINS',idx=0,title=document.getElementById('typeTitle');let timer=setInterval(()=>{title.textContent=txt.slice(0,++idx);if(idx>=txt.length)clearInterval(timer)},135);const gate=document.getElementById('gate'),gateCode=document.getElementById('gateCode'),gateError=document.getElementById('gateError'),gateEnterBtn=document.getElementById('gateEnterBtn');function enterSpins(){gate.classList.add('hide');waitForMediaReady(music).then(()=>{keepVideoPlaying();syncMusicToBgVideo();if(music){return resumeMediaPair()}}).catch(()=>{})}function submitGateCode(){const code=(gateCode?.value||'').trim().toUpperCase();if(code==='TFBFM22'){if(gateError)gateError.textContent='';enterSpins();return}if(gateError)gateError.textContent='Incorrect passcode';if(gateCode){gateCode.value='';gateCode.focus()}}if(gateEnterBtn)gateEnterBtn.onclick=submitGateCode;if(gateCode)gateCode.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();submitGateCode()}});if(gateCode)window.setTimeout(()=>gateCode.focus(),120);
 
 function initReactiveDots(){
   const canvas=document.getElementById('dotCanvas');
