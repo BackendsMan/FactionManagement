@@ -90,6 +90,12 @@ a{text-decoration:none;color:inherit}
   position:fixed;inset:0;width:100vw;height:100vh;object-fit:cover;z-index:-4;
   filter:brightness(.8) saturate(1.06) contrast(1.04);
   pointer-events:none;backface-visibility:hidden;transform:translateZ(0);
+  image-rendering:auto;
+}
+body.hqBgVideo .pageBgVideo{
+  filter:brightness(1) contrast(1.04) saturate(1.06)!important;
+  transform:none!important;
+  image-rendering:auto!important;
 }
 .ambient{
   position:fixed;inset:0;z-index:-3;pointer-events:none;
@@ -1251,6 +1257,10 @@ body.hideFloating .weaponFloat,body.hideFloating .itemImg,body.hideFloating .thu
               <label class="toggleSwitch"><input id="setShowBgVideo" type="checkbox" checked><span class="toggleKnob"></span></label>
             </div>
             <div class="settingRow">
+              <div class="settingInfo"><b>High Quality Background Video</b><span>Keeps the background video cleaner and less filtered/compressed-looking.</span></div>
+              <label class="toggleSwitch"><input id="setHighQualityVideo" type="checkbox" checked><span class="toggleKnob"></span></label>
+            </div>
+            <div class="settingRow">
               <div class="settingInfo"><b>Show Floating Weapons</b><span>Toggle the floating animation on item visuals.</span></div>
               <label class="toggleSwitch"><input id="setShowFloating" type="checkbox" checked><span class="toggleKnob"></span></label>
             </div>
@@ -2396,13 +2406,19 @@ initReactiveDots();
 const savedSettings=JSON.parse(localStorage.getItem(STORAGE_KEYS.settings)||localStorage.getItem(STORAGE_KEYS.legacySettings)||"{}");
 const defaultSettings={
   musicVolume:60,bgOpacity:48,videoBrightness:82,videoBlur:0,floatStrength:12,panelOpacity:100,
-  showBgVideo:true,showFloating:true,showParticles:true,showRgbTrail:true,spinSfx:true,typingSfx:true,
-  hideHeroPanel:false,
+  showBgVideo:true,highQualityVideo:true,showFloating:true,showParticles:true,showRgbTrail:true,spinSfx:true,typingSfx:true,
+  hideHeroPanel:false,heroPanelUserSet:false,
   autoCollect:false,winnerPopups:true,confetti:true,legendaryAlert:true,soundAlerts:true,
   spinSpeed:"normal",managerName:"Faction Management",madeByText:"Made By Nas",
   logoUrl:"",bgVideoUrl:"",musicUrl:""
 };
-let appSettings={...defaultSettings,...savedSettings}; window.appSettings=appSettings; state.settings=appSettings;
+let appSettings={...defaultSettings,...savedSettings};
+// Fix old saved data that made the hero panel hide automatically.
+// It now stays visible by default, and only hides after the user toggles the setting.
+if(!appSettings.heroPanelUserSet){
+  appSettings.hideHeroPanel=false;
+}
+window.appSettings=appSettings; state.settings=appSettings;
 function saveSettings(){localStorage.setItem(STORAGE_KEYS.settings,JSON.stringify(appSettings))}
 function applyVisualSettings(){
   const bg=document.getElementById("bgVideo");
@@ -2410,7 +2426,13 @@ function applyVisualSettings(){
   const music=document.getElementById("music");
   if(music){music.volume=(appSettings.musicVolume||60)/100;syncVolumeUI(appSettings.musicVolume||60)}
   if(bg){
-    bg.style.filter=`brightness(${(appSettings.videoBrightness||82)/100}) contrast(1.18) saturate(1.12) blur(${appSettings.videoBlur||0}px)`;
+    const hq=!!appSettings.highQualityVideo;
+    const brightness=(appSettings.videoBrightness||82)/100;
+    const blur=hq?0:(appSettings.videoBlur||0);
+    bg.style.filter=hq
+      ? `brightness(${Math.max(brightness,.92)}) contrast(1.04) saturate(1.06)`
+      : `brightness(${brightness}) contrast(1.18) saturate(1.12) blur(${blur}px)`;
+    bg.preload='auto';
     bg.volume=(appSettings.musicVolume||60)/100;
   }
   if(ambient){
@@ -2424,6 +2446,7 @@ function applyVisualSettings(){
     }
   }
   document.body.classList.toggle("hideBgVideo",!appSettings.showBgVideo);
+  document.body.classList.toggle("hqBgVideo",!!appSettings.highQualityVideo);
   document.body.classList.toggle("hideFloating",!appSettings.showFloating);
   document.body.classList.toggle("hideParticles",!appSettings.showParticles);
   document.body.classList.toggle("hideRgbTrail",!appSettings.showRgbTrail);
@@ -2474,10 +2497,15 @@ function initSettingsPanel(){
     el.value=appSettings[key];
     el.oninput=()=>{appSettings[key]=Number(el.value);saveSettings();applyVisualSettings()};
   });
-  [["setShowBgVideo","showBgVideo"],["setShowFloating","showFloating"],["setShowParticles","showParticles"],["setShowRgbTrail","showRgbTrail"],["setHideHeroPanel","hideHeroPanel"],["setSpinSfx","spinSfx"],["setTypingSfx","typingSfx"],["setAutoCollect","autoCollect"],["setWinnerPopups","winnerPopups"],["setConfetti","confetti"],["setLegendaryAlert","legendaryAlert"],["setSoundAlerts","soundAlerts"]].forEach(([id,key])=>{
+  [["setShowBgVideo","showBgVideo"],["setHighQualityVideo","highQualityVideo"],["setShowFloating","showFloating"],["setShowParticles","showParticles"],["setShowRgbTrail","showRgbTrail"],["setHideHeroPanel","hideHeroPanel"],["setSpinSfx","spinSfx"],["setTypingSfx","typingSfx"],["setAutoCollect","autoCollect"],["setWinnerPopups","winnerPopups"],["setConfetti","confetti"],["setLegendaryAlert","legendaryAlert"],["setSoundAlerts","soundAlerts"]].forEach(([id,key])=>{
     const el=byId(id); if(!el)return;
     el.checked=!!appSettings[key];
-    el.onchange=()=>{appSettings[key]=el.checked;saveSettings();applyVisualSettings()};
+    el.onchange=()=>{
+      appSettings[key]=el.checked;
+      if(key==="hideHeroPanel") appSettings.heroPanelUserSet=true;
+      saveSettings();
+      applyVisualSettings();
+    };
   });
   const manager=byId("setManagerName"); if(manager){manager.value=appSettings.managerName; manager.oninput=()=>{appSettings.managerName=manager.value||"Faction Management";saveSettings();applyVisualSettings()}}
   const made=byId("setMadeByText"); if(made){made.value=appSettings.madeByText; made.oninput=()=>{appSettings.madeByText=made.value||"Made By Nas";saveSettings();applyVisualSettings()}}
