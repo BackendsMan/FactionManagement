@@ -1466,19 +1466,39 @@ const WEAPON_POOLS={
 };
 const TIERS={test:{label:"TEST",rewards:2,rarities:["common","uncommon"]},t1:{label:"TIER 1",rewards:4,rarities:["common","uncommon","rare"]},"t1.5":{label:"TIER 1.5",rewards:5,rarities:["common","uncommon","rare","epic"]},t2:{label:"TIER 2",rewards:8,rarities:["common","uncommon","rare","epic","legendary"]}};
 const MUSIC_TRACKS=[
-  {name:"Keke - Headtapp Gz",mp3:"./mp3/Music1.mp3",mp4:"./mp4/Music1.mp4"},
-  {name:"Strictly 4 The Fans - Rennytherapper",mp3:"./mp3/Music2.mp3",mp4:"./mp4/Music2.mp4"},
-  {name:"Forget You - Kdot B",mp3:"./mp3/Music3.mp3",mp4:"./mp4/Music3.mp4"},
-  {name:"Clock It - Dotty B",mp3:"./mp3/Music4.mp3",mp4:"./mp4/Music4.mp4"},
-  {name:"Peach Dream - TyBando x Yen34",mp3:"./mp3/Music5.mp3",mp4:"./mp4/Music5.mp4"},
-  {name:"Unfadeable - Kay30",mp3:"./mp3/Music6.mp3",mp4:"./mp4/Music6.mp4"},
-  {name:"Purge - RichNunu",mp3:"./mp3/Music7.mp3",mp4:"./mp4/Music7.mp4"},
-  {name:"Talking About Drillin - TGMAN",mp3:"./mp3/Music8.mp3",mp4:"./mp4/Music8.mp4"},
-  {name:"RTP - BT Spiig x QG74RT",mp3:"./mp3/Music9.mp3",mp4:"./mp4/Music9.mp4"},
-  {name:"Aiint On Shit - Double R x Ace B",mp3:"./mp3/Music10.mp3",mp4:"./mp4/Music10.mp4"},
-  {name:"Dumb Ways 2 Die - Jah Munna",mp3:"./mp3/Music11.mp3",mp4:"./mp4/Music11.mp4"},
-  {name:"Warning - Swoop G",mp3:"./mp3/Music12.mp3",mp4:"./mp4/Music12.mp4"}
-];
+  {name:"Keke - Headtapp Gz",id:1},
+  {name:"Strictly 4 The Fans - Rennytherapper",id:2},
+  {name:"Forget You - Kdot B",id:3},
+  {name:"Clock It - Dotty B",id:4},
+  {name:"Peach Dream - TyBando x Yen34",id:5},
+  {name:"Unfadeable - Kay30",id:6},
+  {name:"Purge - RichNunu",id:7},
+  {name:"Talking About Drillin - TGMAN",id:8},
+  {name:"RTP - BT Spiig x QG74RT",id:9},
+  {name:"Aiint On Shit - Double R x Ace B",id:10},
+  {name:"Dumb Ways 2 Die - Jah Munna",id:11},
+  {name:"Warning - Swoop G",id:12}
+].map(track=>({
+  ...track,
+  mp3:`./mp3/Music${track.id}.mp3`,
+  mp4:`./mp4/Music${track.id}.mp4`,
+  mp3Sources:[
+    `./mp3/Music${track.id}.mp3`,
+    `./mp3/Music ${track.id}.mp3`,
+    `./mp3/music${track.id}.mp3`,
+    `./mp3/music ${track.id}.mp3`,
+    `mp3/Music${track.id}.mp3`,
+    `mp3/Music ${track.id}.mp3`
+  ],
+  mp4Sources:[
+    `./mp4/Music${track.id}.mp4`,
+    `./mp4/Music ${track.id}.mp4`,
+    `./mp4/music${track.id}.mp4`,
+    `./mp4/music ${track.id}.mp4`,
+    `mp4/Music${track.id}.mp4`,
+    `mp4/Music ${track.id}.mp4`
+  ]
+}));
 const SPEEDS={fast:3000,normal:4650,cinematic:5800};
 const STORAGE_KEYS={history:"illegalFactionSpinHistory",legacyHistory:"phillySpinHistory",settings:"illegalFactionSpinSettings",legacySettings:"phillySpinSettings",theme:"illegalFactionTheme",legacyTheme:"phillyTheme",track:"illegalFactionTrackIndex"};
 const ITEM_H=120, WIN_IDX=62;
@@ -2278,6 +2298,18 @@ function resumeMediaPair(){
     });
   });
 }
+function replaceMediaSources(media,urls,type){
+  if(!media || !Array.isArray(urls) || !urls.length)return;
+  media.innerHTML='';
+  urls.forEach(url=>{
+    const source=document.createElement('source');
+    source.src=url;
+    source.type=type;
+    media.appendChild(source);
+  });
+}
+function trackAudioSources(trackInfo){return trackInfo.mp3Sources || [trackInfo.mp3]}
+function trackVideoSources(trackInfo){return trackInfo.mp4Sources || [trackInfo.mp4]}
 function setTrack(index,{autoplay=false,resetTime=true,keepTime=false}={}){
   if(state.usingCustomMusic || state.usingCustomVideo)return;
   const loadToken=state.trackLoadToken+1;
@@ -2285,11 +2317,9 @@ function setTrack(index,{autoplay=false,resetTime=true,keepTime=false}={}){
   state.trackIndex=((index%MUSIC_TRACKS.length)+MUSIC_TRACKS.length)%MUSIC_TRACKS.length;
   localStorage.setItem(STORAGE_KEYS.track,String(state.trackIndex));
   const trackInfo=currentTrack();
-  const audioSource=music.querySelector('source');
-  const videoSource=bgVideo.querySelector('source');
   const preservedTime=keepTime?Math.max(music.currentTime||0,bgVideo.currentTime||0):0;
-  if(audioSource)audioSource.src=trackInfo.mp3;
-  if(videoSource)videoSource.src=trackInfo.mp4;
+  replaceMediaSources(music,trackAudioSources(trackInfo),'audio/mpeg');
+  replaceMediaSources(bgVideo,trackVideoSources(trackInfo),'video/mp4');
   music.load();
   bgVideo.load();
   if(resetTime){safeSetCurrentTime(music,0);safeSetCurrentTime(bgVideo,0)}
@@ -2324,6 +2354,8 @@ bgVideo.addEventListener('play',()=>{if(state.usingCustomVideo){updateTrackButto
 bgVideo.addEventListener('seeking',()=>{if(music.paused)syncMusicToBgVideo()});
 bgVideo.addEventListener('pause',()=>{if(state.usingCustomVideo)updateTrackButton()});
 bgVideo.addEventListener('ended',()=>{if(state.usingCustomVideo){safeSetCurrentTime(bgVideo,0);bgVideo.play().catch(()=>{});return}if(state.usingCustomMusic){safeSetCurrentTime(bgVideo,0);if(!music.paused)keepVideoPlaying();return}syncBgVideoToMusic();keepVideoPlaying()});
+music.addEventListener('error',()=>{if(!state.usingCustomMusic&&!state.usingCustomVideo)setMediaStatus('Could not load this MP3. Check the mp3 folder filename/case for '+currentTrack().name+'.','error')});
+bgVideo.addEventListener('error',()=>{if(!state.usingCustomVideo)setMediaStatus('Could not load this MP4. Check the mp4 folder filename/case for '+currentTrack().name+'.','error')});
 music.addEventListener('ended',()=>{if(state.usingCustomMusic){safeSetCurrentTime(music,0);resumeMediaPair().catch(()=>{});return}nextTrack(true)});
 startMediaSyncLoop();
 playBtn.onclick=()=>{
