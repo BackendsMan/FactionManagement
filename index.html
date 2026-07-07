@@ -2298,15 +2298,37 @@ function resumeMediaPair(){
     });
   });
 }
+function normalizeMediaUrl(url){
+  if(!url)return '';
+  return String(url).replace(/^\.\//,'');
+}
+function setDirectMediaSource(media,url,type){
+  media.innerHTML='';
+  media.removeAttribute('src');
+  const source=document.createElement('source');
+  source.src=normalizeMediaUrl(url);
+  source.type=type;
+  media.appendChild(source);
+  media.dataset.activeSrc=source.src;
+}
 function replaceMediaSources(media,urls,type){
   if(!media || !Array.isArray(urls) || !urls.length)return;
-  media.innerHTML='';
-  urls.forEach(url=>{
-    const source=document.createElement('source');
-    source.src=url;
-    source.type=type;
-    media.appendChild(source);
-  });
+  const clean=[...new Set(urls.map(normalizeMediaUrl).filter(Boolean))];
+  media.dataset.fallbackSources=JSON.stringify(clean);
+  media.dataset.fallbackIndex='0';
+  setDirectMediaSource(media,clean[0],type);
+}
+function tryNextMediaSource(media,type,label){
+  if(!media || !media.dataset.fallbackSources)return false;
+  let sources=[];
+  try{sources=JSON.parse(media.dataset.fallbackSources||'[]')}catch(e){sources=[]}
+  let idx=Number(media.dataset.fallbackIndex||0)+1;
+  if(!sources.length || idx>=sources.length)return false;
+  media.dataset.fallbackIndex=String(idx);
+  setDirectMediaSource(media,sources[idx],type);
+  media.load();
+  setMediaStatus(`Trying ${label} source ${idx+1}/${sources.length}...`,'error');
+  return true;
 }
 function trackAudioSources(trackInfo){return trackInfo.mp3Sources || [trackInfo.mp3]}
 function trackVideoSources(trackInfo){return trackInfo.mp4Sources || [trackInfo.mp4]}
@@ -2354,8 +2376,8 @@ bgVideo.addEventListener('play',()=>{if(state.usingCustomVideo){updateTrackButto
 bgVideo.addEventListener('seeking',()=>{if(music.paused)syncMusicToBgVideo()});
 bgVideo.addEventListener('pause',()=>{if(state.usingCustomVideo)updateTrackButton()});
 bgVideo.addEventListener('ended',()=>{if(state.usingCustomVideo){safeSetCurrentTime(bgVideo,0);bgVideo.play().catch(()=>{});return}if(state.usingCustomMusic){safeSetCurrentTime(bgVideo,0);if(!music.paused)keepVideoPlaying();return}syncBgVideoToMusic();keepVideoPlaying()});
-music.addEventListener('error',()=>{if(!state.usingCustomMusic&&!state.usingCustomVideo)setMediaStatus('Could not load this MP3. Check the mp3 folder filename/case for '+currentTrack().name+'.','error')});
-bgVideo.addEventListener('error',()=>{if(!state.usingCustomVideo)setMediaStatus('Could not load this MP4. Check the mp4 folder filename/case for '+currentTrack().name+'.','error')});
+music.addEventListener('error',()=>{if(state.usingCustomMusic||state.usingCustomVideo)return;if(tryNextMediaSource(music,'audio/mpeg','MP3'))return;setMediaStatus('Could not load this MP3 on GitHub. Check mp3 filename/case and that the file is real audio: '+currentTrack().name+'.','error')});
+bgVideo.addEventListener('error',()=>{if(state.usingCustomVideo)return;if(tryNextMediaSource(bgVideo,'video/mp4','MP4'))return;setMediaStatus('Could not load this MP4 on GitHub. Check mp4 filename/case and that the file is real video: '+currentTrack().name+'.','error')});
 music.addEventListener('ended',()=>{if(state.usingCustomMusic){safeSetCurrentTime(music,0);resumeMediaPair().catch(()=>{});return}nextTrack(true)});
 startMediaSyncLoop();
 playBtn.onclick=()=>{
