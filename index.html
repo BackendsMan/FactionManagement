@@ -1149,7 +1149,7 @@ body.hideFloating .weaponFloat,body.hideFloating .itemImg,body.hideFloating .thu
 
 </head>
 <body class="dark">
-<video id="bgVideo" class="pageBgVideo" autoplay muted playsinline><source src="Music1.mp4" type="video/mp4"></video><div class="ambient"></div>
+<video id="bgVideo" class="pageBgVideo" autoplay muted playsinline><source src="Music1.mp4" type="video/mp4"><source src="./mp4/Music1.mp4" type="video/mp4"></video><div class="ambient"></div>
 <div class="typewriter" id="gate"><div class="typeTitle" id="typeTitle"></div><div class="typeSub">Enter passcode to access spins</div><div class="gatePanel"><input class="gateInput" id="gateCode" type="password" placeholder="Enter passcode" autocomplete="off" spellcheck="false"><button class="gateBtn" id="gateEnterBtn" type="button">Enter Spins</button><div class="gateError" id="gateError"></div></div></div>
 <audio id="music" preload="auto"><source src="./mp3/Music1.mp3" type="audio/mpeg"></audio>
 <div class="app">
@@ -2097,14 +2097,26 @@ function safeSetCurrentTime(media,time){
   if(!media || !isFinite(time) || time<0)return;
   try{media.currentTime=time}catch(e){}
 }
-function waitForMediaReady(media){
+function waitForMediaReady(media,timeout=3200){
   if(!media)return Promise.resolve();
   if(media.readyState>=1)return Promise.resolve();
   return new Promise(resolve=>{
-    const done=()=>resolve();
+    let doneOnce=false;
+    const done=()=>{
+      if(doneOnce)return;
+      doneOnce=true;
+      clearTimeout(timer);
+      media.removeEventListener('loadedmetadata',done);
+      media.removeEventListener('canplay',done);
+      media.removeEventListener('loadeddata',done);
+      media.removeEventListener('error',done);
+      resolve();
+    };
+    const timer=setTimeout(done,timeout);
     media.addEventListener('loadedmetadata',done,{once:true});
     media.addEventListener('canplay',done,{once:true});
     media.addEventListener('loadeddata',done,{once:true});
+    media.addEventListener('error',done,{once:true});
   });
 }
 function syncMediaTimes(source,target){
@@ -2632,6 +2644,99 @@ function initSettingsPanel(){
   applyVisualSettings();
   if(appSettings.bgVideoUrl){activateCustomVideo(appSettings.bgVideoUrl).then(applied=>{if(!applied){appSettings.bgVideoUrl="";saveSettings();if(bgurl)bgurl.value="";}else if(bgurl){bgurl.value=appSettings.bgVideoUrl;}})}
 }
+
+
+/* === GITHUB MEDIA HARD FIX - normal playlist always uses mp3/Music#.mp3 + root/mp4/Music#.mp4 ===
+   Reason fixed: old custom media/localStorage or a failed source could lock the player before the playlist loaded.
+   This resets stale custom media on load and makes the audio the master while the muted MP4 background follows it. */
+(function(){
+  const AUDIO_EXT='audio/mpeg';
+  const VIDEO_EXT='video/mp4';
+  const normalAudioSources=id=>[
+    `mp3/Music${id}.mp3`, `./mp3/Music${id}.mp3`,
+    `mp3/music${id}.mp3`, `./mp3/music${id}.mp3`,
+    `mp3/Music ${id}.mp3`, `./mp3/Music ${id}.mp3`
+  ];
+  const normalVideoSources=id=>[
+    `Music${id}.mp4`, `./Music${id}.mp4`,
+    `mp4/Music${id}.mp4`, `./mp4/Music${id}.mp4`,
+    `music${id}.mp4`, `./music${id}.mp4`,
+    `mp4/music${id}.mp4`, `./mp4/music${id}.mp4`,
+    `Music ${id}.mp4`, `./Music ${id}.mp4`,
+    `mp4/Music ${id}.mp4`, `./mp4/Music ${id}.mp4`
+  ];
+  function addSources(media, urls, type){
+    if(!media)return;
+    media.pause();
+    media.innerHTML='';
+    media.removeAttribute('src');
+    [...new Set(urls)].forEach(url=>{
+      const source=document.createElement('source');
+      source.src=url;
+      source.type=type;
+      media.appendChild(source);
+    });
+    media.dataset.fallbackSources=JSON.stringify([...new Set(urls)]);
+    media.dataset.fallbackIndex='0';
+    try{media.load()}catch(e){}
+  }
+  function chosenTrack(){
+    return MUSIC_TRACKS[((state.trackIndex%MUSIC_TRACKS.length)+MUSIC_TRACKS.length)%MUSIC_TRACKS.length];
+  }
+  // Stale custom URLs saved in the browser were stopping the normal playlist from loading.
+  if(window.appSettings){
+    appSettings.musicUrl='';
+    appSettings.bgVideoUrl='';
+    saveSettings();
+  }
+  state.usingCustomMusic=false;
+  state.usingCustomVideo=false;
+  window.trackAudioSources = trackInfo => normalAudioSources(trackInfo.id);
+  window.trackVideoSources = trackInfo => normalVideoSources(trackInfo.id);
+  trackAudioSources = window.trackAudioSources;
+  trackVideoSources = window.trackVideoSources;
+  setTrack = function(index,{autoplay=false,resetTime=true,keepTime=false}={}){
+    state.usingCustomMusic=false;
+    state.usingCustomVideo=false;
+    state.trackLoadToken=(state.trackLoadToken||0)+1;
+    const loadToken=state.trackLoadToken;
+    state.trackIndex=((index%MUSIC_TRACKS.length)+MUSIC_TRACKS.length)%MUSIC_TRACKS.length;
+    localStorage.setItem(STORAGE_KEYS.track,String(state.trackIndex));
+    const t=chosenTrack();
+    const keep=keepTime?Math.max(music.currentTime||0,bgVideo.currentTime||0):0;
+    addSources(music,normalAudioSources(t.id),AUDIO_EXT);
+    addSources(bgVideo,normalVideoSources(t.id),VIDEO_EXT);
+    bgVideo.muted=true;
+    if(resetTime){safeSetCurrentTime(music,0);safeSetCurrentTime(bgVideo,0)}
+    else if(keepTime){safeSetCurrentTime(music,keep);safeSetCurrentTime(bgVideo,keep)}
+    if(elements.trackName){elements.trackName.textContent=t.name;elements.trackName.title=t.name}
+    updateTrackButton();
+    setMuteButton();
+    if(autoplay){
+      setTimeout(()=>{
+        if(loadToken!==state.trackLoadToken)return;
+        resumeMediaPair().catch(()=>setMediaStatus('Audio was blocked by the browser. Click Play once.','error'));
+      },80);
+    }
+  };
+  previousTrack=function(autoplay=true){setTrack(state.trackIndex-1,{autoplay,resetTime:true})};
+  nextTrack=function(autoplay=true){setTrack(state.trackIndex+1,{autoplay,resetTime:true})};
+  resumeMediaPair=function(){
+    bgVideo.muted=true;
+    return Promise.resolve()
+      .then(()=>music.play())
+      .then(()=>{syncMediaTimes(music,bgVideo);return bgVideo.play().catch(()=>{})})
+      .then(()=>{syncMediaTimes(music,bgVideo);updateTrackButton();setMuteButton();setMediaStatus('')});
+  };
+  pauseMediaPair=function(){music.pause();bgVideo.pause();updateTrackButton();};
+  if(playBtn){
+    playBtn.onclick=()=>{music.paused?resumeMediaPair().catch(()=>setMediaStatus('Browser blocked audio. Click Play again after entering the site.','error')):pauseMediaPair()};
+  }
+  if(elements.nextBtn)elements.nextBtn.onclick=()=>nextTrack(!music.paused);
+  if(elements.prevBtn)elements.prevBtn.onclick=()=>previousTrack(!music.paused);
+  if(muteBtn)muteBtn.onclick=()=>{music.muted=!music.muted;setMuteButton()};
+})();
+
 initSettingsPanel();
 
 setTrack(state.trackIndex,{autoplay:false,resetTime:true});
