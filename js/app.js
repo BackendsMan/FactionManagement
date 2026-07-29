@@ -40,6 +40,7 @@ const state={
   spinning:false,
   pending:[],
   pendingGroup:'',
+  pendingModifierAudit:null,
   settings:{spinSpeed:'normal'},
   trackIndex:Number(localStorage.getItem(STORAGE_KEYS.track)||0)||0,
   usingCustomMusic:false,

@@ -218,6 +218,119 @@ function getConsecutiveCount(name){
   }
   return count;
 }
+/* =============================================================================
+   ADMIN CONFIGURATION — Tier 2 legendary probability modifier
+   -----------------------------------------------------------------------------
+   Internal, developer/admin-managed setting. There is no user-account system
+   in this app, so "admin-only" here means: this section, not any in-app
+   control. To change the behavior, edit the values below directly in this
+   file and redeploy.
+
+   What it does: when a spin is rolled on Tier 2 (and ONLY Tier 2 — Test,
+   Tier 1, and Tier 1.5 always use their unmodified odds) for a group name
+   that matches one of the keywords below, the legendary drop chance for
+   that spin gets a small, fixed bump, capped at maximumLegendaryChance.
+
+   Current Tier 2 legendary baselines (computed from the live item weights,
+   see js/data.js): guns ~26.16%, bullets ~2.97%, accessories ~3.62%. A flat
+   +2 percentage points keeps the change small relative to any of those
+   baselines and the 30% ceiling is well above the highest baseline (guns),
+   so legendary stays the minority outcome and is never guaranteed.
+
+   How it's applied: this does NOT run a second/separate roll and does NOT
+   force, predetermine, or reroll an outcome. It scales the weight of the
+   legendary-rarity items inside the SAME pool array that the normal
+   weightedPick() roll already uses, so the eventual result is still one
+   genuine weighted-random draw — just drawn from a pool where legendary
+   items carry slightly more weight. Non-legendary items are left exactly
+   as they are, so common/uncommon/rare/epic keep their existing relative
+   proportions among themselves.
+   ============================================================================= */
+const tier2GroupModifierConfig = {
+  enabled: true,
+  eligibleKeywords: ["brower", "brower gang", "bg", "2605"],
+  legendaryBonus: 0.02,          // +2 percentage points when eligible
+  maximumLegendaryChance: 0.30   // hard ceiling regardless of bonus or baseline
+};
+
+// Lowercases and strips everything but letters/digits. Used both to
+// normalize the configured keywords and to normalize each token pulled out
+// of a typed group name, so "B.G.", "bg", and "B G" all reduce to the same
+// comparable string.
+function normalizeGroupText(value) {
+  if (value === null || value === undefined) return '';
+  return String(value).toLowerCase().replace(/[^a-z0-9]/g, '');
+}
+
+// Returns true only if the group name contains a WHOLE token that exactly
+// matches one of the configured keywords (after normalization). Tokens are
+// split on real word separators (whitespace and hyphens) — punctuation
+// *inside* a token (like the dots in "B.G.") is stripped, not treated as a
+// separator, so an acronym written with dots still normalizes to one token.
+// Matching whole tokens only (never "does this string merely contain that
+// substring") is what stops a short keyword like "bg" from firing on some
+// unrelated word that happens to contain those two letters in sequence.
+function matchesEligibleGroupKeyword(groupName) {
+  if (!groupName) return false;
+  const configuredKeywords = (tier2GroupModifierConfig.eligibleKeywords || [])
+    .map(normalizeGroupText)
+    .filter(Boolean);
+  if (!configuredKeywords.length) return false;
+  const tokens = String(groupName)
+    .split(/[\s\-]+/)
+    .map(normalizeGroupText)
+    .filter(Boolean);
+  return tokens.some(token => configuredKeywords.includes(token));
+}
+
+function computeLegendaryChance(pool) {
+  const total = pool.reduce((sum, item) => sum + item.weight, 0);
+  if (!total) return 0;
+  const legendaryWeight = pool.filter(item => item.rarity === 'legendary').reduce((sum, item) => sum + item.weight, 0);
+  return legendaryWeight / total;
+}
+
+// Applies the Tier 2 group modifier to a copy of the pool (never mutates the
+// shared ITEMS objects). Called once per spin — the resulting pool is then
+// reused for every roll within that spin, so the bonus is computed once
+// even if the group name contains more than one eligible keyword.
+function applyTier2GroupModifier(pool, groupName, selectedTier) {
+  const baseLegendaryChance = computeLegendaryChance(pool);
+  const isTier2 = selectedTier === 't2';
+  const isEligibleGroup = matchesEligibleGroupKeyword(groupName);
+
+  const bonusApplies =
+    tier2GroupModifierConfig.enabled &&
+    isTier2 &&
+    isEligibleGroup;
+
+  if (!bonusApplies) {
+    return { pool, bonusApplies: false, baseLegendaryChance, finalLegendaryChance: baseLegendaryChance };
+  }
+
+  const finalLegendaryChance = Math.min(
+    baseLegendaryChance + tier2GroupModifierConfig.legendaryBonus,
+    tier2GroupModifierConfig.maximumLegendaryChance
+  );
+
+  const legendaryWeight = pool.filter(item => item.rarity === 'legendary').reduce((sum, item) => sum + item.weight, 0);
+  const otherWeight = pool.reduce((sum, item) => sum + item.weight, 0) - legendaryWeight;
+
+  let adjustedPool = pool;
+  if (legendaryWeight > 0 && finalLegendaryChance < 1 && finalLegendaryChance > baseLegendaryChance) {
+    // Solve for the legendary weight that makes
+    // newLegendaryWeight / (newLegendaryWeight + otherWeight) === finalLegendaryChance,
+    // then scale every legendary item's weight by the same factor. This
+    // keeps the odds *within* the legendary rarity unchanged relative to
+    // each other — only the overall legendary-vs-everything-else split moves.
+    const targetLegendaryWeight = (finalLegendaryChance * otherWeight) / (1 - finalLegendaryChance);
+    const scale = targetLegendaryWeight / legendaryWeight;
+    adjustedPool = pool.map(item => item.rarity === 'legendary' ? { ...item, weight: item.weight * scale } : item);
+  }
+
+  return { pool: adjustedPool, bonusApplies: true, baseLegendaryChance, finalLegendaryChance };
+}
+
 function weightedPick(pool, previousName) {
   const adjusted = pool.map((item) => ({
     ...item,
@@ -336,14 +449,24 @@ async function startSpin() {
     return;
   }
 
-  const pool = getVisiblePool(true).filter((item) =>
+  const basePool = getVisiblePool(true).filter((item) =>
     state.filter === "all" || item.rarity === state.filter
   );
 
-  if (!pool.length) {
+  if (!basePool.length) {
     alert(`No ${state.spinType} drops available for ${TIERS[state.tier].label}.`);
     return;
   }
+
+  // Computed once per spin (not per roll), so a group name with more than
+  // one eligible keyword still only applies the bonus a single time.
+  const modifierResult = applyTier2GroupModifier(basePool, group, state.tier);
+  const pool = modifierResult.pool;
+  state.pendingModifierAudit = {
+    tier2GroupModifierApplied: modifierResult.bonusApplies,
+    baseLegendaryChance: modifierResult.baseLegendaryChance,
+    finalLegendaryChance: modifierResult.finalLegendaryChance
+  };
 
   state.spinning = true;
   state.pending = [];
@@ -426,7 +549,12 @@ function saveResults(){
   resultsSaving=true;
   try{
     const now=new Date();
-    const rows=state.pending.map(i=>({id:generateHistoryId(),time:now.toLocaleString(),ts:Date.now(),group:state.pendingGroup,tier:TIERS[state.tier].label,spinType:state.spinType,item:i.name,category:i.category,rank:i.rarity,image:i.image||'',emoji:i.emoji||''}));
+    // Internal audit fields only — never rendered in the public history
+    // table or CSV export (both use their own fixed column lists), kept
+    // here purely so an admin inspecting the raw saved data can verify
+    // whether the Tier 2 group modifier fired on a given spin.
+    const modifierAudit=state.pendingModifierAudit||{tier2GroupModifierApplied:false,baseLegendaryChance:null,finalLegendaryChance:null};
+    const rows=state.pending.map(i=>({id:generateHistoryId(),time:now.toLocaleString(),ts:Date.now(),group:state.pendingGroup,tier:TIERS[state.tier].label,spinType:state.spinType,item:i.name,category:i.category,rank:i.rarity,image:i.image||'',emoji:i.emoji||'',tier2GroupModifierApplied:modifierAudit.tier2GroupModifierApplied,baseLegendaryChance:modifierAudit.baseLegendaryChance,finalLegendaryChance:modifierAudit.finalLegendaryChance}));
     history.unshift(...rows);
     persistHistory();
     if(typeof rememberGroup==='function')rememberGroup(state.pendingGroup);
