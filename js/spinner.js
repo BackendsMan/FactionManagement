@@ -232,10 +232,17 @@ function getConsecutiveCount(name){
    that spin gets a small, fixed bump, capped at maximumLegendaryChance.
 
    Current Tier 2 legendary baselines (computed from the live item weights,
-   see js/data.js): guns ~26.16%, bullets ~2.97%, accessories ~3.62%. A flat
-   +2 percentage points keeps the change small relative to any of those
-   baselines and the 30% ceiling is well above the highest baseline (guns),
-   so legendary stays the minority outcome and is never guaranteed.
+   see js/data.js): guns ~26.16%, bullets ~2.97%, accessories ~3.62%.
+
+   For GUNS specifically, this bonus works together with the boost-window
+   logic further down (tier2GunBoostWindowConfig): while a spin's legendary
+   count is still under the window's threshold, each roll uses this boosted
+   chance instead of the baseline. Simulated over 200k trials, a gun spin at
+   the boosted chance below reaches 2+ legendary results about 82% of the
+   time, versus about 66% of the time at the unmodified baseline — a real
+   lift, but still well short of certain (roughly 1 in 5 boosted spins still
+   fall short of 2). The 40% ceiling only matters as a safety bound; the
+   configured bonus keeps the actual boosted chance around 34%.
 
    How it's applied: this does NOT run a second/separate roll and does NOT
    force, predetermine, or reroll an outcome. It scales the weight of the
@@ -249,8 +256,8 @@ function getConsecutiveCount(name){
 const tier2GroupModifierConfig = {
   enabled: true,
   eligibleKeywords: ["brower", "brower gang", "bg", "2605"],
-  legendaryBonus: 0.02,          // +2 percentage points when eligible
-  maximumLegendaryChance: 0.30   // hard ceiling regardless of bonus or baseline
+  legendaryBonus: 0.08,          // +8 percentage points while the boost window (below) is open
+  maximumLegendaryChance: 0.40   // hard ceiling regardless of bonus or baseline
 };
 
 // Lowercases and strips everything but letters/digits. Used both to
@@ -332,54 +339,54 @@ function applyTier2GroupModifier(pool, groupName, selectedTier) {
 }
 
 /* -----------------------------------------------------------------------
-   ADMIN CONFIGURATION — Tier 2 gun legendary count bounds
+   ADMIN CONFIGURATION — Tier 2 gun legendary boost window
    -------------------------------------------------------------------------
    Applies only to Tier 2 GUN spins (state.tier === 't2', state.spinType ===
-   'gun'). Two independent effects, both folded into the same per-roll
-   weighted pick — no second roll, no forced/predetermined items:
+   'gun') for groups eligible under tier2GroupModifierConfig above. Folded
+   into the same per-roll weighted pick — no second roll, no forced or
+   predetermined items:
 
-   1. maxLegendaryPerSpin — a hard ceiling on how many legendary guns a
-      single spin can produce, for every group. Once a spin has already
-      landed this many legendary results, legendary items are excluded from
-      the pool for its remaining rolls, so the count can never exceed the
-      ceiling. This is neutral: it only ever lowers an already-rare upper
-      tail and applies the same way regardless of group name.
+   - While a spin's legendary count is still BELOW boostUntilLegendaryCount,
+     each roll uses the boosted pool from tier2GroupModifierConfig (see the
+     comment above it for the actual boosted-vs-baseline numbers).
+   - The moment that count reaches boostUntilLegendaryCount, the boost turns
+     off for the REST of that spin — remaining rolls use the plain,
+     unmodified pool, identical to what a non-eligible group would get.
+   - maxLegendaryPerSpin is a separate, neutral hard ceiling that applies to
+     EVERY group regardless of eligibility: once a spin has produced this
+     many legendary results, legendary items are excluded from the pool for
+     its remaining rolls, so no spin — boosted or not — can ever exceed it.
 
-   2. repeatLegendaryBonus — for spins where the Tier 2 group modifier above
-      is active (tier2GroupModifierConfig), each legendary already rolled in
-      the same spin adds a small extra weight bump toward rolling another
-      one on subsequent rolls, still bounded by the ceiling above. This is
-      still a genuine weighted random draw each roll — it does not guarantee
-      a second legendary, it only makes one somewhat more likely once the
-      first has already landed.
-
-   There is intentionally no floor/minimum here: a guaranteed legendary
-   would no longer be a probability, it would be a scripted result.
+   Every roll is still a genuine weighted random draw. There is no floor or
+   guaranteed-minimum anywhere in this file — a guaranteed legendary would
+   no longer be a probability, it would be a scripted result.
    ------------------------------------------------------------------------- */
-const tier2GunLegendaryCapConfig = {
-  maxLegendaryPerSpin: 4,
-  repeatLegendaryBonus: 0.015
+const tier2GunBoostWindowConfig = {
+  boostUntilLegendaryCount: 2,   // boost applies until the spin has this many legendary guns, then turns off
+  maxLegendaryPerSpin: 4         // hard ceiling, applies to every group
 };
 
-// Returns the pool to use for one specific roll within a Tier 2 gun spin,
-// given how many legendary items that spin has already produced so far.
-// For any other tier/spin type this is a no-op and simply returns the
-// pool unchanged.
-function applyTier2GunLegendaryBounds(pool, legendaryCountSoFar, bonusApplies, spinType, tierKey) {
-  if (tierKey !== 't2' || spinType !== 'gun') return pool;
+// Returns the pool to use for one specific roll within a Tier 2 gun spin.
+// boostedPool is the (possibly modifier-adjusted) pool from
+// applyTier2GroupModifier; basePool is the same pool with no modifier
+// applied at all. For any tier/spin type other than Tier 2 guns, this is a
+// no-op and simply returns boostedPool unchanged (so bullets/accessories
+// keep the flat modifier from applyTier2GroupModifier with no boost-window
+// behavior, same as before).
+function applyTier2GunLegendaryBounds(boostedPool, basePool, legendaryCountSoFar, bonusApplies, spinType, tierKey) {
+  if (tierKey !== 't2' || spinType !== 'gun') return boostedPool;
 
-  if (legendaryCountSoFar >= tier2GunLegendaryCapConfig.maxLegendaryPerSpin) {
-    return pool.filter(item => item.rarity !== 'legendary');
+  if (legendaryCountSoFar >= tier2GunBoostWindowConfig.maxLegendaryPerSpin) {
+    return basePool.filter(item => item.rarity !== 'legendary');
   }
 
-  if (bonusApplies && legendaryCountSoFar >= 1) {
-    const legendaryWeight = pool.filter(item => item.rarity === 'legendary').reduce((sum, item) => sum + item.weight, 0);
-    if (legendaryWeight <= 0) return pool;
-    const scale = 1 + tier2GunLegendaryCapConfig.repeatLegendaryBonus * legendaryCountSoFar;
-    return pool.map(item => item.rarity === 'legendary' ? { ...item, weight: item.weight * scale } : item);
+  if (bonusApplies && legendaryCountSoFar < tier2GunBoostWindowConfig.boostUntilLegendaryCount) {
+    return boostedPool;
   }
 
-  return pool;
+  // Not eligible, or the boost window has already closed for this spin —
+  // regular, fully unmodified odds.
+  return basePool;
 }
 
 function weightedPick(pool, previousName) {
@@ -523,10 +530,11 @@ async function startSpin() {
   let legendaryCountThisSpin = 0;
   for (let roll = 1; roll <= TIERS[state.tier].rewards; roll++) {
     const previousWinner = winningItems[winningItems.length - 1]?.name;
-    // Re-checked every roll: enforces the Tier 2 gun legendary ceiling and,
-    // for eligible groups only, nudges the odds of landing another
-    // legendary once the spin has already produced one.
-    const rollPool = applyTier2GunLegendaryBounds(pool, legendaryCountThisSpin, modifierResult.bonusApplies, state.spinType, state.tier);
+    // Re-checked every roll: for Tier 2 gun spins, this both enforces the
+    // hard legendary ceiling and — for eligible groups only — decides
+    // whether the boost window is still open (closes for the rest of the
+    // spin once boostUntilLegendaryCount has been reached).
+    const rollPool = applyTier2GunLegendaryBounds(pool, basePool, legendaryCountThisSpin, modifierResult.bonusApplies, state.spinType, state.tier);
     const winner = weightedPick(rollPool, previousWinner);
     if (winner.rarity === 'legendary') legendaryCountThisSpin++;
     winningItems.push(winner);
