@@ -278,6 +278,11 @@ const wait=ms=>new Promise(r=>setTimeout(r,ms));
   function renderResults(){showResults()}
   function playSpinChime(){if(appSettings.spinSfx===false)return}
 let skipRequested=false;
+// Reel motion restored to match backup-original/index.html exactly (same
+// keyframes/offsets/easing/duration as the original app). The only addition
+// on top of the original is the Skip button: if a skip is requested (or
+// reduced-motion is on), the strip jumps straight to the landing position
+// instead of playing the original travel curve.
 async function animateReelToWinner(winnerIndex = WIN_IDX, winnerRarity = '') {
   const reelHeight = elements.reel?.clientHeight || 360;
   const targetY = (reelHeight / 2) - (winnerIndex * ITEM_H + ITEM_H / 2);
@@ -285,26 +290,21 @@ async function animateReelToWinner(winnerIndex = WIN_IDX, winnerRarity = '') {
   elements.track.classList.add("spinMotion");
 
   const fastForward=skipRequested||document.body.classList.contains('lowMotion');
-  // Slow start -> fast cruise -> gradual slowdown -> tiny spring overshoot -> exact landing.
-  // The winning item's position (targetY) never changes — only how we visually
-  // travel there — so the existing weighted-pick/result logic is untouched.
-  // Strictly monotonic vertical descent — every keyframe moves further down
-  // the reel than the last, so the strip never reverses or jumps backward
-  // (that reversal was what read as a "skip"). Accelerate -> fast cruise ->
-  // gradual decelerate -> land exactly on targetY, no overshoot bounce.
+
   const animation = elements.track.animate(fastForward ? [
       { transform: "translate3d(0,0,0)", offset: 0 },
       { transform: `translate3d(0, ${targetY}px, 0)`, offset: 1 },
     ] : [
-      { transform: "translate3d(0,0,0)", offset: 0, easing: "cubic-bezier(.55,0,.85,.35)" },
-      { transform: `translate3d(0, ${targetY * 0.05}px, 0)`, offset: 0.08, easing: "cubic-bezier(.45,0,.4,1)" },
-      { transform: `translate3d(0, ${targetY * 0.22}px, 0)`, offset: 0.24, easing: "linear" },
-      { transform: `translate3d(0, ${targetY * 0.70}px, 0)`, offset: 0.58, easing: "cubic-bezier(.16,.84,.2,1)" },
-      { transform: `translate3d(0, ${targetY * 0.94}px, 0)`, offset: 0.84, easing: "cubic-bezier(.16,.84,.28,1)" },
-      { transform: `translate3d(0, ${targetY}px, 0)`, offset: 1, easing: "cubic-bezier(.16,.84,.32,1)" },
+      { transform: "translate3d(0,0,0)", offset: 0 },
+      { transform: `translate3d(0, ${targetY * 0.22}px, 0)`, offset: 0.18 },
+      { transform: `translate3d(0, ${targetY * 0.58}px, 0)`, offset: 0.55 },
+      { transform: `translate3d(0, ${targetY - ITEM_H}px, 0)`, offset: 0.88 },
+      { transform: `translate3d(0, ${targetY + 32}px, 0)`, offset: 0.96 },
+      { transform: `translate3d(0, ${targetY}px, 0)`, offset: 1 },
     ],
     {
-      duration: fastForward?260:SPEEDS[state.settings.spinSpeed],
+      duration: fastForward ? 260 : SPEEDS[state.settings.spinSpeed],
+      easing: "cubic-bezier(.16,.84,.24,1)",
       fill: "forwards",
     }
   );
@@ -349,8 +349,6 @@ async function startSpin() {
   state.pending = [];
   state.pendingGroup = group;
   skipRequested = false;
-  document.body.classList.add('spinCharging');
-  setTimeout(()=>document.body.classList.remove('spinCharging'),900);
 
   const winningItems = [];
   for (let roll = 1; roll <= TIERS[state.tier].rewards; roll++) {
@@ -361,29 +359,14 @@ async function startSpin() {
 
   elements.dropBtn.disabled = true;
   elements.closeSpin.disabled = true;
-  document.body.classList.add('spinCinematic');
   openModal(elements.spinModal);
 
   try {
     for (let roll = 1; roll <= winningItems.length; roll++) {
       elements.rollText.textContent = `ROLL ${roll} OF ${winningItems.length}`;
 
-      if (roll > 1) {
-        // Fade out before resetting the strip to the top for the next roll,
-        // instead of an instant snap-back, so it reads as one continuous
-        // spin sequence rather than a jarring jump between rolls.
-        const fadeMs = skipRequested ? 0 : 160;
-        if (fadeMs) {
-          elements.track.style.transition = `opacity ${fadeMs}ms ease`;
-          elements.track.style.opacity = "0";
-          await wait(fadeMs);
-        }
-      }
-
       const winner = winningItems[roll - 1];
       fillReel(reelItems(pool, winner));
-      elements.track.style.transition = "";
-      elements.track.style.opacity = "1";
       await animateReelToWinner(WIN_IDX, winner.rarity);
 
       playSpinChime(winner.rarity);
@@ -400,8 +383,6 @@ async function startSpin() {
     state.spinning = false;
     skipRequested = false;
     elements.closeSpin.disabled = false;
-    document.body.classList.remove('spinCinematic');
-    document.body.classList.remove('spinCharging');
     updateSpinStageStatus(pool);
   }
 }
