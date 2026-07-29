@@ -1,0 +1,49 @@
+@media (max-width:1280px){
+  .layout{grid-template-columns:minmax(0,1fr) 330px}
+  .trackName{max-width:100px}
+  .volumeSlider{width:56px}
+}
+@media (max-width:1120px){
+  body{overflow:auto}
+  .main{height:auto;overflow:visible}
+  .topbar{align-items:center;flex-wrap:wrap;row-gap:10px}
+  .topNav{order:1;width:100%;justify-content:center;overflow-x:auto}
+  .topRight{width:100%;justify-content:center;flex-wrap:wrap}
+  .layout,.historyLayout,.settingsGrid,.setup,.spinControls,.playlistLayout{grid-template-columns:1fr}
+  .items{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .rightPane{padding-bottom:8px}
+  .cardGrid{overflow-x:auto;justify-content:flex-start;padding:34px 6px 14px;-webkit-overflow-scrolling:touch}
+  .homeCard{scroll-snap-align:center}
+}
+@media (max-width:760px){
+  .main{padding:14px 14px 20px}
+  .topbar{padding:12px 14px;border-radius:18px}
+  .trackName{max-width:70px}
+  .welcome{font-size:17px;align-items:flex-start;flex-direction:column}
+  .script{font-size:21px}
+  .hero{height:auto}
+  .centerLaunch{width:min(300px,86%)}
+  .launchBtn{height:64px;font-size:26px}
+  .items{grid-template-columns:1fr}
+  .card{grid-template-columns:118px 1fr}
+  .appearance,.settingsActions{grid-template-columns:1fr}
+  .settingRow{grid-template-columns:1fr}
+  .historyTitle,.settingsTitle{font-size:26px}
+  .tableTools{flex-direction:column;align-items:flex-start}
+  .modal{padding:14px}
+  .modalTop h2,.confirmBox h2{font-size:28px}
+  .confirmActions{flex-direction:column-reverse}
+  .heroTitle{font-size:clamp(24px,7vw,34px)}
+  .heroActions .launchBtn{min-width:0;width:100%}
+  .heroActions{flex-direction:column;width:100%}
+  .homeCard{width:172px;height:210px}
+  .viewHead{flex-wrap:wrap}
+  .tiersToolbar{flex-direction:column}
+  .nowPlayingArt{width:72px;height:72px}
+  .historyStatRow{grid-template-columns:repeat(2,1fr)}
+}
+
+/* --- Ultrawide: keep the launcher centered instead of stretching --- */
+@media (min-width:1921px){
+  .homeHero,.cardGrid,.main>.view{max-width:1680px;margin-left:auto;margin-right:auto}
+}

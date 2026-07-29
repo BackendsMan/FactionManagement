@@ -1,0 +1,263 @@
+/* ==========================================================
+   ANIMATION-ONLY PATCH copied from index(26) animation feel
+   No layout/content/functionality changes.
+   ========================================================== */
+:root{
+  --easeOut:cubic-bezier(.16,.84,.24,1);
+  --easeBounce:cubic-bezier(.68,-.35,.265,1.35);
+}
+
+/* Page/view fade + drop-in */
+.view.active{animation:viewSmoothIn .36s var(--easeOut) both!important}
+.view.fadeOut{display:block;animation:viewSmoothOut .24s ease both!important}
+.topbar,.welcome,.hero,.setup,.sectionHead,.rightPane .panel,.historySide,.historyTableBox,.settingsHero,.settingsCard{
+  animation:uiDropIn .52s var(--easeOut) both;
+}
+.topbar{animation-delay:20ms}
+.welcome{animation-delay:70ms}
+.hero{animation-delay:115ms}
+.setup{animation-delay:165ms}
+.sectionHead{animation-delay:215ms}
+.rightPane .panel:nth-child(1){animation-delay:125ms}
+.rightPane .panel:nth-child(2){animation-delay:185ms}
+.rightPane .panel:nth-child(3){animation-delay:245ms}
+
+/* Every clickable thing: click-pop + shine sweep */
+.navBtn,.tierTab,.spinType,.chip,.themeBtn,.soundBtn,.launchBtn,.settingBtn,.danger,.clear,.collect,.close,.confirmBtn,.iconBtn,.groupRow,.card,.toggleKnob{
+  position:relative;
+  overflow:hidden;
+  isolation:isolate;
+}
+.navBtn::before,.tierTab::before,.spinType::before,.chip::before,.themeBtn::before,.soundBtn::before,.launchBtn::before,.settingBtn::before,.danger::before,.clear::before,.collect::before,.close::before,.confirmBtn::before,.iconBtn::before,.groupRow::before,.card::after{
+  content:"";
+  position:absolute;
+  inset:0;
+  background:linear-gradient(120deg,transparent 0%,rgba(255,255,255,.16) 42%,rgba(255,255,255,.24) 50%,rgba(255,255,255,.10) 58%,transparent 100%);
+  transform:translateX(-125%);
+  pointer-events:none;
+  z-index:0;
+}
+.navBtn:hover::before,.tierTab:hover::before,.spinType:hover::before,.chip:hover::before,.themeBtn:hover::before,.soundBtn:hover::before,.launchBtn:hover::before,.settingBtn:hover::before,.danger:hover::before,.clear:hover::before,.collect:hover::before,.close:hover::before,.confirmBtn:hover::before,.iconBtn:hover::before,.groupRow:hover::before,.card:hover::after,
+.navBtn.clicked::before,.tierTab.clicked::before,.spinType.clicked::before,.chip.clicked::before,.themeBtn.clicked::before,.soundBtn.clicked::before,.launchBtn.clicked::before,.settingBtn.clicked::before,.danger.clicked::before,.clear.clicked::before,.collect.clicked::before,.close.clicked::before,.confirmBtn.clicked::before,.iconBtn.clicked::before,.groupRow.clicked::before{
+  animation:shineSweep .72s ease forwards;
+}
+.navBtn > *,.tierTab > *,.spinType > *,.chip > *,.themeBtn > *,.soundBtn > *,.launchBtn > *,.settingBtn > *,.danger > *,.clear > *,.collect > *,.close > *,.confirmBtn > *,.iconBtn > *,.groupRow > *,.card > *{position:relative;z-index:1}
+
+.clicked{animation:clickPulse .34s var(--easeBounce) both!important}
+button:active,.card:active,.groupRow:active,.toggleKnob:active{transform:scale(.97)}
+
+/* Hover lift */
+.tierTab,.spinType,.chip,.themeBtn,.settingBtn,.soundBtn,.navBtn,.iconBtn,.groupRow,.card,.launchBtn{
+  transition:transform .22s var(--easeOut),border-color .26s ease,background .26s ease,box-shadow .26s ease,color .26s ease,filter .22s ease;
+}
+.tierTab:hover,.spinType:hover,.chip:hover,.themeBtn:hover,.settingBtn:hover,.soundBtn:hover,.navBtn:hover,.iconBtn:hover,.groupRow:hover{
+  transform:translateY(-3px);
+}
+.card:hover{
+  transform:translateY(-8px) scale(1.018)!important;
+}
+
+/* Active underline glow for selected tabs/buttons */
+.tierTab::after,.spinType::after,.chip::after,.navBtn[data-view]::after,.themeBtn::after,.settingBtn.active::after{
+  content:"";
+  position:absolute;
+  left:13%;
+  right:13%;
+  bottom:7px;
+  height:3px;
+  border-radius:999px;
+  background:linear-gradient(90deg,transparent,#fff,var(--red),#fff,transparent);
+  box-shadow:0 0 14px rgba(155,92,255,.9);
+  transform:scaleX(0);
+  transform-origin:left;
+  opacity:0;
+  transition:transform .38s var(--easeOut),opacity .22s ease;
+  pointer-events:none;
+  z-index:2;
+}
+.tierTab.active::after,.spinType.active::after,.chip.active::after,.navBtn.active::after,.themeBtn.active::after,.settingBtn.active::after{
+  transform:scaleX(1);
+  opacity:1;
+  animation:underlineGlow 1.8s ease-in-out infinite;
+}
+
+/* Smooth tier/filter switching + cascading reveal */
+.items{
+  perspective:900px;
+  transform-style:preserve-3d;
+  transition:opacity .18s ease,filter .18s ease,transform .18s ease;
+}
+.items.loading{
+  opacity:.42!important;
+  transform:translate3d(0,-10px,0);
+  filter:blur(3px);
+}
+.items.poolReveal .card{
+  animation:itemCascade .50s var(--easeOut) both!important;
+}
+.items.tierSwitchOut{
+  animation:viewSmoothOut .24s ease both!important;
+  pointer-events:none;
+}
+.items.tierSwitchIn{
+  animation:viewSmoothIn .36s var(--easeOut) both!important;
+}
+.card:nth-child(1){animation-delay:20ms!important}
+.card:nth-child(2){animation-delay:75ms!important}
+.card:nth-child(3){animation-delay:130ms!important}
+.card:nth-child(4){animation-delay:185ms!important}
+.card:nth-child(5){animation-delay:240ms!important}
+.card:nth-child(6){animation-delay:295ms!important}
+.card:nth-child(7){animation-delay:350ms!important}
+.card:nth-child(8){animation-delay:405ms!important}
+
+/* Floating weapon/item images */
+.thumb img,.thumb .emoji,.itemImg,.weaponFloat,.miniImg,.resultCard img,.resultCard .emoji,.reelItem img,.reelItem .emoji,.rarityPeekCard img,.rarityPeekCard .emoji{
+  animation:dropItemFloat 3.2s ease-in-out infinite!important;
+  will-change:transform;
+}
+.card:nth-child(2n) .thumb img,.card:nth-child(2n) .thumb .emoji{animation-delay:.25s!important}
+.card:nth-child(3n) .thumb img,.card:nth-child(3n) .thumb .emoji{animation-delay:.55s!important}
+.card:nth-child(4n) .thumb img,.card:nth-child(4n) .thumb .emoji{animation-delay:.85s!important}
+
+/* Spin type / tier / history open reveal */
+.spinType span,.rule span,.groupRow span,.tierTab small{
+  overflow:hidden;
+  transition:max-height .34s var(--easeOut),opacity .24s ease,transform .24s ease;
+}
+.rule span,.groupRow span{
+  max-height:0;
+  opacity:0;
+  transform:translateY(-7px);
+}
+.rule:hover span,.groupRow.active span,.groupRow:hover span{
+  max-height:50px;
+  opacity:1;
+  transform:translateY(0);
+}
+.tierTab small{
+  max-height:0;
+  opacity:0;
+  transform:translateY(-5px);
+}
+.tierTab.active small,.tierTab:hover small{
+  max-height:28px;
+  opacity:1;
+  transform:translateY(0);
+}
+
+/* History rows + modal/result pop */
+.groupRow,tr{animation:rowReveal .32s var(--easeOut) both}
+.modal.open .spinBox,.modal.open .resultBox,.modal.open .confirmBox{
+  animation:modalDrop .34s var(--easeOut) both;
+}
+.resultCard{
+  animation:resultPop .36s var(--easeOut) both;
+}
+.resultCard:nth-child(1){animation-delay:40ms}
+.resultCard:nth-child(2){animation-delay:90ms}
+.resultCard:nth-child(3){animation-delay:140ms}
+.resultCard:nth-child(4){animation-delay:190ms}
+
+/* Reel spin motion + winner lock glow */
+.track{will-change:transform;transform:translate3d(0,0,0);backface-visibility:hidden}
+.reelItem{backface-visibility:hidden;transform:translateZ(0);will-change:transform,filter,opacity}
+.track.spinMotion{
+  filter:drop-shadow(0 0 12px rgba(155,92,255,.18));
+}
+.track.spinMotion .reelItem{
+  animation:reelMotionBlur .12s linear infinite!important;
+}
+.track.settled .reelItem.winner{
+  animation:winnerLock .55s cubic-bezier(.16,.84,.24,1) both!important;
+}
+
+/* Theme switching */
+.app.themeSwitch{
+  animation:themeSmoothSwitch .42s var(--easeOut) 1 both!important;
+}
+.themeBtn.themeBlink{
+  animation:themeButtonBlink .34s var(--easeOut) 1 both;
+}
+
+/* Keyframes from the animation reference */
+@keyframes uiDropIn{
+  0%{opacity:0;transform:translate3d(0,-28px,0) scale(.985);filter:blur(6px)}
+  62%{opacity:1;transform:translate3d(0,5px,0) scale(1.004);filter:blur(0)}
+  100%{opacity:1;transform:translate3d(0,0,0) scale(1);filter:blur(0)}
+}
+@keyframes viewSmoothIn{
+  from{opacity:0;transform:translate3d(0,-18px,0);filter:blur(5px)}
+  to{opacity:1;transform:translate3d(0,0,0);filter:blur(0)}
+}
+@keyframes viewSmoothOut{
+  from{opacity:1;transform:translate3d(0,0,0);filter:blur(0)}
+  to{opacity:0;transform:translate3d(0,12px,0);filter:blur(5px)}
+}
+@keyframes shineSweep{to{transform:translateX(125%)}}
+@keyframes underlineGlow{
+  0%,100%{filter:brightness(1);box-shadow:0 0 10px rgba(155,92,255,.7)}
+  50%{filter:brightness(1.35);box-shadow:0 0 22px rgba(155,92,255,1),0 0 8px rgba(255,255,255,.55)}
+}
+@keyframes itemCascade{
+  0%{opacity:0;transform:translate3d(0,-34px,0) rotateX(-10deg) scale(.96);filter:blur(7px)}
+  55%{opacity:1;transform:translate3d(0,6px,0) rotateX(2deg) scale(1.01);filter:blur(0)}
+  100%{opacity:1;transform:translate3d(0,0,0) rotateX(0) scale(1);filter:blur(0)}
+}
+@keyframes dropItemFloat{
+  0%,100%{transform:translate3d(0,0,0) rotate(0deg)}
+  50%{transform:translate3d(0,calc(var(--floatAmt,12px) * -1),0) rotate(-1.2deg)}
+}
+@keyframes clickPulse{
+  0%{transform:scale(1)}
+  45%{transform:scale(.94)}
+  100%{transform:scale(1)}
+}
+@keyframes rowReveal{
+  from{opacity:0;transform:translateY(-10px)}
+  to{opacity:1;transform:translateY(0)}
+}
+@keyframes modalDrop{
+  0%{opacity:0;transform:translateY(-22px) scale(.97);filter:blur(5px)}
+  100%{opacity:1;transform:translateY(0) scale(1);filter:blur(0)}
+}
+@keyframes resultPop{
+  0%{opacity:0;transform:translateY(18px) scale(.94);filter:blur(5px)}
+  75%{opacity:1;transform:translateY(-3px) scale(1.015);filter:blur(0)}
+  100%{opacity:1;transform:translateY(0) scale(1)}
+}
+@keyframes reelMotionBlur{
+  0%{opacity:.95;filter:blur(.3px)}
+  50%{opacity:.68;filter:blur(1.4px)}
+  100%{opacity:.95;filter:blur(.3px)}
+}
+@keyframes winnerLock{
+  0%{filter:brightness(1);transform:scale(.96)}
+  55%{filter:brightness(1.55) drop-shadow(0 0 18px rgba(155,92,255,.75));transform:scale(1.08)}
+  100%{filter:brightness(1.1);transform:scale(1)}
+}
+@keyframes themeSmoothSwitch{
+  0%{opacity:.58;transform:translate3d(0,-14px,0) scale(.994);filter:blur(4px)}
+  72%{opacity:1;transform:translate3d(0,2px,0) scale(1.001);filter:blur(0)}
+  100%{opacity:1;transform:translate3d(0,0,0) scale(1);filter:blur(0)}
+}
+@keyframes themeButtonBlink{
+  0%{box-shadow:0 0 0 rgba(155,92,255,0);filter:brightness(1)}
+  50%{box-shadow:0 0 16px rgba(155,92,255,.28);filter:brightness(1.16)}
+  100%{box-shadow:0 0 16px rgba(155,92,255,.22);filter:brightness(1)}
+}
+
+/* Keep weak PCs / accessibility safe */
+@media (prefers-reduced-motion: reduce){
+  *,*::before,*::after{animation:none!important;transition:none!important}
+}
+body.lowMotion *{animation:none!important;transition:none!important}
+
+/* Home hub floating cards (new, additive) */
+@keyframes homeCardFloat{
+  0%,100%{translate:0 0}
+  50%{translate:0 -10px}
+}
+
+
+

@@ -1,0 +1,2748 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Illegal Faction Spins</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Rajdhani:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+
+<style>
+@font-face{font-family:AnotherDanger;src:url("./Another Danger Slanted - Demo.otf") format("opentype");font-display:swap}
+@font-face{font-family:BrotherSignature;src:url("./Brother Signature.otf") format("opentype");font-display:swap}
+
+:root{
+  --bg:#06080d;
+  --bg2:#0c1119;
+  --panelRgb:15,19,29;
+  --panel2Rgb:19,24,36;
+  --line:rgba(255,255,255,.085);
+  --lineStrong:rgba(255,255,255,.14);
+  --red:#e8000d;
+  --red2:#a8000a;
+  --redSoft:rgba(232,0,13,.16);
+  --green:#19e682;
+  --text:#f5f7fb;
+  --muted:#98a1b3;
+  --panelOpacity:1;
+  --rgbTrailOpacity:.34;
+  --shadow-lg:0 22px 48px rgba(0,0,0,.34);
+  --shadow-md:0 14px 30px rgba(0,0,0,.24);
+  --shadow-sm:0 8px 18px rgba(0,0,0,.18);
+  --radius-xl:24px;
+  --radius-lg:18px;
+  --radius-md:14px;
+  --radius-sm:11px;
+  --ease-ui:cubic-bezier(.2,.8,.2,1);
+  --floatAmt:12px;
+  --headerH:74px;
+  --railW:94px;
+}
+body.light{
+  --bg:#eef2f8;
+  --bg2:#dde5f0;
+  --panelRgb:255,255,255;
+  --panel2Rgb:245,247,252;
+  --line:rgba(17,24,39,.10);
+  --lineStrong:rgba(17,24,39,.16);
+  --text:#141821;
+  --muted:#657086;
+  --shadow-lg:0 18px 36px rgba(10,25,41,.12);
+  --shadow-md:0 12px 24px rgba(10,25,41,.10);
+  --shadow-sm:0 6px 14px rgba(10,25,41,.08);
+}
+body.dim{
+  --bg:#0e1117;
+  --bg2:#161b25;
+  --panelRgb:24,28,39;
+  --panel2Rgb:32,37,50;
+  --line:rgba(255,255,255,.09);
+  --lineStrong:rgba(255,255,255,.16);
+  --text:#edf1f9;
+  --muted:#adb5c8;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{
+  min-height:100vh;
+  background:
+    radial-gradient(circle at top, rgba(232,0,13,.10), transparent 32%),
+    linear-gradient(180deg, rgba(7,10,17,.10), rgba(2,4,8,.55)),
+    var(--bg);
+  color:var(--text);
+  font-family:Inter, Rajdhani, Arial, sans-serif;
+  overflow:hidden;
+  letter-spacing:.02em;
+  text-rendering:optimizeLegibility;
+  -webkit-font-smoothing:antialiased;
+  -moz-osx-font-smoothing:grayscale;
+}
+body.modalLocked{overflow:hidden}
+button,input,select,textarea{font:inherit;color:inherit}
+button{border:0;background:none}
+img{display:block;max-width:100%}
+a{text-decoration:none;color:inherit}
+::selection{background:rgba(232,0,13,.22)}
+.srOnly{position:absolute!important;width:1px!important;height:1px!important;padding:0!important;margin:-1px!important;overflow:hidden!important;clip:rect(0 0 0 0)!important;white-space:nowrap!important;border:0!important}
+
+.pageBgVideo{
+  position:fixed;inset:0;width:100vw;height:100vh;object-fit:cover;z-index:-4;
+  filter:brightness(.8) saturate(1.06) contrast(1.04);
+  pointer-events:none;backface-visibility:hidden;transform:translateZ(0);
+  image-rendering:auto;
+}
+body.hqBgVideo .pageBgVideo{
+  filter:brightness(1) contrast(1.04) saturate(1.06)!important;
+  transform:none!important;
+  image-rendering:auto!important;
+}
+.ambient{
+  position:fixed;inset:0;z-index:-3;pointer-events:none;
+  background:
+    radial-gradient(circle at 22% 0%, rgba(232,0,13,.12), transparent 28%),
+    radial-gradient(circle at 100% 28%, rgba(232,0,13,.08), transparent 24%),
+    linear-gradient(180deg, rgba(5,6,10,.34), rgba(1,3,8,.56));
+}
+body.light .ambient{background:linear-gradient(180deg, rgba(245,248,252,.60), rgba(232,236,244,.88))}
+
+body::before,body::after{
+  content:"";position:fixed;inset:0;pointer-events:none;z-index:-2;opacity:var(--rgbTrailOpacity);transition:opacity .22s ease;
+}
+body::before{
+  inset:1px;padding:1px;
+  background:conic-gradient(from 0deg, rgba(255,0,40,0) 0deg, rgba(255,0,40,.78) 36deg, rgba(255,119,0,.72) 90deg, rgba(0,220,255,.70) 220deg, rgba(145,78,255,.68) 300deg, rgba(255,0,40,0) 360deg);
+  mask:linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask:linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  mask-composite:exclude;-webkit-mask-composite:xor;
+  animation:rgbOrbit 8.4s linear infinite;
+}
+body::after{
+  background:
+    radial-gradient(circle at 50% 0%, rgba(255,64,64,.08), transparent 24%),
+    radial-gradient(circle at 100% 50%, rgba(0,190,255,.06), transparent 22%),
+    radial-gradient(circle at 50% 100%, rgba(110,255,90,.05), transparent 24%);
+}
+body.hideRgbTrail::before,body.hideRgbTrail::after{opacity:0}
+
+.app{
+  min-height:100vh;
+  display:grid;
+  grid-template-columns:var(--railW) minmax(0,1fr);
+}
+.rail{
+  position:sticky;top:0;height:100vh;
+  display:flex;flex-direction:column;align-items:center;gap:14px;
+  padding:18px 12px;
+  background:linear-gradient(180deg, rgba(7,11,18,.90), rgba(10,13,20,.74));
+  border-right:1px solid rgba(255,255,255,.05);
+  backdrop-filter:blur(18px);
+}
+body.light .rail{background:linear-gradient(180deg, rgba(255,255,255,.82), rgba(248,250,255,.92))}
+.brand{
+  width:62px;height:62px;border-radius:20px;display:grid;place-items:center;flex:0 0 auto;
+  background:linear-gradient(180deg, rgba(255,255,255,.08), rgba(255,255,255,.02));
+  border:1px solid rgba(232,0,13,.42);
+  box-shadow:0 0 0 1px rgba(255,255,255,.05) inset, 0 14px 24px rgba(0,0,0,.20), 0 0 28px rgba(232,0,13,.14);
+}
+.brand img{width:88%;height:88%;object-fit:contain}
+.spacer{flex:1}
+.navBtn{
+  width:62px;min-height:62px;padding:8px 6px;border-radius:18px;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;
+  border:1px solid transparent;
+  color:#c6ccda;font-size:10px;font-weight:800;line-height:1.05;text-transform:uppercase;letter-spacing:.08em;
+  cursor:pointer;transition:transform .18s var(--ease-ui), background .18s var(--ease-ui), border-color .18s var(--ease-ui), color .18s var(--ease-ui), box-shadow .18s var(--ease-ui);
+}
+.navBtn .ico{font-size:20px;line-height:1}
+.navBtn:hover,.navBtn.active{
+  color:#fff;
+  border-color:rgba(232,0,13,.38);
+  background:linear-gradient(180deg, rgba(232,0,13,.22), rgba(255,255,255,.04));
+  box-shadow:0 10px 20px rgba(0,0,0,.22), 0 0 18px rgba(232,0,13,.14);
+  transform:translateY(-1px);
+}
+body.light .navBtn{color:#4a5267}
+body.light .navBtn:hover,body.light .navBtn.active{color:#171b24}
+
+.main{
+  height:100vh;overflow:auto;padding:18px 18px 26px;
+}
+.view{display:none}
+.view.active{display:block;animation:viewIn .26s var(--ease-ui)}
+.view.fadeOut{display:block;animation:viewOut .18s ease both}
+
+.topbar{
+  min-height:var(--headerH);
+  display:flex;align-items:center;justify-content:space-between;gap:18px;
+  margin-bottom:18px;padding:14px 18px;
+  border-radius:22px;
+  background:linear-gradient(180deg, rgba(var(--panelRgb), calc(.88 * var(--panelOpacity))), rgba(var(--panel2Rgb), calc(.80 * var(--panelOpacity))));
+  border:1px solid var(--line);
+  box-shadow:var(--shadow-md);
+  backdrop-filter:blur(18px);
+}
+.topLeft,.topRight{display:flex;align-items:center;gap:14px;min-width:0}
+.topRight{margin-left:auto;justify-content:flex-end}
+.status{
+  width:10px;height:10px;border-radius:50%;background:var(--green);
+  box-shadow:0 0 0 4px rgba(25,230,130,.14), 0 0 14px var(--green);
+}
+.tiny{
+  font-size:12px;font-weight:700;color:var(--muted);letter-spacing:.07em;text-transform:uppercase;
+}
+.appTitle{
+  display:inline-block;position:relative;
+  padding:0 6px 1px 0;
+  font-family:AnotherDanger, Rajdhani, sans-serif;
+  font-size:28px;line-height:.95;letter-spacing:.04em;text-transform:uppercase;
+  color:#f1121d;
+  -webkit-text-stroke:1.05px rgba(255,255,255,.96);
+  text-shadow:0 1px 0 rgba(255,255,255,.45), 0 0 16px rgba(232,0,13,.18), 0 0 26px rgba(232,0,13,.10);
+  white-space:nowrap;
+}
+.manager{
+  display:inline-flex;align-items:center;gap:8px;white-space:nowrap;
+  font-size:12px;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;
+}
+.manager .status{width:8px;height:8px}
+
+.musicStack.compactPlayer{
+  display:flex;align-items:center;gap:8px;flex-wrap:nowrap;white-space:nowrap;min-width:0;
+  padding:6px 8px;border-radius:16px;border:1px solid var(--line);
+  background:linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.03));
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.04);
+}
+.trackBadge{
+  display:flex;align-items:center;gap:8px;min-width:0;max-width:190px;
+  height:36px;padding:0 12px;border-radius:12px;
+  background:rgba(0,0,0,.20);border:1px solid rgba(255,255,255,.06);
+}
+.trackIcon{color:#ff4050;font-size:14px;line-height:1}
+.trackName{
+  min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+  font-size:12px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;
+}
+.soundBtn{
+  display:inline-flex;align-items:center;justify-content:center;
+  height:36px;min-width:42px;padding:0 12px;border-radius:11px;
+  border:1px solid rgba(255,255,255,.08);
+  background:linear-gradient(180deg, rgba(255,255,255,.065), rgba(255,255,255,.03));
+  color:var(--text);font-size:11px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;
+  cursor:pointer;box-shadow:var(--shadow-sm);
+  transition:transform .18s var(--ease-ui), border-color .18s var(--ease-ui), background .18s var(--ease-ui), box-shadow .18s var(--ease-ui), color .18s var(--ease-ui);
+}
+.soundBtn:hover,.soundBtn:focus-visible{
+  border-color:rgba(232,0,13,.42);
+  background:linear-gradient(180deg, rgba(232,0,13,.14), rgba(255,255,255,.04));
+  box-shadow:0 12px 22px rgba(0,0,0,.20), 0 0 18px rgba(232,0,13,.10);
+  transform:translateY(-1px);
+}
+.soundBtn:active{transform:translateY(0) scale(.985)}
+.volumeControl.compactVolume{
+  display:flex;align-items:center;gap:8px;min-width:0;
+  height:36px;padding:0 10px;border-radius:12px;
+  border:1px solid rgba(255,255,255,.08);
+  background:rgba(0,0,0,.18);
+}
+.volumeSlider{
+  appearance:none;-webkit-appearance:none;width:138px;height:4px;flex:0 0 auto;
+  border-radius:999px;outline:none;cursor:pointer;
+  background:linear-gradient(90deg, var(--red) 0%, var(--red) var(--volumeProgress,60%), rgba(255,255,255,.12) var(--volumeProgress,60%), rgba(255,255,255,.12) 100%);
+  transition:filter .18s var(--ease-ui), transform .18s var(--ease-ui);
+}
+.volumeSlider:hover{filter:brightness(1.1)}
+.volumeSlider:focus-visible{box-shadow:0 0 0 4px rgba(232,0,13,.18)}
+.volumeSlider:active{transform:scaleY(1.15)}
+.volumeSlider::-webkit-slider-thumb{
+  -webkit-appearance:none;appearance:none;width:14px;height:14px;border-radius:50%;
+  background:linear-gradient(180deg,#ff4451,#b9000a);
+  border:2px solid rgba(255,255,255,.96);
+  box-shadow:0 0 0 4px rgba(232,0,13,.14), 0 5px 10px rgba(0,0,0,.24);
+}
+.volumeSlider::-moz-range-thumb{
+  width:14px;height:14px;border-radius:50%;
+  background:linear-gradient(180deg,#ff4451,#b9000a);
+  border:2px solid rgba(255,255,255,.96);
+  box-shadow:0 0 0 4px rgba(232,0,13,.14), 0 5px 10px rgba(0,0,0,.24);
+}
+.volumeSlider::-moz-range-track{height:4px;border:none;background:transparent}
+.volumeValue{
+  min-width:38px;text-align:right;
+  font-size:11px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);
+}
+
+.layout{
+  min-height:calc(100vh - var(--headerH) - 54px);
+  display:grid;grid-template-columns:minmax(0,1.06fr) minmax(320px,.42fr);gap:18px;
+}
+.leftPane,.rightPane{min-width:0}
+.rightPane{display:flex;flex-direction:column;gap:16px}
+
+.welcome{
+  display:flex;align-items:center;justify-content:space-between;gap:12px;
+  min-height:42px;margin-bottom:12px;
+  font-size:20px;font-weight:600;letter-spacing:.01em;
+}
+.welcome b{font-weight:900}
+.script{font-family:BrotherSignature;font-size:24px;color:#fff;opacity:.92;text-shadow:0 0 18px rgba(232,0,13,.18)}
+
+.hero,.setup,.panel,.historySide,.historyTableBox,.settingsHero,.settingsCard,.spinBox,.resultBox,.rarityPeekInner,.card{
+  background:linear-gradient(180deg, rgba(var(--panelRgb), calc(.90 * var(--panelOpacity))), rgba(var(--panel2Rgb), calc(.82 * var(--panelOpacity))));
+  border:1px solid var(--line);
+  box-shadow:var(--shadow-md);
+  backdrop-filter:blur(18px);
+}
+.hero{
+  position:relative;height:360px;border-radius:var(--radius-xl);overflow:hidden;
+}
+.dotCanvas{position:absolute;inset:0;width:100%;height:100%;z-index:0;background:radial-gradient(circle at 50% 50%, rgba(232,0,13,.06), transparent 44%), linear-gradient(135deg, rgba(7,10,17,.88), rgba(13,18,28,.78))}
+.dotShade,.heroShade{
+  position:absolute;inset:0;z-index:1;
+  background:
+    radial-gradient(circle at var(--mx,50%) var(--my,50%), rgba(232,0,13,.13), transparent 16%),
+    linear-gradient(90deg, rgba(0,0,0,.56), rgba(0,0,0,.18) 50%, rgba(0,0,0,.56));
+}
+.centerLaunch{
+  position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);z-index:2;width:min(360px,76%);
+}
+.launchBtn{
+  width:100%;height:72px;border-radius:18px;
+  background:linear-gradient(180deg,#ff2c39,#a9000a);
+  color:#fff;font-family:AnotherDanger, Rajdhani, sans-serif;font-size:32px;letter-spacing:.10em;text-transform:uppercase;
+  box-shadow:0 20px 44px rgba(232,0,13,.28), inset 0 1px 0 rgba(255,255,255,.24);
+  cursor:pointer;transition:transform .18s var(--ease-ui), filter .18s var(--ease-ui), box-shadow .18s var(--ease-ui);
+}
+.launchBtn:hover{transform:translateY(-2px);filter:brightness(1.04);box-shadow:0 24px 54px rgba(232,0,13,.32), inset 0 1px 0 rgba(255,255,255,.22)}
+
+.setup{
+  margin-top:16px;padding:18px;border-radius:var(--radius-lg);
+  display:grid;grid-template-columns:minmax(280px,.7fr) minmax(0,1fr);gap:18px;align-items:center;
+}
+.setupBlock{display:flex;align-items:center;gap:14px;min-width:0}
+.setupIcon{
+  width:54px;height:54px;border-radius:16px;flex:0 0 auto;display:grid;place-items:center;overflow:hidden;
+  background:linear-gradient(180deg, rgba(232,0,13,.16), rgba(255,255,255,.04));
+  border:1px solid rgba(232,0,13,.26);
+}
+.setupIcon img{width:82%;height:82%;object-fit:contain}
+.fieldLabel,.panelTitle h3,.sectionHead h2,.historyTitle,.settingsTitle,.settingsCard h3,.tableTools h2{
+  text-transform:uppercase;letter-spacing:.08em;
+}
+.fieldLabel{margin-bottom:8px;font-size:12px;font-weight:800;color:var(--muted)}
+.groupInput,.settingsInput{
+  width:100%;height:50px;padding:0 14px;
+  border-radius:14px;border:1px solid var(--lineStrong);
+  background:rgba(0,0,0,.18);outline:none;
+  font-size:15px;font-weight:700;
+  transition:border-color .18s var(--ease-ui), box-shadow .18s var(--ease-ui), background .18s var(--ease-ui);
+}
+.groupInput{max-width:290px}
+.groupInput:focus,.settingsInput:focus{
+  border-color:rgba(232,0,13,.42);
+  box-shadow:0 0 0 4px rgba(232,0,13,.10);
+  background:rgba(0,0,0,.24);
+}
+.tiers{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}
+.tierTab,.themeBtn,.chip,.settingBtn{
+  border-radius:14px;border:1px solid rgba(255,255,255,.08);
+  background:linear-gradient(180deg, rgba(255,255,255,.055), rgba(255,255,255,.03));
+  color:var(--text);cursor:pointer;
+  transition:transform .18s var(--ease-ui), border-color .18s var(--ease-ui), background .18s var(--ease-ui), box-shadow .18s var(--ease-ui), color .18s var(--ease-ui);
+}
+.tierTab{
+  min-height:72px;padding:12px 10px;text-align:left;
+  font-size:14px;font-weight:800;text-transform:uppercase;letter-spacing:.08em;
+}
+.tierTab small{display:block;margin-top:6px;font-size:11px;color:var(--muted);letter-spacing:.06em}
+.tierTab:hover,.tierTab.active,.themeBtn:hover,.themeBtn.active,.chip:hover,.chip.active,.settingBtn:hover,.settingBtn.active,.spinType:hover,.spinType.active{
+  border-color:rgba(232,0,13,.38);
+  background:linear-gradient(180deg, rgba(232,0,13,.16), rgba(255,255,255,.04));
+  box-shadow:0 12px 22px rgba(0,0,0,.18), 0 0 18px rgba(232,0,13,.10);
+  transform:translateY(-1px);
+}
+.sectionHead{
+  display:flex;align-items:flex-end;justify-content:space-between;gap:16px;
+  padding:18px 2px 10px;
+}
+.sectionHead h2{font-size:18px;display:flex;align-items:center;gap:10px}
+#poolCount{font-size:12px;color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:.08em}
+.filters{display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end}
+.chip{
+  min-height:38px;padding:0 12px;font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.08em;
+}
+.rarityPeek{
+  overflow:hidden;max-height:0;opacity:0;transform:translateY(-10px);
+  transition:max-height .28s var(--ease-ui), opacity .20s ease, transform .20s ease;
+}
+.rarityPeek.open{max-height:420px;opacity:1;transform:none}
+.rarityPeekInner{padding:14px;border-radius:var(--radius-lg)}
+.rarityPeekLabel{
+  display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:12px;
+  font-size:12px;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;
+}
+.rarityPeekList{
+  display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:10px;
+  max-height:310px;overflow:auto;padding-right:2px;
+}
+.rarityPeekCard{
+  display:grid;grid-template-columns:54px 1fr;align-items:center;gap:12px;
+  min-height:70px;padding:10px 12px;border-radius:14px;border:1px solid var(--line);
+  background:rgba(255,255,255,.04);
+}
+.rarityPeekCard .imgShell,.rarityPeekCard img,.rarityPeekCard .emoji{width:48px;height:48px;display:grid;place-items:center}
+.rarityPeekCard img{object-fit:contain}
+.rarityPeekText{min-width:0}
+.rarityPeekText strong{
+  display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+  font-size:14px;font-weight:800;text-transform:uppercase
+}
+.rarityPeekText span{
+  display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+  margin-top:4px;font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.07em;
+}
+.peekDiamond,.rarityPeekText .peekDiamond,.cardInfo .peekDiamond{display:none!important}
+
+.items{
+  display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;
+}
+.items.loading{opacity:.55;filter:blur(2px)}
+.items.poolReveal .card{animation:cardIn .32s var(--ease-ui) both}
+.card{
+  position:relative;display:grid;grid-template-columns:132px 1fr;min-height:144px;
+  border-radius:18px;overflow:hidden;
+  transition:transform .18s var(--ease-ui), border-color .18s var(--ease-ui), box-shadow .18s var(--ease-ui);
+}
+.card::before{
+  content:"";position:absolute;inset:0;
+  background:radial-gradient(circle at 0% 50%, rgba(232,0,13,.14), transparent 36%);
+  pointer-events:none;
+}
+.card:hover{
+  transform:translateY(-3px);
+  border-color:rgba(232,0,13,.34);
+  box-shadow:0 18px 36px rgba(0,0,0,.26), 0 0 18px rgba(232,0,13,.12);
+}
+.thumb{
+  display:grid;place-items:center;position:relative;padding:14px;
+  background:linear-gradient(135deg, rgba(232,0,13,.08), rgba(255,255,255,.01));
+}
+.imgShell{display:inline-grid;place-items:center}
+.thumb .imgShell{width:112px;height:96px}
+.thumb img,.thumb .emoji{width:100%;height:100%;object-fit:contain}
+.itemImg,.weaponFloat,.miniImg,.resultCard img,.reelItem img,.rarityPeekCard img{
+  opacity:0;transform:translateY(6px);transition:opacity .22s ease, transform .22s ease;
+}
+.imgReady{opacity:1!important}
+.thumb .emoji,.reelItem .emoji,.resultCard .emoji,.rarityPeekCard .emoji,.imgFallback{
+  font-size:52px;display:grid;place-items:center;color:var(--text)
+}
+.weaponFloat{
+  animation:weaponFloat var(--floatDuration,5.6s) ease-in-out infinite;
+  animation-delay:var(--floatDelay,0s);
+}
+.cardInfo{
+  padding:18px 16px 16px;display:flex;flex-direction:column;justify-content:center;min-width:0;
+}
+.itemName{
+  font-size:22px;font-weight:900;line-height:.96;text-transform:uppercase;letter-spacing:.02em;
+}
+.itemCat{
+  margin-top:7px;font-size:11px;font-weight:700;color:var(--muted);
+  text-transform:uppercase;letter-spacing:.09em;
+}
+.badges{display:flex;gap:7px;flex-wrap:wrap;margin-top:12px}
+.badge{
+  display:inline-flex;align-items:center;justify-content:center;
+  min-height:25px;padding:0 9px;border-radius:999px;
+  border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.05);
+  font-size:10px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;
+}
+.common{border-color:#8b93a4!important;color:#d4dae5}
+.uncommon{border-color:#19e882!important;color:#19e882}
+.rare{border-color:#468dff!important;color:#76a8ff}
+.epic{border-color:#b35dff!important;color:#d3a1ff}
+.legendary{border-color:#ff2738!important;color:#ffd458;box-shadow:0 0 14px rgba(232,0,13,.18)}
+
+.panel,.historySide,.historyTableBox,.settingsCard{border-radius:var(--radius-lg);padding:18px}
+.panelTitle,.tableTools{
+  display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:14px;
+}
+.panelTitle h3,.settingsCard h3{font-size:17px}
+.online{font-size:11px;font-weight:800;letter-spacing:.08em;color:var(--green);text-transform:uppercase}
+.spinTypes,.rules{display:grid;gap:10px}
+.spinType{
+  min-height:84px;padding:14px;border-radius:16px;text-align:left;
+  border:1px solid rgba(255,255,255,.08);
+  background:linear-gradient(180deg, rgba(255,255,255,.055), rgba(255,255,255,.03));
+  cursor:pointer;
+  transition:transform .18s var(--ease-ui), border-color .18s var(--ease-ui), background .18s var(--ease-ui), box-shadow .18s var(--ease-ui);
+}
+.spinType b{
+  display:block;font-family:AnotherDanger, Rajdhani, sans-serif;
+  font-size:19px;letter-spacing:.05em;text-transform:uppercase;line-height:1.02;
+}
+.spinType span{
+  display:block;margin-top:8px;
+  font-size:11px;font-weight:700;color:var(--muted);line-height:1.45;text-transform:uppercase;letter-spacing:.08em;
+}
+.rule{
+  display:grid;grid-template-columns:auto 1fr;gap:12px;align-items:start;
+  padding:11px 12px;border-radius:14px;background:rgba(255,255,255,.05);
+}
+.rule b{font-size:13px}
+.rule span{font-size:12px;color:var(--muted);font-weight:700;line-height:1.45}
+.appearance{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.themeBtn{height:46px;font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.08em}
+
+.settingsLayout{display:grid;gap:16px}
+.settingsHero{
+  padding:22px;border-radius:var(--radius-xl);
+  background:linear-gradient(135deg, rgba(232,0,13,.18), rgba(var(--panelRgb), calc(.86 * var(--panelOpacity))) 42%, rgba(var(--panel2Rgb), calc(.84 * var(--panelOpacity))) 100%);
+}
+.settingsTitle{
+  font-family:AnotherDanger, Rajdhani, sans-serif;font-size:34px;line-height:1;letter-spacing:.08em;
+}
+.settingsSub{
+  margin-top:8px;max-width:760px;font-size:12px;font-weight:700;color:#d6dce8;text-transform:uppercase;letter-spacing:.09em;
+}
+.settingsGrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
+.settingRow{
+  display:grid;grid-template-columns:1fr auto;gap:14px;align-items:center;
+  padding:12px 0;border-bottom:1px solid rgba(255,255,255,.07);
+}
+.settingRow:last-child{border-bottom:0}
+.settingInfo b{
+  display:block;font-size:13px;font-weight:800;text-transform:uppercase;letter-spacing:.08em;
+}
+.settingInfo span{
+  display:block;margin-top:4px;font-size:12px;font-weight:600;color:var(--muted);line-height:1.45;
+}
+.rangeControl{
+  width:180px;height:4px;appearance:none;-webkit-appearance:none;background:rgba(255,255,255,.14);border-radius:999px;outline:none;
+}
+.rangeControl::-webkit-slider-thumb{
+  -webkit-appearance:none;appearance:none;width:14px;height:14px;border-radius:50%;background:var(--red);border:2px solid rgba(255,255,255,.95);
+}
+.rangeControl::-moz-range-thumb{
+  width:14px;height:14px;border-radius:50%;background:var(--red);border:2px solid rgba(255,255,255,.95);
+}
+.settingsStack{display:grid;gap:10px}
+.settingsActions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.settingBtn{min-height:44px;padding:0 12px;font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.08em}
+.dangerBtn,.danger,.confirmBtn.danger{
+  color:#fff;background:linear-gradient(180deg, rgba(255,46,59,.94), rgba(145,0,8,.92))!important;
+  border-color:rgba(232,0,13,.44)!important;
+}
+.toggleSwitch{position:relative;width:56px;height:30px;flex:0 0 auto}
+.toggleSwitch input{display:none}
+.toggleKnob{
+  position:absolute;inset:0;border-radius:999px;
+  background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.10);
+  cursor:pointer;transition:.18s var(--ease-ui);
+}
+.toggleKnob::before{
+  content:"";position:absolute;left:4px;top:3px;width:22px;height:22px;border-radius:50%;
+  background:#fff;box-shadow:0 4px 10px rgba(0,0,0,.24);transition:.18s var(--ease-ui);
+}
+.toggleSwitch input:checked + .toggleKnob{
+  background:rgba(232,0,13,.72);border-color:rgba(232,0,13,.86);
+  box-shadow:0 0 18px rgba(232,0,13,.18);
+}
+.toggleSwitch input:checked + .toggleKnob::before{transform:translateX(25px)}
+.versionBox{
+  border-radius:16px;padding:18px;text-align:center;
+  border:1px dashed rgba(232,0,13,.34);
+  background:rgba(255,255,255,.03);
+  font-size:13px;font-weight:700;color:var(--muted);line-height:1.8;letter-spacing:.06em;
+}
+.mediaStatus{margin-top:8px;min-height:18px;font-size:11px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.mediaStatus.success{color:#9cffcb}
+.mediaStatus.error{color:#ff9b9b}
+
+.historyLayout{display:grid;grid-template-columns:310px minmax(0,1fr);gap:18px}
+.historyTitle{
+  font-family:AnotherDanger, Rajdhani, sans-serif;font-size:30px;line-height:1;letter-spacing:.08em;margin-bottom:8px;
+}
+.groupList{
+  display:grid;gap:10px;max-height:calc(100vh - 255px);overflow:auto;padding-right:2px;
+}
+.groupRow{
+  text-align:left;padding:12px 14px;border-radius:14px;cursor:pointer;
+  border:1px solid rgba(255,255,255,.08);background:rgba(255,255,255,.04);
+  transition:transform .18s var(--ease-ui), border-color .18s var(--ease-ui), background .18s var(--ease-ui), box-shadow .18s var(--ease-ui);
+}
+.groupRow b{display:block;font-size:13px;font-weight:800;text-transform:uppercase;letter-spacing:.08em}
+.groupRow span{display:block;margin-top:4px;font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.07em}
+.groupRow:hover,.groupRow.active{
+  border-color:rgba(232,0,13,.34);
+  background:rgba(232,0,13,.12);
+  box-shadow:0 10px 20px rgba(0,0,0,.16);
+}
+.clear,.danger{
+  display:inline-flex;align-items:center;justify-content:center;
+  min-height:44px;padding:0 14px;border-radius:14px;
+  font-size:11px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;cursor:pointer;
+}
+.tableTools h2{font-size:24px}
+.tableWrap{
+  border-radius:16px;border:1px solid var(--line);overflow:auto;
+  background:rgba(0,0,0,.12);
+}
+table{width:100%;border-collapse:collapse;min-width:940px}
+th,td{padding:14px 14px;border-bottom:1px solid rgba(255,255,255,.07);text-align:left;vertical-align:middle}
+th{
+  position:sticky;top:0;z-index:1;
+  background:rgba(10,14,22,.96);backdrop-filter:blur(10px);
+  font-size:11px;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;
+}
+body.light th{background:rgba(255,255,255,.96)}
+td{font-size:14px}
+.miniImg{
+  width:58px;height:40px;object-fit:contain;vertical-align:middle;margin-right:10px;
+  opacity:1;transform:none;
+}
+.historyActions{display:flex;justify-content:center}
+.iconBtn{
+  width:38px;height:38px;border-radius:12px;display:grid;place-items:center;
+  border:1px solid rgba(255,255,255,.10);background:rgba(255,255,255,.05);cursor:pointer;
+  transition:transform .18s var(--ease-ui), border-color .18s var(--ease-ui), background .18s var(--ease-ui), box-shadow .18s var(--ease-ui);
+}
+.iconBtn:hover{transform:translateY(-1px);border-color:rgba(232,0,13,.38);background:rgba(232,0,13,.12);box-shadow:0 12px 20px rgba(0,0,0,.18)}
+.legacyBadge{
+  display:inline-flex;align-items:center;gap:6px;margin-left:8px;padding:4px 8px;border-radius:999px;
+  background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);
+  font-size:10px;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;
+}
+
+.modal{
+  position:fixed;inset:0;display:none;align-items:center;justify-content:center;z-index:25;
+  padding:22px;background:rgba(4,6,11,.72);backdrop-filter:blur(16px);
+}
+.modal.open{display:flex;animation:fadeIn .18s ease}
+.spinBox,.resultBox,.confirmBox{
+  width:min(760px,96vw);
+  border-radius:26px;
+}
+.spinBox,.resultBox{
+  padding:22px;
+}
+.modalTop{
+  display:flex;align-items:center;justify-content:space-between;gap:12px;
+  padding-bottom:14px;margin-bottom:16px;border-bottom:1px solid var(--line);
+}
+.modalTop h2{
+  font-family:AnotherDanger, Rajdhani, sans-serif;font-size:34px;line-height:.95;letter-spacing:.08em;
+}
+.close,.confirmBtn{
+  min-height:44px;padding:0 14px;border-radius:14px;
+  border:1px solid rgba(255,255,255,.10);background:rgba(255,255,255,.05);cursor:pointer;
+  font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.08em;
+  transition:transform .18s var(--ease-ui), border-color .18s var(--ease-ui), background .18s var(--ease-ui), box-shadow .18s var(--ease-ui);
+}
+.close:hover,.confirmBtn:hover{transform:translateY(-1px);border-color:rgba(232,0,13,.34);box-shadow:0 12px 20px rgba(0,0,0,.18)}
+.reel{
+  position:relative;height:360px;border-radius:20px;overflow:hidden;
+  border:1px solid var(--line);background:rgba(0,0,0,.22);
+}
+.reel::before,.reel::after{
+  content:"";position:absolute;left:0;right:0;height:116px;z-index:2;pointer-events:none;
+}
+.reel::before{top:0;background:linear-gradient(#0a0d13, transparent)}
+.reel::after{bottom:0;background:linear-gradient(transparent, #0a0d13)}
+.line{
+  position:absolute;left:12px;right:12px;top:50%;height:2px;border-radius:999px;z-index:3;
+  background:linear-gradient(90deg, transparent, var(--red), #fff, var(--red), transparent);
+  box-shadow:0 0 14px rgba(232,0,13,.38);
+}
+.track{display:flex;flex-direction:column;will-change:transform;transform:translate3d(0,0,0)}
+.reelItem{
+  height:120px;padding:0 18px;display:grid;grid-template-columns:92px 1fr;align-items:center;gap:16px;
+  border-bottom:1px solid rgba(255,255,255,.06);
+  font-size:22px;font-weight:900;text-transform:uppercase;
+}
+.reelItem .imgShell,.reelItem img,.reelItem .emoji{width:82px;height:82px;display:grid;place-items:center}
+.reelItem img{object-fit:contain;opacity:1;transform:none}
+.reelText{min-width:0}
+.reelText strong{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.reelItem.winner{background:linear-gradient(90deg, rgba(232,0,13,.18), transparent 80%)}
+.resultGrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(165px,1fr));gap:12px}
+.resultCard{
+  padding:16px;border-radius:18px;text-align:center;
+  background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.09);
+}
+.resultCard .imgShell,.resultCard img,.resultCard .emoji{width:112px;height:82px;margin:0 auto;display:grid;place-items:center}
+.resultCard img{object-fit:contain;opacity:1;transform:none}
+.collect{
+  width:100%;min-height:52px;margin-top:16px;border-radius:16px;
+  background:linear-gradient(180deg,#ff2734,#a9000a);
+  color:#fff;font-size:13px;font-weight:900;letter-spacing:.10em;text-transform:uppercase;cursor:pointer;
+  box-shadow:0 18px 34px rgba(232,0,13,.22);
+}
+
+.confirmModal{z-index:40}
+.confirmBox{
+  position:relative;padding:24px;border:1px solid rgba(255,255,255,.09);
+  background:linear-gradient(180deg, rgba(18,21,31,.98), rgba(10,12,18,.98));
+  box-shadow:0 30px 90px rgba(0,0,0,.56), 0 0 0 1px rgba(232,0,13,.12), 0 0 44px rgba(232,0,13,.12);
+}
+.confirmGlow{
+  position:absolute;inset:-1px auto auto -1px;width:62%;height:150px;
+  background:radial-gradient(circle at top left, rgba(232,0,13,.20), transparent 72%);
+  pointer-events:none;
+}
+.confirmHeader{
+  display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:10px;
+}
+.confirmEyebrow{
+  font-size:11px;font-weight:800;letter-spacing:.16em;text-transform:uppercase;color:#ff9198;
+}
+.confirmBox h2{
+  font-family:AnotherDanger, Rajdhani, sans-serif;font-size:32px;line-height:.98;letter-spacing:.06em;
+}
+.confirmBox p{margin-top:10px;font-size:15px;line-height:1.6;color:#d7deeb}
+.confirmMeta{
+  margin-top:16px;padding:14px 15px;border-radius:16px;border:1px solid rgba(255,255,255,.08);
+  background:rgba(255,255,255,.04);font-size:13px;color:#f5f7fb;
+}
+.confirmActions{display:flex;justify-content:flex-end;gap:10px;margin-top:20px}
+.confirmBtn.ghost{background:rgba(255,255,255,.05)}
+
+.typewriter{
+  position:fixed;inset:0;z-index:50;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:14px;
+  background:radial-gradient(circle at top, rgba(232,0,13,.12), transparent 28%), #04060b;
+  transition:opacity .5s ease, visibility .5s ease;
+}
+.typewriter.hide{opacity:0;visibility:hidden}
+.typeTitle{
+  font-family:AnotherDanger, Rajdhani, sans-serif;
+  font-size:clamp(2.4rem,5.5vw,5.2rem);line-height:.95;letter-spacing:.08em;
+  color:#fff;text-shadow:0 0 24px rgba(232,0,13,.32);
+}
+.typeSub{
+  font-size:11px;font-weight:800;letter-spacing:.16em;text-transform:uppercase;color:var(--muted);
+}
+.gatePanel{
+  width:min(460px,92vw);padding:18px;border-radius:20px;
+  background:linear-gradient(180deg, rgba(18,22,32,.92), rgba(10,12,18,.92));
+  border:1px solid rgba(255,255,255,.08);box-shadow:var(--shadow-lg);
+  display:grid;grid-template-columns:1fr auto;gap:10px;
+}
+.gateInput{
+  min-width:0;height:52px;padding:0 16px;border-radius:14px;border:1px solid rgba(255,255,255,.10);
+  background:rgba(255,255,255,.04);outline:none;font-size:15px;font-weight:700;
+}
+.gateBtn{
+  min-width:140px;height:52px;padding:0 18px;border-radius:14px;
+  background:linear-gradient(180deg,#ff2532,#a60009);color:#fff;
+  font-size:12px;font-weight:900;letter-spacing:.10em;text-transform:uppercase;cursor:pointer;
+}
+.gateError{
+  grid-column:1/-1;min-height:18px;
+  font-size:12px;font-weight:700;color:#ff9b9b;
+}
+
+.madeByNas{font-family:BrotherSignature, cursive}
+body.hideBgVideo .pageBgVideo{display:none!important}
+body.hideParticles .dotCanvas,body.hideParticles .dotShade{display:none!important}
+body.hideFloating .weaponFloat,body.hideFloating .thumb .emoji,body.hideFloating .resultCard .emoji,body.hideFloating .resultCard img{animation:none!important}
+body.noConfetti #confettiCanvas{display:none!important}
+body.hideHeroPanel .hero{background:transparent;border-color:transparent;box-shadow:none}
+body.hideHeroPanel .heroShade,body.hideHeroPanel .dotCanvas{opacity:0}
+body.lowMotion *{animation:none!important;transition:none!important}
+#confettiCanvas{position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:9999}
+
+.clicked{animation:clickPulse .24s ease}
+.track.spinMotion .reelItem{animation:reelBlur .12s linear infinite}
+.track.settled .reelItem.winner{animation:winnerLock .44s var(--ease-ui)}
+.tierSwitchIn{animation:viewIn .24s var(--ease-ui)}
+.tierSwitchOut{animation:viewOut .16s ease both}
+
+@keyframes rgbOrbit{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
+@keyframes cardIn{from{opacity:0;transform:translateY(14px) scale(.985)}to{opacity:1;transform:none}}
+@keyframes viewIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+@keyframes viewOut{from{opacity:1;transform:none}to{opacity:0;transform:translateY(-8px)}}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+@keyframes clickPulse{50%{transform:scale(.985)}}
+@keyframes weaponFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(calc(var(--floatAmt,12px) * -1))}}
+@keyframes reelBlur{50%{filter:blur(1.2px);opacity:.72}}
+@keyframes winnerLock{50%{transform:scale(1.05);filter:brightness(1.25) drop-shadow(0 0 20px rgba(232,0,13,.44))}100%{transform:none}}
+@media (prefers-reduced-motion: reduce){*,*::before,*::after{animation:none!important;transition:none!important}}
+
+::-webkit-scrollbar{width:10px;height:10px}
+::-webkit-scrollbar-track{background:rgba(255,255,255,.04)}
+::-webkit-scrollbar-thumb{background:rgba(255,255,255,.16);border-radius:999px}
+::-webkit-scrollbar-thumb:hover{background:rgba(255,255,255,.22)}
+
+@media (max-width:1280px){
+  .layout{grid-template-columns:minmax(0,1fr) 330px}
+  .trackBadge{max-width:150px}
+  .volumeSlider{width:120px}
+}
+@media (max-width:1120px){
+  body{overflow:auto}
+  .app{grid-template-columns:78px 1fr}
+  .main{height:auto;overflow:visible}
+  .topbar{align-items:flex-start;flex-wrap:wrap}
+  .topRight{width:100%;justify-content:space-between;flex-wrap:wrap}
+  .musicStack.compactPlayer{order:2;max-width:100%;flex-wrap:wrap}
+  .manager{order:1}
+  .layout,.historyLayout,.settingsGrid,.setup{grid-template-columns:1fr}
+  .items{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .rightPane{padding-bottom:8px}
+}
+@media (max-width:760px){
+  :root{--railW:74px}
+  .main{padding:14px 14px 20px}
+  .brand{width:50px;height:50px;border-radius:16px}
+  .navBtn{width:50px;min-height:50px;border-radius:14px;font-size:9px}
+  .navBtn .ico{font-size:17px}
+  .topbar{padding:12px 14px;border-radius:18px}
+  .appTitle{font-size:22px;-webkit-text-stroke:.9px rgba(255,255,255,.96)}
+  .musicStack.compactPlayer{gap:6px;padding:6px}
+  .trackBadge{max-width:none;flex:1 1 100%}
+  .soundBtn{min-width:38px;padding:0 10px}
+  .volumeControl.compactVolume{width:100%;justify-content:space-between}
+  .volumeSlider{width:min(44vw,160px)}
+  .welcome{font-size:17px;align-items:flex-start;flex-direction:column}
+  .script{font-size:21px}
+  .hero{height:300px}
+  .centerLaunch{width:min(300px,86%)}
+  .launchBtn{height:64px;font-size:26px}
+  .items{grid-template-columns:1fr}
+  .card{grid-template-columns:118px 1fr}
+  .appearance,.settingsActions{grid-template-columns:1fr}
+  .settingRow{grid-template-columns:1fr}
+  .historyTitle,.settingsTitle{font-size:26px}
+  .tableTools{flex-direction:column;align-items:flex-start}
+  .modal{padding:14px}
+  .modalTop h2,.confirmBox h2{font-size:28px}
+  .confirmActions{flex-direction:column-reverse}
+}
+
+/* ==========================================================
+   ANIMATION-ONLY PATCH copied from index(26) animation feel
+   No layout/content/functionality changes.
+   ========================================================== */
+:root{
+  --easeOut:cubic-bezier(.16,.84,.24,1);
+  --easeBounce:cubic-bezier(.68,-.35,.265,1.35);
+}
+
+/* Page/view fade + drop-in */
+.view.active{animation:viewSmoothIn .36s var(--easeOut) both!important}
+.view.fadeOut{display:block;animation:viewSmoothOut .24s ease both!important}
+.topbar,.welcome,.hero,.setup,.sectionHead,.rightPane .panel,.historySide,.historyTableBox,.settingsHero,.settingsCard{
+  animation:uiDropIn .52s var(--easeOut) both;
+}
+.topbar{animation-delay:20ms}
+.welcome{animation-delay:70ms}
+.hero{animation-delay:115ms}
+.setup{animation-delay:165ms}
+.sectionHead{animation-delay:215ms}
+.rightPane .panel:nth-child(1){animation-delay:125ms}
+.rightPane .panel:nth-child(2){animation-delay:185ms}
+.rightPane .panel:nth-child(3){animation-delay:245ms}
+
+/* Every clickable thing: click-pop + shine sweep */
+.navBtn,.tierTab,.spinType,.chip,.themeBtn,.soundBtn,.launchBtn,.settingBtn,.danger,.clear,.collect,.close,.confirmBtn,.iconBtn,.groupRow,.card,.toggleKnob{
+  position:relative;
+  overflow:hidden;
+  isolation:isolate;
+}
+.navBtn::before,.tierTab::before,.spinType::before,.chip::before,.themeBtn::before,.soundBtn::before,.launchBtn::before,.settingBtn::before,.danger::before,.clear::before,.collect::before,.close::before,.confirmBtn::before,.iconBtn::before,.groupRow::before,.card::after{
+  content:"";
+  position:absolute;
+  inset:0;
+  background:linear-gradient(120deg,transparent 0%,rgba(255,255,255,.16) 42%,rgba(255,255,255,.24) 50%,rgba(255,255,255,.10) 58%,transparent 100%);
+  transform:translateX(-125%);
+  pointer-events:none;
+  z-index:0;
+}
+.navBtn:hover::before,.tierTab:hover::before,.spinType:hover::before,.chip:hover::before,.themeBtn:hover::before,.soundBtn:hover::before,.launchBtn:hover::before,.settingBtn:hover::before,.danger:hover::before,.clear:hover::before,.collect:hover::before,.close:hover::before,.confirmBtn:hover::before,.iconBtn:hover::before,.groupRow:hover::before,.card:hover::after,
+.navBtn.clicked::before,.tierTab.clicked::before,.spinType.clicked::before,.chip.clicked::before,.themeBtn.clicked::before,.soundBtn.clicked::before,.launchBtn.clicked::before,.settingBtn.clicked::before,.danger.clicked::before,.clear.clicked::before,.collect.clicked::before,.close.clicked::before,.confirmBtn.clicked::before,.iconBtn.clicked::before,.groupRow.clicked::before{
+  animation:shineSweep .72s ease forwards;
+}
+.navBtn > *,.tierTab > *,.spinType > *,.chip > *,.themeBtn > *,.soundBtn > *,.launchBtn > *,.settingBtn > *,.danger > *,.clear > *,.collect > *,.close > *,.confirmBtn > *,.iconBtn > *,.groupRow > *,.card > *{position:relative;z-index:1}
+
+.clicked{animation:clickPulse .34s var(--easeBounce) both!important}
+button:active,.card:active,.groupRow:active,.toggleKnob:active{transform:scale(.97)}
+
+/* Hover lift */
+.tierTab,.spinType,.chip,.themeBtn,.settingBtn,.soundBtn,.navBtn,.iconBtn,.groupRow,.card,.launchBtn{
+  transition:transform .22s var(--easeOut),border-color .26s ease,background .26s ease,box-shadow .26s ease,color .26s ease,filter .22s ease;
+}
+.tierTab:hover,.spinType:hover,.chip:hover,.themeBtn:hover,.settingBtn:hover,.soundBtn:hover,.navBtn:hover,.iconBtn:hover,.groupRow:hover{
+  transform:translateY(-3px);
+}
+.card:hover{
+  transform:translateY(-8px) scale(1.018)!important;
+}
+
+/* Active underline glow for selected tabs/buttons */
+.tierTab::after,.spinType::after,.chip::after,.navBtn[data-view]::after,.themeBtn::after,.settingBtn.active::after{
+  content:"";
+  position:absolute;
+  left:13%;
+  right:13%;
+  bottom:7px;
+  height:3px;
+  border-radius:999px;
+  background:linear-gradient(90deg,transparent,#fff,var(--red),#fff,transparent);
+  box-shadow:0 0 14px rgba(232,0,13,.9);
+  transform:scaleX(0);
+  transform-origin:left;
+  opacity:0;
+  transition:transform .38s var(--easeOut),opacity .22s ease;
+  pointer-events:none;
+  z-index:2;
+}
+.tierTab.active::after,.spinType.active::after,.chip.active::after,.navBtn.active::after,.themeBtn.active::after,.settingBtn.active::after{
+  transform:scaleX(1);
+  opacity:1;
+  animation:underlineGlow 1.8s ease-in-out infinite;
+}
+
+/* Smooth tier/filter switching + cascading reveal */
+.items{
+  perspective:900px;
+  transform-style:preserve-3d;
+  transition:opacity .18s ease,filter .18s ease,transform .18s ease;
+}
+.items.loading{
+  opacity:.42!important;
+  transform:translate3d(0,-10px,0);
+  filter:blur(3px);
+}
+.items.poolReveal .card{
+  animation:itemCascade .50s var(--easeOut) both!important;
+}
+.items.tierSwitchOut{
+  animation:viewSmoothOut .24s ease both!important;
+  pointer-events:none;
+}
+.items.tierSwitchIn{
+  animation:viewSmoothIn .36s var(--easeOut) both!important;
+}
+.card:nth-child(1){animation-delay:20ms!important}
+.card:nth-child(2){animation-delay:75ms!important}
+.card:nth-child(3){animation-delay:130ms!important}
+.card:nth-child(4){animation-delay:185ms!important}
+.card:nth-child(5){animation-delay:240ms!important}
+.card:nth-child(6){animation-delay:295ms!important}
+.card:nth-child(7){animation-delay:350ms!important}
+.card:nth-child(8){animation-delay:405ms!important}
+
+/* Floating weapon/item images */
+.thumb img,.thumb .emoji,.itemImg,.weaponFloat,.miniImg,.resultCard img,.resultCard .emoji,.reelItem img,.reelItem .emoji,.rarityPeekCard img,.rarityPeekCard .emoji{
+  animation:dropItemFloat 3.2s ease-in-out infinite!important;
+  will-change:transform;
+}
+.card:nth-child(2n) .thumb img,.card:nth-child(2n) .thumb .emoji{animation-delay:.25s!important}
+.card:nth-child(3n) .thumb img,.card:nth-child(3n) .thumb .emoji{animation-delay:.55s!important}
+.card:nth-child(4n) .thumb img,.card:nth-child(4n) .thumb .emoji{animation-delay:.85s!important}
+
+/* Spin type / tier / history open reveal */
+.spinType span,.rule span,.groupRow span,.tierTab small{
+  overflow:hidden;
+  transition:max-height .34s var(--easeOut),opacity .24s ease,transform .24s ease;
+}
+.rule span,.groupRow span{
+  max-height:0;
+  opacity:0;
+  transform:translateY(-7px);
+}
+.rule:hover span,.groupRow.active span,.groupRow:hover span{
+  max-height:50px;
+  opacity:1;
+  transform:translateY(0);
+}
+.tierTab small{
+  max-height:0;
+  opacity:0;
+  transform:translateY(-5px);
+}
+.tierTab.active small,.tierTab:hover small{
+  max-height:28px;
+  opacity:1;
+  transform:translateY(0);
+}
+
+/* History rows + modal/result pop */
+.groupRow,tr{animation:rowReveal .32s var(--easeOut) both}
+.modal.open .spinBox,.modal.open .resultBox,.modal.open .confirmBox{
+  animation:modalDrop .34s var(--easeOut) both;
+}
+.resultCard{
+  animation:resultPop .36s var(--easeOut) both;
+}
+.resultCard:nth-child(1){animation-delay:40ms}
+.resultCard:nth-child(2){animation-delay:90ms}
+.resultCard:nth-child(3){animation-delay:140ms}
+.resultCard:nth-child(4){animation-delay:190ms}
+
+/* Reel spin motion + winner lock glow */
+.track{will-change:transform;transform:translate3d(0,0,0);backface-visibility:hidden}
+.reelItem{backface-visibility:hidden;transform:translateZ(0);will-change:transform,filter,opacity}
+.track.spinMotion{
+  filter:drop-shadow(0 0 12px rgba(232,0,13,.18));
+}
+.track.spinMotion .reelItem{
+  animation:reelMotionBlur .12s linear infinite!important;
+}
+.track.settled .reelItem.winner{
+  animation:winnerLock .55s cubic-bezier(.16,.84,.24,1) both!important;
+}
+
+/* Theme switching */
+.app.themeSwitch{
+  animation:themeSmoothSwitch .42s var(--easeOut) 1 both!important;
+}
+.themeBtn.themeBlink{
+  animation:themeButtonBlink .34s var(--easeOut) 1 both;
+}
+
+/* Keyframes from the animation reference */
+@keyframes uiDropIn{
+  0%{opacity:0;transform:translate3d(0,-28px,0) scale(.985);filter:blur(6px)}
+  62%{opacity:1;transform:translate3d(0,5px,0) scale(1.004);filter:blur(0)}
+  100%{opacity:1;transform:translate3d(0,0,0) scale(1);filter:blur(0)}
+}
+@keyframes viewSmoothIn{
+  from{opacity:0;transform:translate3d(0,-18px,0);filter:blur(5px)}
+  to{opacity:1;transform:translate3d(0,0,0);filter:blur(0)}
+}
+@keyframes viewSmoothOut{
+  from{opacity:1;transform:translate3d(0,0,0);filter:blur(0)}
+  to{opacity:0;transform:translate3d(0,12px,0);filter:blur(5px)}
+}
+@keyframes shineSweep{to{transform:translateX(125%)}}
+@keyframes underlineGlow{
+  0%,100%{filter:brightness(1);box-shadow:0 0 10px rgba(232,0,13,.7)}
+  50%{filter:brightness(1.35);box-shadow:0 0 22px rgba(232,0,13,1),0 0 8px rgba(255,255,255,.55)}
+}
+@keyframes itemCascade{
+  0%{opacity:0;transform:translate3d(0,-34px,0) rotateX(-10deg) scale(.96);filter:blur(7px)}
+  55%{opacity:1;transform:translate3d(0,6px,0) rotateX(2deg) scale(1.01);filter:blur(0)}
+  100%{opacity:1;transform:translate3d(0,0,0) rotateX(0) scale(1);filter:blur(0)}
+}
+@keyframes dropItemFloat{
+  0%,100%{transform:translate3d(0,0,0) rotate(0deg)}
+  50%{transform:translate3d(0,calc(var(--floatAmt,12px) * -1),0) rotate(-1.2deg)}
+}
+@keyframes clickPulse{
+  0%{transform:scale(1)}
+  45%{transform:scale(.94)}
+  100%{transform:scale(1)}
+}
+@keyframes rowReveal{
+  from{opacity:0;transform:translateY(-10px)}
+  to{opacity:1;transform:translateY(0)}
+}
+@keyframes modalDrop{
+  0%{opacity:0;transform:translateY(-22px) scale(.97);filter:blur(5px)}
+  100%{opacity:1;transform:translateY(0) scale(1);filter:blur(0)}
+}
+@keyframes resultPop{
+  0%{opacity:0;transform:translateY(18px) scale(.94);filter:blur(5px)}
+  75%{opacity:1;transform:translateY(-3px) scale(1.015);filter:blur(0)}
+  100%{opacity:1;transform:translateY(0) scale(1)}
+}
+@keyframes reelMotionBlur{
+  0%{opacity:.95;filter:blur(.3px)}
+  50%{opacity:.68;filter:blur(1.4px)}
+  100%{opacity:.95;filter:blur(.3px)}
+}
+@keyframes winnerLock{
+  0%{filter:brightness(1);transform:scale(.96)}
+  55%{filter:brightness(1.55) drop-shadow(0 0 18px rgba(232,0,13,.75));transform:scale(1.08)}
+  100%{filter:brightness(1.1);transform:scale(1)}
+}
+@keyframes themeSmoothSwitch{
+  0%{opacity:.58;transform:translate3d(0,-14px,0) scale(.994);filter:blur(4px)}
+  72%{opacity:1;transform:translate3d(0,2px,0) scale(1.001);filter:blur(0)}
+  100%{opacity:1;transform:translate3d(0,0,0) scale(1);filter:blur(0)}
+}
+@keyframes themeButtonBlink{
+  0%{box-shadow:0 0 0 rgba(232,0,13,0);filter:brightness(1)}
+  50%{box-shadow:0 0 16px rgba(232,0,13,.28);filter:brightness(1.16)}
+  100%{box-shadow:0 0 16px rgba(232,0,13,.22);filter:brightness(1)}
+}
+
+/* Keep weak PCs / accessibility safe */
+@media (prefers-reduced-motion: reduce){
+  *,*::before,*::after{animation:none!important;transition:none!important}
+}
+body.lowMotion *{animation:none!important;transition:none!important}
+
+
+
+/* === FINAL FIX PACK: glass panels, working light mode, stronger floating weapons === */
+:root{
+  --glassDarkBase:18,21,31;
+  --glassDarkTop:255,255,255;
+  --glassLightBase:255,255,255;
+  --glassLightTop:255,255,255;
+}
+.topbar,.hero,.setup,.panel,.settingsHero,.settingsCard,.historySide,.historyTableBox,.spinBox,.resultBox,.confirmBox,.card,.rarityPeekInner,.groupRow,.tableWrap,.reel,.resultCard,.rule,.spinType,.tierTab,.themeBtn,.chip,.settingBtn,.soundBtn,.volumeControl,.trackBadge,.groupInput,.settingsInput{
+  backdrop-filter:blur(22px) saturate(1.18)!important;
+  -webkit-backdrop-filter:blur(22px) saturate(1.18)!important;
+}
+.topbar,.hero,.setup,.panel,.settingsHero,.settingsCard,.historySide,.historyTableBox,.spinBox,.resultBox,.confirmBox,.card,.rarityPeekInner{
+  background:
+    linear-gradient(135deg, rgba(var(--glassDarkTop), calc(.105 * var(--panelOpacity))) 0%, rgba(var(--glassDarkBase), calc(.50 * var(--panelOpacity))) 42%, rgba(9,11,18, calc(.36 * var(--panelOpacity))) 100%)!important;
+  border-color:rgba(255,255,255,.12)!important;
+  box-shadow:0 20px 46px rgba(0,0,0,.28), inset 0 1px 0 rgba(255,255,255,.10), 0 0 28px rgba(232,0,13,.055)!important;
+}
+.hero{
+  background:
+    radial-gradient(circle at 50% 48%, rgba(232,0,13, calc(.10 * var(--panelOpacity))), transparent 44%),
+    linear-gradient(135deg, rgba(255,255,255, calc(.075 * var(--panelOpacity))), rgba(10,13,22, calc(.36 * var(--panelOpacity))))!important;
+}
+body.hideHeroPanel .hero{
+  background:transparent!important;
+  background-color:transparent!important;
+  border-color:transparent!important;
+  box-shadow:none!important;
+  backdrop-filter:none!important;
+  -webkit-backdrop-filter:none!important;
+}
+body.hideHeroPanel .heroShade,body.hideHeroPanel .dotCanvas{opacity:0!important;visibility:hidden!important}
+body.light{
+  background:
+    radial-gradient(circle at top, rgba(232,0,13,.055), transparent 28%),
+    linear-gradient(180deg,#f4f7fb,#e7edf5)!important;
+  color:#10131b!important;
+}
+body.light .ambient{background:linear-gradient(180deg,rgba(255,255,255,.66),rgba(238,242,248,.88))!important}
+body.light .rail{background:rgba(255,255,255,.58)!important;border-right:1px solid rgba(16,24,39,.09)!important;backdrop-filter:blur(22px) saturate(1.15)!important;-webkit-backdrop-filter:blur(22px) saturate(1.15)!important}
+body.light .topbar,body.light .hero,body.light .setup,body.light .panel,body.light .settingsHero,body.light .settingsCard,body.light .historySide,body.light .historyTableBox,body.light .spinBox,body.light .resultBox,body.light .confirmBox,body.light .card,body.light .rarityPeekInner{
+  background:
+    linear-gradient(135deg, rgba(var(--glassLightTop), calc(.62 * var(--panelOpacity))) 0%, rgba(var(--glassLightBase), calc(.44 * var(--panelOpacity))) 48%, rgba(235,240,248, calc(.34 * var(--panelOpacity))) 100%)!important;
+  border-color:rgba(15,23,42,.12)!important;
+  box-shadow:0 18px 36px rgba(20,32,52,.12), inset 0 1px 0 rgba(255,255,255,.78), 0 0 22px rgba(232,0,13,.045)!important;
+  color:#111827!important;
+}
+body.light .dotCanvas{background:radial-gradient(circle at 50% 50%,rgba(232,0,13,.05),transparent 46%),linear-gradient(135deg,rgba(255,255,255,.28),rgba(236,241,248,.24))!important}
+body.light .heroShade,.body.light .dotShade{background:radial-gradient(circle at var(--mx,50%) var(--my,50%),rgba(232,0,13,.09),transparent 22%),linear-gradient(90deg,rgba(255,255,255,.45),rgba(255,255,255,.05),rgba(255,255,255,.45))!important}
+body.light .groupInput,body.light .settingsInput{background:rgba(255,255,255,.34)!important;border-color:rgba(15,23,42,.14)!important;color:#111827!important}
+body.light .themeBtn,body.light .tierTab,body.light .chip,body.light .settingBtn,body.light .soundBtn,body.light .spinType,body.light .rule,body.light .trackBadge,body.light .volumeControl{background:rgba(255,255,255,.34)!important;border-color:rgba(15,23,42,.12)!important;color:#111827!important}
+body.light .tiny,body.light .fieldLabel,body.light .itemCat,body.light .rule span,body.light .spinType span,body.light .settingInfo span,body.light .volumeValue{color:#596579!important}
+body.light .appTitle{-webkit-text-stroke:.7px rgba(232,0,13,.55);color:#111827!important;text-shadow:0 0 10px rgba(232,0,13,.10)!important;background:none!important;-webkit-background-clip:border-box!important;background-clip:border-box!important}
+.weaponFloat,.itemImg.imgReady,.weaponFloat.imgReady,.thumb img.imgReady,.rarityPeekCard img.imgReady,.resultCard img,.resultCard .emoji,.reelItem img,.reelItem .emoji,.miniImg{
+  opacity:1!important;
+  animation:finalWeaponFloat 3.25s ease-in-out infinite!important;
+  will-change:transform!important;
+  transform-origin:center center!important;
+}
+.card:nth-child(2n) .weaponFloat,.card:nth-child(2n) .thumb img,.card:nth-child(2n) .thumb .emoji{animation-delay:.25s!important}
+.card:nth-child(3n) .weaponFloat,.card:nth-child(3n) .thumb img,.card:nth-child(3n) .thumb .emoji{animation-delay:.55s!important}
+.card:nth-child(4n) .weaponFloat,.card:nth-child(4n) .thumb img,.card:nth-child(4n) .thumb .emoji{animation-delay:.85s!important}
+body.hideFloating .weaponFloat,body.hideFloating .itemImg,body.hideFloating .thumb img,body.hideFloating .thumb .emoji,body.hideFloating .resultCard img,body.hideFloating .resultCard .emoji,body.hideFloating .reelItem img,body.hideFloating .reelItem .emoji,body.hideFloating .miniImg{animation:none!important}
+@keyframes finalWeaponFloat{
+  0%,100%{transform:translate3d(0,0,0) rotate(0deg)}
+  50%{transform:translate3d(0,calc(var(--floatAmt,12px) * -1),0) rotate(-1.2deg)}
+}
+@media (prefers-reduced-motion: reduce){.weaponFloat,.itemImg.imgReady,.weaponFloat.imgReady,.thumb img.imgReady,.rarityPeekCard img.imgReady,.resultCard img,.resultCard .emoji,.reelItem img,.reelItem .emoji,.miniImg{animation:none!important}}
+
+</style>
+
+</head>
+<body class="dark">
+<video id="bgVideo" class="pageBgVideo" autoplay muted playsinline><source src="Music1.mp4" type="video/mp4"><source src="./mp4/Music1.mp4" type="video/mp4"></video><div class="ambient"></div>
+<div class="typewriter" id="gate"><div class="typeTitle" id="typeTitle"></div><div class="typeSub">Enter passcode to access spins</div><div class="gatePanel"><input class="gateInput" id="gateCode" type="password" placeholder="Enter passcode" autocomplete="off" spellcheck="false"><button class="gateBtn" id="gateEnterBtn" type="button">Enter Spins</button><div class="gateError" id="gateError"></div></div></div>
+<audio id="music" preload="auto"><source src="./mp3/Music1.mp3" type="audio/mpeg"></audio>
+<div class="app">
+  <aside class="rail">
+    <div class="brand"><img src="./Images/TFB Logo.png" alt="Faction"></div>
+    <button class="navBtn active" data-view="spin"><span class="ico">◇</span><span>Spins</span></button>
+    <button class="navBtn" data-view="history"><span class="ico">↺</span><span>History</span></button>
+    <div class="spacer"></div>
+    <button class="navBtn" data-view="settings"><span class="ico">⚙</span><span>Settings</span></button>
+  </aside>
+  <main class="main">
+    <div class="topbar">
+      <div class="topLeft"><span class="appTitle">Illegal Faction Spins</span></div>
+      <div class="topRight">
+        <div class="musicStack compactPlayer" aria-label="Music controls">
+          <div class="trackBadge" id="trackBadge" aria-live="polite" title="Current track"><span class="trackIcon" aria-hidden="true">♪</span><span class="trackName" id="trackName">Music</span></div>
+          <button class="soundBtn compactControl" id="prevBtn" type="button" aria-label="Previous track">Prev</button>
+          <button class="soundBtn compactControl" id="playBtn" type="button" aria-label="Play or pause music">Play</button>
+          <button class="soundBtn compactControl" id="nextBtn" type="button" aria-label="Next track">Next</button>
+          <button class="soundBtn compactControl" id="muteBtn" type="button" aria-label="Mute audio">Mute</button>
+          <label class="volumeControl compactVolume" for="volumeSlider">
+            <span class="srOnly">Volume</span>
+            <input id="volumeSlider" class="volumeSlider" type="range" min="0" max="100" step="1" value="60" aria-label="Music volume">
+            <span class="volumeValue" id="volumeValue">60%</span>
+          </label>
+        </div>
+        <span class="manager">Faction Management <span class="status"></span></span>
+      </div>
+    </div>
+
+    <section class="view active" id="spinView">
+      <div class="layout">
+        <section class="leftPane">
+          <div class="welcome"><span>Welcome Back, <b>Faction Management</b></span><span class="script madeByNas">Made By Nas</span></div>
+          <div class="hero">
+            <canvas id="dotCanvas" class="dotCanvas"></canvas><div class="heroShade dotShade"></div>
+            <div class="centerLaunch"><button class="launchBtn" id="dropBtn">START SPIN</button></div>
+          </div>
+          <div class="setup">
+            <div class="setupBlock"><div class="setupIcon"><img src="./Images/TFB Logo.png" alt="TFB"></div><div><div class="fieldLabel">Select Group</div><input class="groupInput" id="groupInput" placeholder="Type group name"></div></div>
+            <div><div class="fieldLabel">Select Tier</div><div class="tiers" id="tierTabs"><button class="tierTab active" data-tier="test">Test<small>2 Rewards</small></button><button class="tierTab" data-tier="t1">Tier 1<small>4 Rewards</small></button><button class="tierTab" data-tier="t1.5">Tier 1.5<small>5 Rewards</small></button><button class="tierTab" data-tier="t2">Tier 2<small>8 Rewards</small></button></div></div>
+          </div>
+          <div class="sectionHead"><h2>Possible Drops <span id="poolCount">0 items</span></h2><div class="filters" id="filterChips"><button class="chip active" data-filter="all">All</button><button class="chip" data-filter="common">Common</button><button class="chip" data-filter="uncommon">Uncommon</button><button class="chip" data-filter="rare">Rare</button><button class="chip" data-filter="epic">Epic</button><button class="chip" data-filter="legendary">Legendary</button></div></div>
+          <div class="rarityPeek" id="rarityPeek"><div class="rarityPeekInner"><div class="rarityPeekLabel"><span id="rarityPeekTitle">All Visible Items</span><span id="rarityPeekCount">0 matches</span></div><div class="rarityPeekList" id="rarityPeekList"></div></div></div>
+          <div class="items" id="items"></div>
+        </section>
+        <aside class="rightPane">
+          <div class="panel"><div class="panelTitle"><h3>Spin Type</h3><span class="online">Active</span></div><div class="spinTypes" id="spinTypes"><button class="spinType active" data-type="gun"><b>Gun Spins</b><span>Official illegal faction weapon pool for your tier</span></button><button class="spinType" data-type="bullet"><b>Bullet Spins</b><span>Ammo rewards based on tier access</span></button><button class="spinType" data-type="accessory"><b>Accessory Spin</b><span>Attachments and utility rewards from your tier pool</span></button></div></div>
+          <div class="panel"><div class="panelTitle"><h3>Tier Rules</h3><span class="tiny" id="ruleTier">TEST</span></div><div class="rules"><div class="rule"><b>Test</b><span>Official test pool • 2 rewards</span></div><div class="rule"><b>Tier 1</b><span>Official Tier 1 pool • 4 rewards</span></div><div class="rule"><b>Tier 1.5</b><span>Tier 1.5 pool • 5 rewards</span></div><div class="rule"><b>Tier 2</b><span>Tier 2 pool + all switches • 8 rewards</span></div></div></div>
+          <div class="panel" id="appearancePanel"><div class="panelTitle"><h3>Appearance</h3><span class="tiny" id="themeLabel">DARK</span></div><div class="appearance"><button class="themeBtn" data-theme="light">Light</button><button class="themeBtn" data-theme="dim">Dim</button><button class="themeBtn active" data-theme="dark">Dark</button></div></div>
+        </aside>
+      </div>
+    </section>
+
+
+    <section class="view" id="settingsView">
+      <div class="settingsLayout">
+        <div class="settingsHero">
+          <div class="settingsTitle">Settings</div>
+          <div class="settingsSub">Control audio, visuals, spin behavior, background, history, and admin branding.</div>
+        </div>
+
+        <div class="settingsGrid">
+          <div class="settingsCard">
+            <h3>Appearance</h3>
+            <div class="appearance">
+              <button class="themeBtn" data-theme="light">Light</button>
+              <button class="themeBtn" data-theme="dim">Dim</button>
+              <button class="themeBtn active" data-theme="dark">Dark</button>
+            </div>
+            <div class="settingRow">
+              <div class="settingInfo"><b>Background Opacity</b><span>Low / medium / high feel through the page overlay.</span></div>
+              <input class="rangeControl" id="setBgOpacity" type="range" min="15" max="80" value="48">
+            </div>
+            <div class="settingRow">
+              <div class="settingInfo"><b>Video Brightness</b><span>Make the background video darker or brighter.</span></div>
+              <input class="rangeControl" id="setVideoBrightness" type="range" min="25" max="120" value="82">
+            </div>
+            <div class="settingRow">
+              <div class="settingInfo"><b>Video Blur</b><span>Add or remove blur from the background video.</span></div>
+              <input class="rangeControl" id="setVideoBlur" type="range" min="0" max="8" value="0">
+            </div>
+            <div class="settingRow">
+              <div class="settingInfo"><b>Weapon Animation Strength</b><span>Controls the floating item animation intensity.</span></div>
+              <input class="rangeControl" id="setFloatStrength" type="range" min="0" max="25" value="12">
+            </div>
+            <div class="settingRow">
+              <div class="settingInfo"><b>Panel Opacity</b><span>Controls the opacity of all UI panels and cards globally.</span></div>
+              <input class="rangeControl" id="setPanelOpacity" type="range" min="0" max="100" value="100">
+            </div>
+            <div class="settingRow">
+              <div class="settingInfo"><b>Hide Hero Box Panel</b><span>Removes the big background box behind the Start Spin button.</span></div>
+              <label class="toggleSwitch"><input id="setHideHeroPanel" type="checkbox"><span class="toggleKnob"></span></label>
+            </div>
+            <div class="settingRow">
+              <div class="settingInfo"><b>RGB Border Trail</b><span>Toggle the subtle rainbow reflection around the viewport.</span></div>
+              <label class="toggleSwitch"><input id="setShowRgbTrail" type="checkbox" checked><span class="toggleKnob"></span></label>
+            </div>
+          </div>
+
+          <div class="settingsCard">
+            <h3>Background</h3>
+            <div class="settingRow">
+              <div class="settingInfo"><b>Show Background Video</b><span>Hide or show the full page background video.</span></div>
+              <label class="toggleSwitch"><input id="setShowBgVideo" type="checkbox" checked><span class="toggleKnob"></span></label>
+            </div>
+            <div class="settingRow">
+              <div class="settingInfo"><b>High Quality Background Video</b><span>Keeps the background video cleaner and less filtered/compressed-looking.</span></div>
+              <label class="toggleSwitch"><input id="setHighQualityVideo" type="checkbox" checked><span class="toggleKnob"></span></label>
+            </div>
+            <div class="settingRow">
+              <div class="settingInfo"><b>Show Floating Weapons</b><span>Toggle the floating animation on item visuals.</span></div>
+              <label class="toggleSwitch"><input id="setShowFloating" type="checkbox" checked><span class="toggleKnob"></span></label>
+            </div>
+            <div class="settingRow">
+              <div class="settingInfo"><b>Show Particle Effects</b><span>Hide or show the reactive dot canvas.</span></div>
+              <label class="toggleSwitch"><input id="setShowParticles" type="checkbox" checked><span class="toggleKnob"></span></label>
+            </div>
+          </div>
+
+          <div class="settingsCard">
+            <h3>Spin Settings</h3>
+            <div class="settingsActions">
+              <button class="settingBtn spinSpeed active" data-speed="normal">Normal Spin</button>
+              <button class="settingBtn spinSpeed" data-speed="fast">Fast Spin</button>
+              <button class="settingBtn spinSpeed" data-speed="cinematic">Cinematic Spin</button>
+              <button class="settingBtn" id="setSkipAnimations">Skip Animations</button>
+            </div>
+            <div class="settingRow">
+              <div class="settingInfo"><b>Auto Collect Rewards</b><span>Automatically saves drops after a spin.</span></div>
+              <label class="toggleSwitch"><input id="setAutoCollect" type="checkbox"><span class="toggleKnob"></span></label>
+            </div>
+          </div>
+
+          <div class="settingsCard">
+            <h3>History</h3>
+            <div class="settingsActions">
+              <button class="settingBtn" id="settingsExportHistory">Export CSV</button>
+              <button class="settingBtn dangerBtn" id="settingsClearHistory">Clear Spin History</button>
+              <button class="settingBtn dangerBtn" id="settingsClearLocal">Clear Local Data</button>
+              <button class="settingBtn dangerBtn" id="settingsReset">Reset Settings</button>
+            </div>
+          </div>
+
+          <div class="settingsCard">
+            <h3>Notifications</h3>
+            <div class="settingRow">
+              <div class="settingInfo"><b>Winner Popups</b><span>Show drops won result popup.</span></div>
+              <label class="toggleSwitch"><input id="setWinnerPopups" type="checkbox" checked><span class="toggleKnob"></span></label>
+            </div>
+            <div class="settingRow">
+              <div class="settingInfo"><b>Confetti Effects</b><span>Show confetti when saving drops.</span></div>
+              <label class="toggleSwitch"><input id="setConfetti" type="checkbox" checked><span class="toggleKnob"></span></label>
+            </div>
+            <div class="settingRow">
+              <div class="settingInfo"><b>Legendary Reward Alert</b><span>Special alert when legendary items drop.</span></div>
+              <label class="toggleSwitch"><input id="setLegendaryAlert" type="checkbox" checked><span class="toggleKnob"></span></label>
+            </div>
+            <div class="settingRow">
+              <div class="settingInfo"><b>Sound Alerts</b><span>Allow alert sounds placeholder.</span></div>
+              <label class="toggleSwitch"><input id="setSoundAlerts" type="checkbox" checked><span class="toggleKnob"></span></label>
+            </div>
+          </div>
+
+          <div class="settingsCard">
+            <h3>Admin</h3>
+            <div class="settingsStack">
+              <input class="settingsInput" id="setManagerName" placeholder="Manager name" value="Faction Management">
+              <input class="settingsInput" id="setMadeByText" placeholder="Made by text" value="Made By Nas">
+              <input class="settingsInput" id="setLogoUrl" placeholder="Custom logo image URL">
+              <input class="settingsInput" id="setBgVideoUrl" placeholder="Custom background video URL">
+              <button class="settingBtn" id="applyAdminSettings">Apply Admin Changes</button>
+              <button class="settingBtn" id="exitCustomVideoBtn">Exit Custom Video</button>
+              <div class="mediaStatus" id="mediaStatus"></div>
+            </div>
+          </div>
+
+          <div class="settingsCard">
+            <h3>Live Preview</h3>
+            <div class="versionBox">
+              ━━━━━━━━━━━━━━━━━━<br>
+              ILLEGAL FACTION SPINS v2.0<br>
+              <span id="previewMadeBy">Made By Nas</span><br>
+              ━━━━━━━━━━━━━━━━━━
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+
+    <section class="view" id="historyView">
+      <div class="historyLayout">
+        <aside class="historySide"><div class="historyTitle">Spin History</div><div class="tiny" style="margin-bottom:14px">Click a group to see every item they spun.</div><div class="groupList" id="groupList"></div><button class="clear danger" id="clearHistoryBtn" style="margin-top:14px;width:100%">CLEAR ALL HISTORY</button></aside>
+        <div class="historyTableBox"><div class="tableTools"><div><h2 id="historyHeading">All Groups</h2><div class="tiny" id="historySub">Every saved spin is stored here.</div></div><button class="danger" id="exportBtn">EXPORT CSV</button></div><div class="tableWrap"><table><thead><tr><th>Time</th><th>Group</th><th>Tier</th><th>Spin Type</th><th>Item Won</th><th>Category</th><th>Rarity</th><th>Actions</th></tr></thead><tbody id="historyRows"></tbody></table></div></div>
+      </div>
+    </section>
+  </main>
+</div>
+<canvas id="confettiCanvas"></canvas>
+<div class="modal" id="spinModal"><div class="spinBox"><div class="modalTop"><div><h2>Rolling Drop</h2><div class="tiny" id="rollText">ROLL 1 OF 2</div></div><button class="close" id="closeSpin">Close</button></div><div class="reel"><div class="line"></div><div class="track" id="track"></div></div></div></div>
+<div class="modal" id="resultModal"><div class="resultBox"><div class="modalTop"><h2>Drops Won</h2><button class="close" id="closeResult">Close</button></div><div class="resultGrid" id="results"></div><button class="collect" id="collectBtn">COLLECT ALL + SAVE HISTORY</button></div></div>
+
+<div class="modal confirmModal" id="confirmModal" aria-hidden="true">
+  <div class="confirmBox" role="dialog" aria-modal="true" aria-labelledby="confirmTitle" aria-describedby="confirmMessage">
+    <div class="confirmGlow"></div>
+    <div class="confirmHeader">
+      <div class="confirmEyebrow" id="confirmEyebrow">Confirmation</div>
+      <button class="close confirmClose" id="confirmClose" type="button" aria-label="Close confirmation">Close</button>
+    </div>
+    <h2 id="confirmTitle">Confirm action</h2>
+    <p id="confirmMessage">This change will be applied immediately.</p>
+    <div class="confirmMeta" id="confirmMeta"></div>
+    <div class="confirmActions">
+      <button class="confirmBtn ghost" id="confirmCancel" type="button">Cancel</button>
+      <button class="confirmBtn danger" id="confirmAccept" type="button">Confirm</button>
+    </div>
+  </div>
+</div>
+<script>
+const ITEMS=[
+{name:"T850",rarity:"common",category:"official test drop",type:"gun",image:"./Images/WEAPON_T850.png",weight:18},
+{name:"G2C",rarity:"common",category:"official test drop",type:"gun",image:"./Images/WEAPON_TG2C.png",weight:17},
+{name:"P226",rarity:"common",category:"official test drop",type:"gun",image:"./Images/WEAPON_P226.png",weight:16},
+{name:"P80",rarity:"uncommon",category:"official test drop",type:"gun",image:"./Images/WEAPON_P80.png",weight:14},
+{name:"P320 SIG",rarity:"uncommon",category:"official test drop",type:"gun",image:"./Images/WEAPON_P320SIG.png",weight:13},
+{name:"G17G3 P80",rarity:"uncommon",category:"official test drop",type:"gun",image:"./Images/WEAPON_G17G3P80.png",weight:12},
+{name:"FN502 Tactical",rarity:"rare",category:"tier 1 pistols",type:"gun",image:"./Images/WEAPON_FN502T.png",weight:11},
+{name:"G45 AV",rarity:"rare",category:"tier 1 pistols",type:"gun",image:"./Images/WEAPON_G45AV.png",weight:10},
+{name:"KG43X",rarity:"rare",category:"tier 1 pistols",type:"gun",image:"./Images/WEAPON_KG43X.png",weight:10},
+{name:"G45 CAMO",rarity:"uncommon",category:"tier 1 pistols",type:"gun",image:"./Images/WEAPON_G45CAMO.png",weight:12},
+{name:"G19X COYOTE",rarity:"uncommon",category:"tier 1 pistols",type:"gun",image:"./Images/WEAPON_G19XCOYOTE.png",weight:11},
+{name:"M&P 9 2.0",rarity:"rare",category:"tier 1 pistols",type:"gun",image:"./Images/WEAPON_MP920.png",weight:9},
+{name:"SD40 TACTICAL",rarity:"rare",category:"tier 1 pistols",type:"gun",image:"./Images/WEAPON_SD40T.png",weight:9},
+{name:"G17 BINARY",rarity:"rare",category:"tier 1 pistols",type:"gun",image:"./Images/WEAPON_G17BINARY.png",weight:8},
+{name:"PSAD Half N Half",rarity:"epic",category:"tier 1.5 pistols",type:"gun",image:"./Images/WEAPON_PSADHALFNHALF.png",weight:8},
+{name:"PSA FN57",rarity:"epic",category:"tier 1.5 pistols",type:"gun",image:"./Images/WEAPON_PSAFN57.png",weight:7},
+{name:"G20 CGFLEX",rarity:"epic",category:"tier 1.5 pistols",type:"gun",image:"./Images/WEAPON_G20CGFLEX.png",weight:7},
+{name:"MP20FRT",rarity:"legendary",category:"tier 2 rifle",type:"gun",image:"./Images/WEAPON_MP20FRT.png",weight:6},
+{name:"G19 Gen 5 MOS Switch",rarity:"legendary",category:"tier 2 switches",type:"gun",image:"./Images/WEAPON_G19G5MOSSWITCH.png",weight:5},
+{name:"G23 Gen 5 Switch",rarity:"legendary",category:"tier 2 switches",type:"gun",image:"./Images/WEAPON_G23G5SWITCHG.png",weight:5},
+{name:"G24 Switch",rarity:"legendary",category:"tier 2 switches",type:"gun",image:"./Images/WEAPON_G24SWITCHI.png",weight:5},
+{name:"G22 Gen 4 Switch Blue",rarity:"legendary",category:"tier 2 switches",type:"gun",image:"./Images/WEAPON_G22G4SB.png",weight:4},
+{name:"G22 Gen 4 Switch Green",rarity:"legendary",category:"tier 2 switches",type:"gun",image:"./Images/WEAPON_G22G4SG.png",weight:4},
+{name:"G22 Gen 4 Switch Pink",rarity:"legendary",category:"tier 2 switches",type:"gun",image:"./Images/WEAPON_G22G4SP.png",weight:4},
+{name:"G22 Gen 4 Switch Red",rarity:"legendary",category:"tier 2 switches",type:"gun",image:"./Images/WEAPON_G22G4SR.png",weight:4},
+{name:"G31 Gen 5 Gold Switch",rarity:"legendary",category:"tier 2 switches",type:"gun",image:"./Images/WEAPON_G31G5GS.png",weight:4},
+{name:"PSA P80 G19 Switch",rarity:"legendary",category:"tier 2 switches",type:"gun",image:"./Images/WEAPON_PSAP80G19SWITCH.png",weight:4},
+{name:"9mm Ammo",rarity:"common",category:"basic pistol ammo",type:"bullet",image:"./Images/ammo-9.png",weight:72},
+{name:".22 Ammo",rarity:"common",category:"basic pistol ammo",type:"bullet",image:"./Images/ammo-22.png",weight:70},
+{name:".40 Ammo",rarity:"uncommon",category:"better pistol ammo",type:"bullet",image:"./Images/ammo-40.png",weight:58},
+{name:".45 Ammo",rarity:"uncommon",category:"better pistol ammo",type:"bullet",image:"./Images/ammo-45.png",weight:54},
+{name:"10mm Ammo",rarity:"rare",category:"better pistol ammo",type:"bullet",image:"./Images/ammo-10.png",weight:42},
+{name:".357 Sig Ammo",rarity:"rare",category:"better pistol ammo",type:"bullet",image:"./Images/ammo-357s.png",weight:38},
+{name:"5.7x28 Ammo",rarity:"rare",category:"rifle ammo",type:"bullet",image:"./Images/ammo-57x28.png",weight:36},
+{name:"Rifle Ammo",rarity:"epic",category:"rifle ammo",type:"bullet",image:"./Images/ammo-rifle.png",weight:22},
+{name:"AR Ammo",rarity:"legendary",category:"strong rifle ammo",type:"bullet",image:"./Images/ammo-rifle2.png",weight:12},
+{name:"Glock Extended Mag",rarity:"uncommon",category:"extended mags",type:"accessory",image:"./Images/glockextendedmag2.png",weight:46},
+{name:"Glock Extended Mag Tan",rarity:"rare",category:"extended mags",type:"accessory",image:"./Images/glockextendedmagtan.png",weight:36},
+{name:"Klane Extended Mag",rarity:"rare",category:"extended mags",type:"accessory",image:"./Images/klaneextendedmag.png",weight:34},
+{name:"Klane Vector Mag",rarity:"rare",category:"high-capacity mags",type:"accessory",image:"./Images/klanevectormag.png",weight:30},
+{name:"Klane Vector Mag Tan",rarity:"epic",category:"high-capacity mags",type:"accessory",image:"./Images/klanevectormagt.png",weight:20},
+{name:"Klane Vector Mag White",rarity:"epic",category:"high-capacity mags",type:"accessory",image:"./Images/klanevectormagw.png",weight:18},
+{name:"Tactical Drum Mag",rarity:"epic",category:"high-capacity mags",type:"accessory",image:"./Images/tacticaldrummag.png",weight:16},
+{name:"Tactical Extended Mag",rarity:"uncommon",category:"extended mags",type:"accessory",image:"./Images/tacticalextendedmag.png",weight:44},
+{name:"Tactical Extended Mag 2",rarity:"rare",category:"extended mags",type:"accessory",image:"./Images/tacticalextendedmag2.png",weight:34},
+{name:"Tactical Extended Mag 3",rarity:"rare",category:"extended mags",type:"accessory",image:"./Images/tacticalextendedmag3.png",weight:32},
+{name:"Tactical Extended Mag 4",rarity:"epic",category:"high-capacity mags",type:"accessory",image:"./Images/tacticalextendedmag4.png",weight:20},
+{name:"Tactical Extended Mag Clear",rarity:"epic",category:"high-capacity mags",type:"accessory",image:"./Images/tacticalextendedmagclear.png",weight:18},
+{name:"Tactical Extended Mag Tan",rarity:"rare",category:"extended mags",type:"accessory",image:"./Images/tacticalextendedmagtan.png",weight:28},
+{name:"Tactical Extended Mag Alt",rarity:"rare",category:"extended mags",type:"accessory",image:"./Images/tactiaclextendedmag2.png",weight:26},
+{name:"UTG Windowed Mag",rarity:"legendary",category:"rare weapon accessories",type:"accessory",image:"./Images/utgwindowedmag.png",weight:10},
+{name:"AR Shell Catcher",rarity:"epic",category:"rare weapon accessories",type:"accessory",image:"./Images/arshellcatcher.png",weight:16},
+{name:"Black Pistol Grip",rarity:"common",category:"basic attachments",type:"accessory",image:"./Images/at_blackpistolgrip.png",weight:56},
+{name:"Blue Pistol Grip",rarity:"common",category:"basic attachments",type:"accessory",image:"./Images/at_bluepistolgrip.png",weight:54},
+{name:"Camo Pistol Grip",rarity:"uncommon",category:"basic attachments",type:"accessory",image:"./Images/at_camogrip.png",weight:48},
+{name:"Camo Pistol Grip Pink",rarity:"rare",category:"rare weapon accessories",type:"accessory",image:"./Images/at_camogripp.png",weight:30},
+{name:"Camo Pistol Grip Tan",rarity:"rare",category:"rare weapon accessories",type:"accessory",image:"./Images/at_camogript.png",weight:28},
+{name:"Dark Green Pistol Grip",rarity:"common",category:"basic attachments",type:"accessory",image:"./Images/at_darkgreenpistolgrip.png",weight:50},
+{name:"Green Beam",rarity:"epic",category:"rare weapon accessories",type:"accessory",image:"./Images/at_gbeam.png",weight:18},
+{name:"Goon Tape",rarity:"common",category:"basic attachments",type:"accessory",image:"./Images/at_goontape.png",weight:52},
+{name:"Goon Tape Blue",rarity:"uncommon",category:"basic attachments",type:"accessory",image:"./Images/at_goontapeb.png",weight:44},
+{name:"Goon Tape Tan",rarity:"uncommon",category:"basic attachments",type:"accessory",image:"./Images/at_goontapet.png",weight:42},
+{name:"Gray Pistol Grip",rarity:"common",category:"basic attachments",type:"accessory",image:"./Images/at_graypistolgrip.png",weight:50},
+{name:"Green Pistol Grip",rarity:"common",category:"basic attachments",type:"accessory",image:"./Images/at_greenpistolgrip.png",weight:48},
+{name:"Hogue Pistol Grip",rarity:"common",category:"basic attachments",type:"accessory",image:"./Images/at_hoguepistolgrip.png",weight:48},
+{name:"Hogue Pistol Grip Green",rarity:"uncommon",category:"basic attachments",type:"accessory",image:"./Images/at_hoguepistolgripg.png",weight:42},
+{name:"Hogue Pistol Grip Tan",rarity:"uncommon",category:"basic attachments",type:"accessory",image:"./Images/at_hoguepistolgript.png",weight:40},
+{name:"OL Beam Blue",rarity:"epic",category:"rare weapon accessories",type:"accessory",image:"./Images/at_olbeamb.png",weight:16},
+{name:"OL Beam Green",rarity:"epic",category:"rare weapon accessories",type:"accessory",image:"./Images/at_olbeamg.png",weight:16},
+{name:"OL Beam Pink",rarity:"epic",category:"rare weapon accessories",type:"accessory",image:"./Images/at_olbeamp.png",weight:16},
+{name:"OL Beam Red",rarity:"epic",category:"rare weapon accessories",type:"accessory",image:"./Images/at_olbeamr.png",weight:16},
+{name:"OL Beam BG",rarity:"legendary",category:"rare weapon accessories",type:"accessory",image:"./Images/at_olbeambg.png",weight:8},
+{name:"OL Beam BGB",rarity:"legendary",category:"rare weapon accessories",type:"accessory",image:"./Images/at_olbeambgb.png",weight:8},
+{name:"OL Beam BGG",rarity:"legendary",category:"rare weapon accessories",type:"accessory",image:"./Images/at_olbeambgg.png",weight:8},
+{name:"OL Beam BGP",rarity:"legendary",category:"rare weapon accessories",type:"accessory",image:"./Images/at_olbeambgp.png",weight:8},
+{name:"OL Beam BGR",rarity:"legendary",category:"rare weapon accessories",type:"accessory",image:"./Images/at_olbeambgr.png",weight:8},
+{name:"OL Flashlight",rarity:"epic",category:"rare weapon accessories",type:"accessory",image:"./Images/at_olflashlight.png",weight:18},
+{name:"Pink Pistol Grip",rarity:"rare",category:"rare weapon accessories",type:"accessory",image:"./Images/at_pinkpistolgrip.png",weight:24},
+{name:"Purple Pistol Grip",rarity:"rare",category:"rare weapon accessories",type:"accessory",image:"./Images/at_purplepistolgrip.png",weight:24},
+{name:"Red Pistol Grip",rarity:"rare",category:"rare weapon accessories",type:"accessory",image:"./Images/at_redpistolgrip.png",weight:24},
+{name:"Rubber Bands",rarity:"common",category:"utility items",type:"accessory",image:"./Images/at_rubberbands.png",weight:60},
+{name:"Tan Pistol Grip",rarity:"common",category:"basic attachments",type:"accessory",image:"./Images/at_tanpistolgrip.png",weight:50}
+];
+const TEST_GUNS=["T850","G2C","P226","P80","P320 SIG","G17G3 P80"];
+const TIER1_GUNS=[...TEST_GUNS,"FN502 Tactical","G45 AV","KG43X","G45 CAMO","G19X COYOTE","M&P 9 2.0","SD40 TACTICAL","G17 BINARY"];
+const TIER15_GUNS=["P320 SIG","G17G3 P80","FN502 Tactical","G45 AV","KG43X","G45 CAMO","G19X COYOTE","M&P 9 2.0","SD40 TACTICAL","G17 BINARY","PSAD Half N Half","PSA FN57","G20 CGFLEX"];
+const SWITCH_GUNS=["G19 Gen 5 MOS Switch","G23 Gen 5 Switch","G24 Switch","G22 Gen 4 Switch Blue","G22 Gen 4 Switch Green","G22 Gen 4 Switch Pink","G22 Gen 4 Switch Red","G31 Gen 5 Gold Switch","PSA P80 G19 Switch"];
+const WEAPON_POOLS={
+  test:new Set(TEST_GUNS),
+  t1:new Set(TIER1_GUNS),
+  "t1.5":new Set(TIER15_GUNS),
+  t2:new Set([...new Set([...TIER15_GUNS,"MP20FRT",...SWITCH_GUNS])])
+};
+const TIERS={test:{label:"TEST",rewards:2,rarities:["common","uncommon"]},t1:{label:"TIER 1",rewards:4,rarities:["common","uncommon","rare"]},"t1.5":{label:"TIER 1.5",rewards:5,rarities:["common","uncommon","rare","epic"]},t2:{label:"TIER 2",rewards:8,rarities:["common","uncommon","rare","epic","legendary"]}};
+const MUSIC_TRACKS=[
+  {name:"Keke - Headtapp Gz",id:1},
+  {name:"Strictly 4 The Fans - Rennytherapper",id:2},
+  {name:"Forget You - Kdot B",id:3},
+  {name:"Clock It - Dotty B",id:4},
+  {name:"Peach Dream - TyBando x Yen34",id:5},
+  {name:"Unfadeable - Kay30",id:6},
+  {name:"Purge - RichNunu",id:7},
+  {name:"Talking About Drillin - TGMAN",id:8},
+  {name:"RTP - BT Spiig x QG74RT",id:9},
+  {name:"Aiint On Shit - Double R x Ace B",id:10},
+  {name:"Dumb Ways 2 Die - Jah Munna",id:11},
+  {name:"Warning - Swoop G",id:12}
+].map(track=>({
+  ...track,
+  mp3:`./mp3/Music${track.id}.mp3`,
+  mp4:`Music${track.id}.mp4`,
+  mp3Sources:[
+    `./mp3/Music${track.id}.mp3`,
+    `./mp3/Music ${track.id}.mp3`,
+    `./mp3/music${track.id}.mp3`,
+    `./mp3/music ${track.id}.mp3`,
+    `mp3/Music${track.id}.mp3`,
+    `mp3/Music ${track.id}.mp3`
+  ],
+  mp4Sources:[
+    `Music${track.id}.mp4`,
+    `./Music${track.id}.mp4`,
+    `Music ${track.id}.mp4`,
+    `./Music ${track.id}.mp4`,
+    `music${track.id}.mp4`,
+    `./music${track.id}.mp4`,
+    `music ${track.id}.mp4`,
+    `./music ${track.id}.mp4`,
+    `./mp4/Music${track.id}.mp4`,
+    `mp4/Music${track.id}.mp4`,
+    `./mp4/Music ${track.id}.mp4`,
+    `mp4/Music ${track.id}.mp4`
+  ]
+}));
+const SPEEDS={fast:3000,normal:4650,cinematic:5800};
+const STORAGE_KEYS={history:"illegalFactionSpinHistory",legacyHistory:"phillySpinHistory",settings:"illegalFactionSpinSettings",legacySettings:"phillySpinSettings",theme:"illegalFactionTheme",legacyTheme:"phillyTheme",track:"illegalFactionTrackIndex"};
+const ITEM_H=120, WIN_IDX=62;
+const ITEM_LOOKUP=new Map(ITEMS.map(item=>[`${item.type}:${item.name}`,item]));
+function sanitizeHistoryRows(rows){
+  if(!Array.isArray(rows))return [];
+  return rows.map((entry,index)=>{
+    if(!entry||typeof entry!=='object') return null;
+    const spinType=String(entry.spinType||entry.type||'unknown').toLowerCase();
+    const itemName=String(entry.item||entry.name||'Unknown Item').trim()||'Unknown Item';
+    const lookup=ITEM_LOOKUP.get(`${spinType}:${itemName}`);
+    const ts=Number(entry.ts);
+    return {
+      time:String(entry.time|| (Number.isFinite(ts)?new Date(ts).toLocaleString():'Saved spin')),
+      ts:Number.isFinite(ts)?ts:Date.now()-index,
+      group:String(entry.group||entry.faction||'Unknown Group'),
+      tier:String(entry.tier||entry.tierLabel||'Legacy Drop'),
+      spinType,
+      item:itemName,
+      category:String(entry.category||lookup?.category||'Legacy item'),
+      rank:String(entry.rank||entry.rarity||lookup?.rarity||'legacy').toLowerCase(),
+      image:String(entry.image||lookup?.image||''),
+      emoji:String(entry.emoji||lookup?.emoji||'')
+    };
+  }).filter(Boolean).sort((a,b)=>(b.ts||0)-(a.ts||0));
+}
+const rawHistory=JSON.parse(localStorage.getItem(STORAGE_KEYS.history)||localStorage.getItem(STORAGE_KEYS.legacyHistory)||"[]");
+let history=sanitizeHistoryRows(rawHistory);
+localStorage.setItem(STORAGE_KEYS.history,JSON.stringify(history));
+const itemsEl=document.getElementById('items'), poolCount=document.getElementById('poolCount'), track=document.getElementById('track');
+const elements={
+  groupInput:document.getElementById('groupInput'),
+  dropBtn:document.getElementById('dropBtn'),
+  playBtn:document.getElementById('playBtn'),
+  prevBtn:document.getElementById('prevBtn'),
+  nextBtn:document.getElementById('nextBtn'),
+  muteBtn:document.getElementById('muteBtn'),
+  trackName:document.getElementById('trackName'),
+  closeSpin:document.getElementById('closeSpin'),
+  closeResult:document.getElementById('closeResult'),
+  collectBtn:document.getElementById('collectBtn'),
+  spinModal:document.getElementById('spinModal'),
+  resultModal:document.getElementById('resultModal'),
+  track,
+  rollText:document.getElementById('rollText'),
+  results:document.getElementById('results'),
+  rarityPeek:document.getElementById('rarityPeek'),
+  rarityPeekTitle:document.getElementById('rarityPeekTitle'),
+  rarityPeekCount:document.getElementById('rarityPeekCount'),
+  rarityPeekList:document.getElementById('rarityPeekList')
+};
+const state={
+  tier:'test',
+  spinType:'gun',
+  filter:'all',
+  spinning:false,
+  pending:[],
+  pendingGroup:'',
+  settings:{spinSpeed:'normal'},
+  trackIndex:Number(localStorage.getItem(STORAGE_KEYS.track)||0)||0,
+  usingCustomMusic:false,
+  usingCustomVideo:false,
+  rarityPeekFilter:'all',
+  mediaSyncTimer:null,
+  settingsInitialized:false,
+  playlistSnapshot:null,
+  customVideoUrl:'',
+  customVideoToken:0,
+  trackLoadToken:0
+};
+const confirmEls={
+  modal:document.getElementById('confirmModal'),
+  title:document.getElementById('confirmTitle'),
+  message:document.getElementById('confirmMessage'),
+  meta:document.getElementById('confirmMeta'),
+  eyebrow:document.getElementById('confirmEyebrow'),
+  accept:document.getElementById('confirmAccept'),
+  cancel:document.getElementById('confirmCancel'),
+  close:document.getElementById('confirmClose')
+};
+let activeConfirmResolver=null;
+function closeConfirmDialog(result){
+  confirmEls.modal.classList.remove('open');
+  confirmEls.modal.setAttribute('aria-hidden','true');
+  document.body.classList.remove('modalLocked');
+  document.removeEventListener('keydown',handleConfirmEscape);
+  if(activeConfirmResolver){
+    const resolve=activeConfirmResolver;
+    activeConfirmResolver=null;
+    resolve(result);
+  }
+}
+function handleConfirmEscape(event){
+  if(event.key==='Escape') closeConfirmDialog(false);
+}
+function openConfirmDialog(options={}){
+  return new Promise(resolve=>{
+    if(activeConfirmResolver) activeConfirmResolver(false);
+    activeConfirmResolver=resolve;
+    const {
+      eyebrow='Confirmation',
+      title='Confirm action',
+      message='This change will be applied immediately.',
+      details='',
+      confirmText='Confirm',
+      cancelText='Cancel',
+      danger=true
+    }=options;
+    confirmEls.eyebrow.textContent=eyebrow;
+    confirmEls.title.textContent=title;
+    confirmEls.message.textContent=message;
+    confirmEls.meta.textContent=details;
+    confirmEls.meta.style.display=details?'block':'none';
+    confirmEls.accept.textContent=confirmText;
+    confirmEls.cancel.textContent=cancelText;
+    confirmEls.accept.classList.toggle('danger',!!danger);
+    confirmEls.accept.classList.toggle('ghost',!danger);
+    confirmEls.modal.classList.add('open');
+    confirmEls.modal.setAttribute('aria-hidden','false');
+    document.body.classList.add('modalLocked');
+    requestAnimationFrame(()=>confirmEls.accept.focus());
+    document.addEventListener('keydown',handleConfirmEscape);
+  });
+}
+confirmEls.accept.onclick=()=>closeConfirmDialog(true);
+confirmEls.cancel.onclick=()=>closeConfirmDialog(false);
+confirmEls.close.onclick=()=>closeConfirmDialog(false);
+confirmEls.modal.addEventListener('mousedown',event=>{if(event.target===confirmEls.modal)closeConfirmDialog(false);});
+
+function escapeHtml(value){return String(value).replace(/[&<>"']/g,ch=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[ch]))}
+function allowed(t,item){
+  if(item.type==='gun')return WEAPON_POOLS[t].has(item.name);
+  return TIERS[t].rarities.includes(item.rarity);
+}
+function getVisiblePool(ignoreFilter=false){
+  return ITEMS.filter(item=>allowed(state.tier,item)&&item.type===state.spinType&&(ignoreFilter||state.filter==='all'||item.rarity===state.filter));
+}
+function pool(ignoreFilter=false){return getVisiblePool(ignoreFilter)}
+function normalizeAssetUrl(url){
+  if(!url)return '';
+  const cleaned=String(url).trim().replace(/\\/g,'/');
+  try{
+    const resolved=new URL(cleaned,window.location.href);
+    resolved.pathname=resolved.pathname.split('/').map(segment=>encodeURIComponent(decodeURIComponent(segment))).join('/').replace(/%2F/g,'/');
+    return resolved.href;
+  }catch(error){
+    return cleaned;
+  }
+}
+const imageLoadState=new Map();
+const imageProbeCache=new Map();
+function trashIconMarkup(label='Delete item'){
+  return `<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M9 3h6l1 2h4"/><path d="M5 5h14"/><path d="M8 8v9"/><path d="M12 8v9"/><path d="M16 8v9"/><path d="M7 5l1 14a2 2 0 0 0 2 2h4a2 2 0 0 0 2-2l1-14"/></svg><span class="srOnly">${escapeHtml(label)}</span>`;
+}
+function syncVolumeUI(value){
+  const slider=document.getElementById('volumeSlider');
+  const valueEl=document.getElementById('volumeValue');
+  const normalized=Math.max(0,Math.min(100,Number(value)||0));
+  if(slider){
+    slider.value=String(normalized);
+    slider.style.setProperty('--volumeProgress',`${normalized}%`);
+  }
+  if(valueEl)valueEl.textContent=`${normalized}%`;
+}
+function imageMarkup(item,{className='itemImg',sizeClass='',style=''}={}){
+  if(!item?.image)return `<div class="emoji">${item?.emoji||''}</div>`;
+  const src=normalizeAssetUrl(item.image);
+  return `<span class="imgShell ${sizeClass}"><img class="${className}" style="${style}" src="${src}" data-src="${src}" alt="${escapeHtml(item.name)}" loading="eager" decoding="async" fetchpriority="high" draggable="false"><span class="imgFallback" hidden>${item.emoji||''}</span></span>`;
+}
+function visual(i){return imageMarkup(i)}
+function scheduleImageRetry(img){
+  if(!img)return;
+  const src=img.dataset.src||img.getAttribute('src');
+  if(!src)return;
+  const retries=Number(img.dataset.retries||0);
+  if(retries>=2){
+    img.hidden=true;
+    const fallback=img.parentElement?.querySelector('.imgFallback');
+    if(fallback)fallback.hidden=false;
+    return;
+  }
+  img.dataset.retries=String(retries+1);
+  window.setTimeout(()=>{
+    const busted=`${src}${src.includes('?')?'&':'?'}retry=${Date.now()}`;
+    img.src=busted;
+  },140*(retries+1));
+}
+function attachImageGuards(root=document){
+  root.querySelectorAll('img[data-src]').forEach(img=>{
+    if(img.dataset.bound==='1')return;
+    img.dataset.bound='1';
+    const reveal=()=>{
+      img.hidden=false;
+      img.classList.add('imgReady');
+      const fallback=img.parentElement?.querySelector('.imgFallback');
+      if(fallback)fallback.hidden=true;
+      imageLoadState.set(img.dataset.src||img.currentSrc||img.src,'loaded');
+    };
+    img.addEventListener('load',reveal,{passive:true});
+    img.addEventListener('error',()=>{
+      imageLoadState.set(img.dataset.src||img.currentSrc||img.src,'error');
+      scheduleImageRetry(img);
+    });
+    if(img.complete && img.naturalWidth>0){
+      reveal();
+    }else if(img.complete&&img.naturalWidth===0){
+      scheduleImageRetry(img);
+    }
+  });
+}
+function preloadImages(items){
+  [...new Set(items.map(item=>normalizeAssetUrl(item.image)).filter(Boolean))].forEach(src=>{
+    if(!src || imageLoadState.get(src)==='loaded' || imageProbeCache.has(src))return;
+    imageLoadState.set(src,'loading');
+    const probe=new Image();
+    imageProbeCache.set(src,probe);
+    probe.decoding='async';
+    probe.loading='eager';
+    probe.onload=()=>{
+      imageLoadState.set(src,'loaded');
+      imageProbeCache.delete(src);
+    };
+    probe.onerror=()=>{
+      imageLoadState.set(src,'error');
+      imageProbeCache.delete(src);
+    };
+    probe.src=src;
+  });
+}
+function renderRarityPeek(){
+  const peekPool=getVisiblePool(true).filter(item=>state.rarityPeekFilter==='all'||item.rarity===state.rarityPeekFilter);
+  elements.rarityPeekTitle.textContent=state.rarityPeekFilter==='all'?'All Visible Items':`${state.rarityPeekFilter} Items`;
+  elements.rarityPeekCount.textContent=`${peekPool.length} match${peekPool.length===1?'':'es'}`;
+  elements.rarityPeekList.innerHTML=peekPool.map(item=>`<div class="rarityPeekCard">${visual(item)}<div class="rarityPeekText"><strong>${escapeHtml(item.name)}</strong><span>${escapeHtml(item.category)}</span></div></div>`).join('')||'<div class="tiny">No matching items for this rarity.</div>';
+  attachImageGuards(elements.rarityPeekList);
+  elements.rarityPeek.classList.add('open');
+}
+let renderTimer=null;
+let renderSeq=0;
+function buildPoolHTML(p){
+  return p.map((i,idx)=>{
+    const floatDelay=`-${((idx*0.47)%2.8).toFixed(2)}s`;
+    const floatDuration=`${(4.8+((idx*0.63)%1.9)).toFixed(2)}s`;
+    return `<div class="card" style="animation-delay:${Math.min(idx,10)*42}ms"><div class="thumb">${imageMarkup(i,{className:'weaponFloat',style:`--floatDelay:${floatDelay};--floatDuration:${floatDuration};`})}</div><div class="cardInfo"><div class="itemName">${i.name}</div><div class="itemCat">${i.category}</div><div class="badges"><span class="badge ${i.rarity}">${i.rarity}</span><span class="badge">${state.spinType}</span></div></div></div>`;
+  }).join('')||`<div class="tiny" style="animation:dropCascade .28s ease both">No ${state.spinType} drops available for this tier/filter.</div>`;
+}
+function render(){
+  const seq=++renderSeq;
+  const p=pool();
+  poolCount.textContent=`${p.length} items`;
+  document.getElementById('ruleTier').textContent=TIERS[state.tier].label;
+  clearTimeout(renderTimer);
+
+  // Fast render: no delayed loading state, so switching Tier 2 -> Test does not stutter.
+  itemsEl.classList.remove('poolReveal','tierSwitchIn','tierSwitchOut','loading');
+  itemsEl.innerHTML=buildPoolHTML(p);
+  preloadImages(p);
+  attachImageGuards(itemsEl);
+  requestAnimationFrame(()=>{
+    if(seq!==renderSeq)return;
+    itemsEl.classList.add('poolReveal');
+  });
+  renderRarityPeek();
+
+  // Only rebuild the history table while the history view is visible.
+  if(document.getElementById('historyView')?.classList.contains('active')) renderHistory();
+}
+function getConsecutiveCount(name){
+  let count=0;
+  for(let i=state.pending.length-1;i>=0;i--){
+    if(state.pending[i]?.name===name) count++;
+    else break;
+  }
+  return count;
+}
+function weightedPick(pool, previousName) {
+  const adjusted = pool.map((item) => ({
+    ...item,
+    effectiveWeight:
+      previousName && item.name === previousName
+        ? Math.max(1, item.weight * 0.3)
+        : item.weight,
+  }));
+
+  const total = adjusted.reduce((sum, item) => sum + item.effectiveWeight, 0);
+  let roll = Math.random() * total;
+
+  for (const item of adjusted) {
+    roll -= item.effectiveWeight;
+    if (roll <= 0) return item;
+  }
+
+  return adjusted[adjusted.length - 1];
+}
+function reelItems(pool, winner) {
+  const output = [];
+
+  for (let index = 0; index < WIN_IDX; index++) {
+    output.push(pool[Math.floor(Math.random() * pool.length)]);
+  }
+
+  output.push(winner);
+
+  for (let index = 0; index < 10; index++) {
+    output.push(pool[Math.floor(Math.random() * pool.length)]);
+  }
+
+  return output;
+}
+function fillReel(reelPool) {
+  elements.track.classList.remove("spinMotion", "settled");
+  elements.track.style.transform = "translate3d(0,0,0)";
+
+  preloadImages(reelPool);
+  elements.track.innerHTML = reelPool
+    .map(
+      (item, index) => `
+      <div class="reelItem" data-name="${escapeHtml(item.name)}" data-index="${index}">
+        ${visual(item)}
+        <div class="reelText">
+          <strong>${escapeHtml(item.name)}</strong>
+          <div class="tiny">${escapeHtml(item.category)}</div>
+        </div>
+      </div>
+    `
+    )
+    .join("");
+  attachImageGuards(elements.track);
+}
+const wait=ms=>new Promise(r=>setTimeout(r,ms));
+  function openModal(node){node.classList.add('open')}
+  function closeModal(node){node.classList.remove('open')}
+  function renderResults(){showResults()}
+  function playSpinChime(){if(appSettings.spinSfx===false)return}
+async function animateReelToWinner(winnerIndex = WIN_IDX) {
+  const reelHeight = elements.reel?.clientHeight || 360;
+  const targetY = (reelHeight / 2) - (winnerIndex * ITEM_H + ITEM_H / 2);
+
+  elements.track.classList.add("spinMotion");
+
+  const animation = elements.track.animate(
+    [
+      { transform: "translate3d(0,0,0)", offset: 0 },
+      { transform: `translate3d(0, ${targetY * 0.22}px, 0)`, offset: 0.18 },
+      { transform: `translate3d(0, ${targetY * 0.58}px, 0)`, offset: 0.55 },
+      { transform: `translate3d(0, ${targetY - ITEM_H}px, 0)`, offset: 0.88 },
+      { transform: `translate3d(0, ${targetY + 32}px, 0)`, offset: 0.96 },
+      { transform: `translate3d(0, ${targetY}px, 0)`, offset: 1 },
+    ],
+    {
+      duration: SPEEDS[state.settings.spinSpeed],
+      easing: "cubic-bezier(.16,.84,.24,1)",
+      fill: "forwards",
+    }
+  );
+
+  try {
+    await animation.finished;
+  } catch {
+    return;
+  }
+
+  elements.track.classList.remove("spinMotion");
+  elements.track.classList.add("settled");
+  elements.track.style.transform = `translate3d(0, ${targetY}px, 0)`;
+
+  [...elements.track.querySelectorAll(".reelItem")].forEach((node) => {
+    node.classList.toggle("winner", Number(node.dataset.index) === winnerIndex);
+  });
+}
+async function startSpin() {
+  if (state.spinning) return;
+
+  const group = elements.groupInput.value.trim();
+  if (!group) {
+    alert("Type the group name before spinning.");
+    elements.groupInput.focus();
+    return;
+  }
+
+  const pool = getVisiblePool(true).filter((item) =>
+    state.filter === "all" || item.rarity === state.filter
+  );
+
+  if (!pool.length) {
+    alert(`No ${state.spinType} drops available for ${TIERS[state.tier].label}.`);
+    return;
+  }
+
+  state.spinning = true;
+  state.pending = [];
+  state.pendingGroup = group;
+
+  const winningItems = [];
+  for (let roll = 1; roll <= TIERS[state.tier].rewards; roll++) {
+    const previousWinner = winningItems[winningItems.length - 1]?.name;
+    winningItems.push(weightedPick(pool, previousWinner));
+  }
+  state.pending = [...winningItems];
+
+  elements.dropBtn.disabled = true;
+  elements.closeSpin.disabled = true;
+  openModal(elements.spinModal);
+
+  try {
+    for (let roll = 1; roll <= winningItems.length; roll++) {
+      elements.rollText.textContent = `ROLL ${roll} OF ${winningItems.length}`;
+
+      const winner = winningItems[roll - 1];
+      fillReel(reelItems(pool, winner));
+      await animateReelToWinner(WIN_IDX);
+
+      playSpinChime(winner.rarity);
+      launchConfetti("small");
+      await wait(240);
+    }
+
+    state.pending = [...winningItems];
+    renderResults();
+    closeModal(elements.spinModal);
+    openModal(elements.resultModal);
+  } finally {
+    state.spinning = false;
+    elements.dropBtn.disabled = false;
+    elements.closeSpin.disabled = false;
+  }
+}
+function showResults(){document.getElementById('resultModal').classList.remove('open');void document.getElementById('resultModal').offsetWidth;preloadImages(state.pending);document.getElementById('results').innerHTML=state.pending.map(i=>`<div class="resultCard">${visual(i)}<div class="itemName" style="font-size:18px;margin-top:8px">${i.name}</div><div class="tiny">${state.pendingGroup}</div><div class="badges" style="justify-content:center"><span class="badge ${i.rarity}">${i.rarity}</span></div></div>`).join('');attachImageGuards(document.getElementById('results'));document.getElementById('resultModal').classList.add('open')}
+function launchConfetti(){
+  if(window.appSettings && appSettings.confetti===false)return;
+  const canvas=document.getElementById('confettiCanvas'); if(!canvas)return;
+  const ctx=canvas.getContext('2d');
+  canvas.width=innerWidth; canvas.height=innerHeight;
+  const colors=['#e8000d','#ff3333','#ffffff','#0b0b0f','#bf0010','#d9d9df'];
+  const parts=Array.from({length:190},()=>({
+    x:Math.random()*canvas.width,
+    y:Math.random()*canvas.height*.38-canvas.height*.22,
+    w:Math.random()*10+4,
+    h:Math.random()*6+3,
+    c:colors[Math.floor(Math.random()*colors.length)],
+    s:Math.random()*3+1.6,
+    d:(Math.random()-.5)*2.8,
+    r:Math.random()*6,
+    rs:(Math.random()-.5)*.2
+  }));
+  let start=null; const dur=3600, fade=2600;
+  function frame(t){
+    if(!start)start=t;
+    const e=t-start, a=e>fade?1-(e-fade)/(dur-fade):1;
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+    parts.forEach(p=>{
+      p.y+=p.s; p.x+=p.d; p.r+=p.rs;
+      ctx.save(); ctx.globalAlpha=Math.max(0,a); ctx.translate(p.x,p.y); ctx.rotate(p.r); ctx.fillStyle=p.c; ctx.fillRect(-p.w/2,-p.h/2,p.w,p.h); ctx.restore();
+    });
+    if(e<dur)requestAnimationFrame(frame); else ctx.clearRect(0,0,canvas.width,canvas.height);
+  }
+  requestAnimationFrame(frame);
+}
+function saveResults(){const now=new Date();const rows=state.pending.map(i=>({time:now.toLocaleString(),ts:Date.now(),group:state.pendingGroup,tier:TIERS[state.tier].label,spinType:state.spinType,item:i.name,category:i.category,rank:i.rarity,image:i.image||'',emoji:i.emoji||''}));history.unshift(...rows);persistHistory();state.pending=[];document.getElementById('resultModal').classList.remove('open');launchConfetti();render()}
+let selectedGroup='all';function escJS(s){return String(s).replace(/\\/g,'\\\\').replace(/'/g,"\\'")}function persistHistory(){localStorage.setItem(STORAGE_KEYS.history,JSON.stringify(history))}
+async function deleteHistoryEntry(index){
+  const row=history[index];
+  if(!row)return;
+  const ok=await openConfirmDialog({
+    eyebrow:'Delete Saved Drop',
+    title:'Remove this history entry?',
+    message:'Selecting Delete will permanently remove this saved drop from local history on this device.',
+    details:`${row.item} • ${row.spinType.toUpperCase()} • ${row.group} • ${row.time}`,
+    confirmText:'Delete',
+    cancelText:'Keep Item',
+    danger:true
+  });
+  if(!ok)return;
+  history.splice(index,1);
+  if(selectedGroup!=='all'&&!history.some(entry=>entry.group===selectedGroup))selectedGroup='all';
+  persistHistory();
+  renderHistory();
+}
+function renderHistory(){const groups=[...new Set(history.map(h=>h.group))];document.getElementById('groupList').innerHTML=`<button class="groupRow ${selectedGroup==='all'?'active':''}" type="button" onclick="selectGroup('all')"><b>All Groups</b><span>${history.length} total drops</span></button>`+groups.map(g=>{let c=history.filter(h=>h.group===g).length;return `<button class="groupRow ${selectedGroup===g?'active':''}" type="button" onclick="selectGroup('${escJS(g)}')"><b>${g}</b><span>${c} drops spun</span></button>`}).join('');let rows=selectedGroup==='all'?history.map((entry,index)=>({...entry,__index:index})):history.map((entry,index)=>({...entry,__index:index})).filter(h=>h.group===selectedGroup);document.getElementById('historyHeading').textContent=selectedGroup==='all'?'All Groups':selectedGroup;document.getElementById('historySub').textContent=`${rows.length} saved drops`;preloadImages(rows);document.getElementById('historyRows').innerHTML=rows.map(h=>`<tr><td>${h.time}</td><td><b>${h.group}</b></td><td>${h.tier}</td><td>${h.spinType}</td><td>${imageMarkup(h,{className:'miniImg'})} <b>${h.item}</b>${!h.image&&!ITEM_LOOKUP.has(`${h.spinType}:${h.item}`)?'<span class="legacyBadge">Legacy Save</span>':''}</td><td>${h.category}</td><td><span class="badge ${h.rank}">${h.rank}</span></td><td><div class="historyActions"><button class="iconBtn" type="button" title="Delete this item" aria-label="Delete ${escapeHtml(h.item)} from history" onclick="deleteHistoryEntry(${h.__index})">${trashIconMarkup(`Delete ${h.item} from history`)}</button></div></td></tr>`).join('')||`<tr><td colspan="8" class="tiny">No history saved yet.</td></tr>`;attachImageGuards(document.getElementById('historyRows'))}
+window.selectGroup=(g)=>{selectedGroup=g;renderHistory()};
+window.deleteHistoryEntry=deleteHistoryEntry;
+let viewSwitching=false;
+function setView(v){
+  if(viewSwitching)return;
+  const targetView=v==='spins'?'spin':v;
+  const next=document.getElementById(targetView+'View');
+  if(!next)return;
+  const current=document.querySelector('.view.active');
+  if(current===next)return;
+  viewSwitching=true;
+  document.querySelectorAll('.navBtn[data-view]').forEach(b=>b.classList.toggle('active',b.dataset.view===targetView));
+  if(current){
+    current.classList.add('fadeOut');
+    setTimeout(()=>{
+      current.classList.remove('active','fadeOut');
+      next.classList.add('active');
+      renderHistory();
+      setTimeout(()=>{viewSwitching=false},260);
+    },210);
+  }else{
+    next.classList.add('active');
+    renderHistory();
+    viewSwitching=false;
+  }
+}
+function exportCSV(){let rows=[['Time','Group','Tier','Spin Type','Item Won','Category','Rarity'],...history.map(h=>[h.time,h.group,h.tier,h.spinType,h.item,h.category,h.rank])];let csv=rows.map(r=>r.map(x=>`"${String(x).replaceAll('"','""')}"`).join(',')).join('\n');let a=document.createElement('a');a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv'}));a.download='illegal-faction-spin-history.csv';a.click()}
+
+function clickAnimate(el){if(!el)return;el.classList.remove('clicked','choiceOpen');void el.offsetWidth;el.classList.add('clicked','choiceOpen');setTimeout(()=>el.classList.remove('clicked','choiceOpen'),360)}
+document.addEventListener('click',e=>{const t=e.target.closest('button,.card,.groupRow');if(t)clickAnimate(t)},{passive:true});
+document.getElementById('dropBtn').onclick=startSpin;document.getElementById('closeSpin').onclick=()=>{if(!state.spinning)document.getElementById('spinModal').classList.remove('open')};document.getElementById('closeResult').onclick=()=>document.getElementById('resultModal').classList.remove('open');document.getElementById('collectBtn').onclick=saveResults;document.getElementById('clearHistoryBtn').onclick=async()=>{const ok=await openConfirmDialog({eyebrow:'Clear History',title:'Clear all saved spin history?',message:'Selecting Delete All will permanently remove every saved spin from local history on this device.',details:`${history.length} saved ${history.length===1?'entry':'entries'} will be removed. This cannot be undone.`,confirmText:'Delete All',cancelText:'Cancel',danger:true});if(!ok)return;history=[];persistHistory();selectedGroup='all';renderHistory()};document.getElementById('exportBtn').onclick=exportCSV;
+document.querySelectorAll('.navBtn[data-view]').forEach(b=>b.onclick=()=>setView(b.dataset.view));
+function clickFX(b){b.classList.remove('clicked');void b.offsetWidth;b.classList.add('clicked');setTimeout(()=>b.classList.remove('clicked'),650)}
+let tierSwitching=false;
+function tierSwitchAnimation(nextTier,btn){
+  clickFX(btn);
+  if(nextTier===state.tier || tierSwitching)return;
+  tierSwitching=true;
+  const box=document.getElementById('items');
+  document.querySelectorAll('.tierTab').forEach(x=>x.classList.remove('active'));
+  btn.classList.add('active');
+
+  // Same smooth active-button animation, but instant data swap for no lag.
+  box.classList.remove('tierSwitchIn','tierSwitchOut','poolReveal');
+  box.classList.add('tierSwitchOut');
+  requestAnimationFrame(()=>{
+    state.tier=nextTier;
+    render();
+    box.classList.remove('tierSwitchOut');
+    void box.offsetWidth;
+    box.classList.add('tierSwitchIn');
+    setTimeout(()=>{
+      box.classList.remove('tierSwitchIn');
+      tierSwitching=false;
+    },260);
+  });
+}
+document.querySelectorAll('.tierTab').forEach(b=>b.onclick=()=>tierSwitchAnimation(b.dataset.tier,b));
+document.querySelectorAll('.spinType').forEach(b=>b.onclick=()=>{state.spinType=b.dataset.type;state.rarityPeekFilter=state.filter;clickFX(b);document.querySelectorAll('.spinType').forEach(x=>x.classList.remove('active'));b.classList.add('active');render()});document.querySelectorAll('.chip').forEach(b=>b.onclick=()=>{state.filter=b.dataset.filter;state.rarityPeekFilter=b.dataset.filter;clickFX(b);document.querySelectorAll('.chip').forEach(x=>x.classList.remove('active'));b.classList.add('active');render()});
+let themeSwitching=false;
+function applyTheme(t,animate=true,clickedBtn=null){
+  const app=document.querySelector('.app');
+  if(animate && app && !themeSwitching){
+    themeSwitching=true;
+    app.classList.remove('themeSwitch');
+    void app.offsetWidth;
+    app.classList.add('themeSwitch');
+    setTimeout(()=>{app.classList.remove('themeSwitch');themeSwitching=false},430);
+  }
+  document.body.className=t;
+  localStorage.setItem(STORAGE_KEYS.theme,t);
+  document.getElementById('themeLabel').textContent=t.toUpperCase();
+  document.querySelectorAll('.themeBtn').forEach(b=>{
+    b.classList.toggle('active',b.dataset.theme===t);
+    b.classList.remove('themeBlink');
+  });
+  if(clickedBtn){
+    void clickedBtn.offsetWidth;
+    clickedBtn.classList.add('themeBlink');
+    setTimeout(()=>clickedBtn.classList.remove('themeBlink'),360);
+  }
+  if(typeof applyVisualSettings === 'function') requestAnimationFrame(applyVisualSettings);
+}
+document.querySelectorAll('.themeBtn').forEach(b=>b.onclick=()=>applyTheme(b.dataset.theme,true,b));applyTheme(localStorage.getItem(STORAGE_KEYS.theme)||localStorage.getItem(STORAGE_KEYS.legacyTheme)||'dark',false);
+const music=document.getElementById('music'),playBtn=document.getElementById('playBtn'),muteBtn=document.getElementById('muteBtn'),bgVideo=document.getElementById('bgVideo');
+function currentTrack(){return MUSIC_TRACKS[((state.trackIndex%MUSIC_TRACKS.length)+MUSIC_TRACKS.length)%MUSIC_TRACKS.length]}
+function mediaTrackLabel(){return state.usingCustomVideo?"Custom Video":(state.usingCustomMusic?"Custom Music":currentTrack().name)}
+function updateTrackButton(){
+  const trackInfo=mediaTrackLabel();
+  const isPaused=state.usingCustomVideo?bgVideo.paused:music.paused;
+  playBtn.textContent=isPaused?'Play':'Pause';
+  playBtn.setAttribute('aria-pressed',isPaused?'false':'true');
+  playBtn.title=`${isPaused?'Start':'Pause'} ${trackInfo}`;
+  if(elements.trackName){
+    elements.trackName.textContent=trackInfo;
+    elements.trackName.title=trackInfo;
+  }
+}
+function setMuteButton(){
+  const muted=state.usingCustomVideo?bgVideo.muted:music.muted;
+  muteBtn.textContent=muted?'Unmute':'Mute';
+  muteBtn.setAttribute('aria-pressed',muted?'true':'false');
+}
+function setMediaStatus(message,type=''){
+  const node=document.getElementById('mediaStatus');
+  if(!node)return;
+  node.textContent=message||'';
+  node.className=`mediaStatus${type?` ${type}`:''}`;
+}
+function safeSetCurrentTime(media,time){
+  if(!media || !isFinite(time) || time<0)return;
+  try{media.currentTime=time}catch(e){}
+}
+function waitForMediaReady(media,timeout=3200){
+  if(!media)return Promise.resolve();
+  if(media.readyState>=1)return Promise.resolve();
+  return new Promise(resolve=>{
+    let doneOnce=false;
+    const done=()=>{
+      if(doneOnce)return;
+      doneOnce=true;
+      clearTimeout(timer);
+      media.removeEventListener('loadedmetadata',done);
+      media.removeEventListener('canplay',done);
+      media.removeEventListener('loadeddata',done);
+      media.removeEventListener('error',done);
+      resolve();
+    };
+    const timer=setTimeout(done,timeout);
+    media.addEventListener('loadedmetadata',done,{once:true});
+    media.addEventListener('canplay',done,{once:true});
+    media.addEventListener('loadeddata',done,{once:true});
+    media.addEventListener('error',done,{once:true});
+  });
+}
+function syncMediaTimes(source,target){
+  if(!source || !target || !isFinite(source.currentTime))return;
+  const targetDuration=isFinite(target.duration)&&target.duration>0?target.duration:null;
+  const desired=targetDuration?source.currentTime%targetDuration:source.currentTime;
+  if(Math.abs((target.currentTime||0)-desired)>.25)safeSetCurrentTime(target,desired);
+}
+function forceVideoResync(attempts=8,delay=250){
+  let remaining=attempts;
+  const run=()=>{
+    syncBgVideoToMusic();
+    if(music && !music.paused)keepVideoPlaying();
+    remaining-=1;
+    if(remaining>0)window.setTimeout(run,delay);
+  };
+  run();
+}
+function pauseMediaPair(){
+  music.pause();
+  bgVideo.pause();
+  updateTrackButton();
+}
+function snapshotPlaylistState(){
+  return {
+    trackIndex:state.trackIndex,
+    audioSrc:music.currentSrc,
+    videoSrc:bgVideo.currentSrc,
+    audioTime:music.currentTime||0,
+    videoTime:bgVideo.currentTime||0,
+    musicMuted:music.muted,
+    videoMuted:bgVideo.muted,
+    wasPlaying:!music.paused
+  };
+}
+function isSameOriginMediaUrl(url){
+  try{
+    const resolved=new URL(url,window.location.href);
+    return resolved.origin===window.location.origin;
+  }catch(e){
+    return false;
+  }
+}
+async function preflightCustomVideo(url){
+  if(!isSameOriginMediaUrl(url))return {ok:true};
+  return new Promise(resolve=>{
+    try{
+      const request=new XMLHttpRequest();
+      request.open('HEAD',url,true);
+      request.onreadystatechange=()=>{
+        if(request.readyState!==4)return;
+        resolve({ok:request.status>=200&&request.status<400,status:request.status});
+      };
+      request.onerror=()=>resolve({ok:false,status:request.status||0});
+      request.send();
+    }catch(error){
+      resolve({ok:false,error});
+    }
+  });
+}
+function restorePlaylistSnapshot(){
+  const snapshot=state.playlistSnapshot;
+  state.usingCustomVideo=false;
+  state.customVideoUrl='';
+  state.customVideoToken+=1;
+  bgVideo.muted=true;
+  if(!snapshot){
+    setTrack(state.trackIndex,{autoplay:false,resetTime:true});
+    updateTrackButton();
+    setMuteButton();
+    return Promise.resolve();
+  }
+  music.muted=snapshot.musicMuted;
+  bgVideo.muted=true;
+  setTrack(snapshot.trackIndex,{autoplay:snapshot.wasPlaying,resetTime:true});
+  if(!snapshot.wasPlaying){
+    pauseMediaPair();
+    setMuteButton();
+  }
+  state.playlistSnapshot=null;
+  return Promise.resolve();
+}
+async function activateCustomVideo(url){
+  const trimmed=url.trim();
+  if(!trimmed)return Promise.resolve(false);
+  const preflight=await preflightCustomVideo(trimmed);
+  if(!preflight.ok){
+    setMediaStatus('Custom video failed to load. The playlist is still playing.','error');
+    return false;
+  }
+  const previousSnapshot=state.playlistSnapshot||snapshotPlaylistState();
+  const previousUrl=state.customVideoUrl;
+  const shouldResume=state.usingCustomVideo?!bgVideo.paused:!music.paused;
+  const resumeTime=state.usingCustomVideo?(bgVideo.currentTime||0):Math.max(music.currentTime||0,bgVideo.currentTime||0);
+  const source=bgVideo.querySelector('source');
+  if(!source)return Promise.resolve(false);
+  const activationToken=state.customVideoToken+1;
+  state.customVideoToken=activationToken;
+  state.playlistSnapshot=previousSnapshot;
+  state.usingCustomVideo=true;
+  state.customVideoUrl=trimmed;
+  pauseMediaPair();
+  safeSetCurrentTime(music,previousSnapshot.audioTime);
+  source.src=trimmed;
+  bgVideo.muted=false;
+  bgVideo.load();
+  setMediaStatus('Loading custom video...');
+  return new Promise(resolve=>{
+    let settled=false;
+    let failTimer=0;
+    const cleanup=()=>{
+      if(failTimer)clearTimeout(failTimer);
+      bgVideo.removeEventListener('loadedmetadata',onLoaded);
+      bgVideo.removeEventListener('error',onError);
+    };
+    const isStale=()=>activationToken!==state.customVideoToken;
+    const succeed=()=>{
+      if(settled||isStale())return;
+      settled=true;
+      cleanup();
+      safeSetCurrentTime(bgVideo,resumeTime);
+      const playAttempt=shouldResume?bgVideo.play():Promise.resolve();
+      Promise.resolve(playAttempt).then(()=>{
+        if(!shouldResume)bgVideo.pause();
+        updateTrackButton();
+        setMuteButton();
+        setMediaStatus('Custom video active. Clear the URL to return to the playlist.','success');
+        resolve(true);
+      }).catch(()=>{
+        if(shouldResume){
+          setMediaStatus('Custom video loaded, but autoplay was blocked. Press Start Music to play it.','error');
+        }
+        updateTrackButton();
+        setMuteButton();
+        resolve(true);
+      });
+    };
+    const onLoaded=()=>{
+      if(isStale())return;
+      const hasVideo=bgVideo.videoWidth>0 || bgVideo.readyState>=1;
+      if(!hasVideo){onError();return}
+      succeed();
+    };
+    const onError=()=>{
+      if(settled||isStale())return;
+      settled=true;
+      cleanup();
+      source.src=previousUrl || (previousSnapshot.videoSrc || currentTrack().mp4);
+      bgVideo.load();
+      state.usingCustomVideo=false;
+      state.customVideoUrl=previousUrl;
+      state.customVideoToken+=1;
+      restorePlaylistSnapshot().finally(()=>{
+        setMediaStatus('Custom video failed to load. The playlist is still playing.','error');
+        resolve(false);
+      });
+    };
+    bgVideo.addEventListener('loadedmetadata',onLoaded,{once:true});
+    bgVideo.addEventListener('error',onError,{once:true});
+    failTimer=window.setTimeout(onError,4500);
+  });
+}
+function clearCustomVideoMode(){
+  if(!state.usingCustomVideo){
+    state.customVideoUrl='';
+    setMediaStatus('');
+    return Promise.resolve();
+  }
+  return restorePlaylistSnapshot().finally(()=>{
+    setMediaStatus('Returned to the playlist video.','success');
+  });
+}
+function keepVideoPlaying(){
+  if(bgVideo && bgVideo.paused) bgVideo.play().catch(()=>{});
+}
+function startMediaSyncLoop(){
+  if(state.mediaSyncTimer)return;
+  state.mediaSyncTimer=setInterval(()=>{
+    if(music.paused)return;
+    keepVideoPlaying();
+    syncMediaTimes(music,bgVideo);
+  },500);
+}
+function resumeMediaPair(){
+  if(state.usingCustomVideo){
+    return bgVideo.play().then(()=>{
+      updateTrackButton();
+    });
+  }
+  // Do not let a missing/broken MP4 block the MP3. Audio is the master.
+  return waitForMediaReady(music).then(()=>{
+    syncMediaTimes(music,bgVideo);
+    keepVideoPlaying();
+    return music.play().then(()=>{
+      keepVideoPlaying();
+      syncMediaTimes(music,bgVideo);
+      updateTrackButton();
+    });
+  });
+}
+function normalizeMediaUrl(url){
+  if(!url)return '';
+  return String(url).replace(/^\.\//,'');
+}
+function setDirectMediaSource(media,url,type){
+  media.innerHTML='';
+  media.removeAttribute('src');
+  const source=document.createElement('source');
+  source.src=normalizeMediaUrl(url);
+  source.type=type;
+  media.appendChild(source);
+  media.dataset.activeSrc=source.src;
+}
+function replaceMediaSources(media,urls,type){
+  if(!media || !Array.isArray(urls) || !urls.length)return;
+  const clean=[...new Set(urls.map(normalizeMediaUrl).filter(Boolean))];
+  media.dataset.fallbackSources=JSON.stringify(clean);
+  media.dataset.fallbackIndex='0';
+  setDirectMediaSource(media,clean[0],type);
+}
+function tryNextMediaSource(media,type,label){
+  if(!media || !media.dataset.fallbackSources)return false;
+  let sources=[];
+  try{sources=JSON.parse(media.dataset.fallbackSources||'[]')}catch(e){sources=[]}
+  let idx=Number(media.dataset.fallbackIndex||0)+1;
+  if(!sources.length || idx>=sources.length)return false;
+  media.dataset.fallbackIndex=String(idx);
+  setDirectMediaSource(media,sources[idx],type);
+  media.load();
+  setMediaStatus(`Trying ${label} source ${idx+1}/${sources.length}...`,'error');
+  return true;
+}
+function trackAudioSources(trackInfo){return trackInfo.mp3Sources || [trackInfo.mp3]}
+function trackVideoSources(trackInfo){return trackInfo.mp4Sources || [trackInfo.mp4]}
+function setTrack(index,{autoplay=false,resetTime=true,keepTime=false}={}){
+  if(state.usingCustomMusic || state.usingCustomVideo)return;
+  const loadToken=state.trackLoadToken+1;
+  state.trackLoadToken=loadToken;
+  state.trackIndex=((index%MUSIC_TRACKS.length)+MUSIC_TRACKS.length)%MUSIC_TRACKS.length;
+  localStorage.setItem(STORAGE_KEYS.track,String(state.trackIndex));
+  const trackInfo=currentTrack();
+  const preservedTime=keepTime?Math.max(music.currentTime||0,bgVideo.currentTime||0):0;
+  replaceMediaSources(music,trackAudioSources(trackInfo),'audio/mpeg');
+  replaceMediaSources(bgVideo,trackVideoSources(trackInfo),'video/mp4');
+  music.load();
+  bgVideo.load();
+  if(resetTime){safeSetCurrentTime(music,0);safeSetCurrentTime(bgVideo,0)}
+  else if(keepTime){safeSetCurrentTime(music,preservedTime);safeSetCurrentTime(bgVideo,preservedTime)}
+  updateTrackButton();
+  if(autoplay){
+    waitForMediaReady(music).then(()=>{
+      if(loadToken!==state.trackLoadToken)return;
+      return resumeMediaPair();
+    }).catch(()=>{})
+  }
+}
+function previousTrack(autoplay=true){setTrack(state.trackIndex-1,{autoplay,resetTime:true})}
+function nextTrack(autoplay=true){setTrack(state.trackIndex+1,{autoplay,resetTime:true})}
+function safeVideoTime(){
+  return (bgVideo && isFinite(bgVideo.currentTime)) ? bgVideo.currentTime : 0;
+}
+function syncMusicToBgVideo(){
+  if(!bgVideo || !music || !isFinite(safeVideoTime())) return;
+  syncMediaTimes(bgVideo,music);
+}
+function syncBgVideoToMusic(){
+  if(!bgVideo || !music || !isFinite(music.currentTime)) return;
+  syncMediaTimes(music,bgVideo);
+}
+music.addEventListener('play',()=>{keepVideoPlaying();syncBgVideoToMusic();updateTrackButton()});
+music.addEventListener('pause',()=>{if(!bgVideo.paused)bgVideo.pause();updateTrackButton()});
+music.addEventListener('seeking',syncBgVideoToMusic);
+music.addEventListener('seeked',syncBgVideoToMusic);
+music.addEventListener('timeupdate',()=>{if(!music.paused)syncBgVideoToMusic()});
+bgVideo.addEventListener('play',()=>{if(state.usingCustomVideo){updateTrackButton();return}if(music.paused&&document.getElementById('gate')?.classList.contains('hide'))syncBgVideoToMusic()});
+bgVideo.addEventListener('seeking',()=>{if(music.paused)syncMusicToBgVideo()});
+bgVideo.addEventListener('pause',()=>{if(state.usingCustomVideo)updateTrackButton()});
+bgVideo.addEventListener('ended',()=>{if(state.usingCustomVideo){safeSetCurrentTime(bgVideo,0);bgVideo.play().catch(()=>{});return}if(state.usingCustomMusic){safeSetCurrentTime(bgVideo,0);if(!music.paused)keepVideoPlaying();return}syncBgVideoToMusic();keepVideoPlaying()});
+music.addEventListener('error',()=>{if(state.usingCustomMusic||state.usingCustomVideo)return;if(tryNextMediaSource(music,'audio/mpeg','MP3'))return;setMediaStatus('Could not load this MP3 on GitHub. Check mp3 filename/case and that the file is real audio: '+currentTrack().name+'.','error')});
+bgVideo.addEventListener('error',()=>{if(state.usingCustomVideo)return;if(tryNextMediaSource(bgVideo,'video/mp4','MP4'))return;setMediaStatus('MP4 background missing/broken for '+currentTrack().name+'. MP3 audio will keep playing. Check root Music#.mp4 filename/case.','error');if(!music.paused)updateTrackButton()});
+music.addEventListener('ended',()=>{if(state.usingCustomMusic){safeSetCurrentTime(music,0);resumeMediaPair().catch(()=>{});return}nextTrack(true)});
+startMediaSyncLoop();
+playBtn.onclick=()=>{
+  if(state.usingCustomVideo){
+    if(bgVideo.paused)bgVideo.play().then(()=>updateTrackButton()).catch(()=>alert('Click the intro screen or allow video audio, then press Start Music.'));
+    else{bgVideo.pause();updateTrackButton();}
+  }else if(music.paused){
+    resumeMediaPair().catch(()=>alert('Click the intro screen or allow audio, then press Start Music.'))
+  }else{
+    pauseMediaPair();
+  }
+};
+elements.nextBtn.onclick=()=>{
+  if(state.usingCustomVideo){setMediaStatus('Custom video is active. Clear the URL to return to the playlist.','error');return}
+  nextTrack(!music.paused)
+};
+elements.prevBtn.onclick=()=>{
+  if(state.usingCustomVideo){setMediaStatus('Custom video is active. Exit custom video before changing playlist tracks.','error');return}
+  previousTrack(!music.paused)
+};
+muteBtn.onclick=()=>{
+  if(state.usingCustomVideo){
+    bgVideo.muted=!bgVideo.muted;
+  }else{
+    music.muted=!music.muted;
+    if(!music.muted)syncMusicToBgVideo();
+  }
+  setMuteButton();
+};
+let txt='ILLEGAL FACTION SPINS',idx=0,title=document.getElementById('typeTitle');let timer=setInterval(()=>{title.textContent=txt.slice(0,++idx);if(idx>=txt.length)clearInterval(timer)},135);const gate=document.getElementById('gate'),gateCode=document.getElementById('gateCode'),gateError=document.getElementById('gateError'),gateEnterBtn=document.getElementById('gateEnterBtn');function enterSpins(){gate.classList.add('hide');waitForMediaReady(music).then(()=>{keepVideoPlaying();syncMusicToBgVideo();if(music){return resumeMediaPair()}}).catch(()=>{})}function submitGateCode(){const code=(gateCode?.value||'').trim().toUpperCase();if(code==='TFBFM22'){if(gateError)gateError.textContent='';enterSpins();return}if(gateError)gateError.textContent='Incorrect passcode';if(gateCode){gateCode.value='';gateCode.focus()}}if(gateEnterBtn)gateEnterBtn.onclick=submitGateCode;if(gateCode)gateCode.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();submitGateCode()}});if(gateCode)window.setTimeout(()=>gateCode.focus(),120);
+
+function initReactiveDots(){
+  const canvas=document.getElementById('dotCanvas');
+  const hero=document.querySelector('.hero');
+  if(!canvas||!hero) return;
+  const ctx=canvas.getContext('2d',{alpha:true});
+  let w=0,h=0,dpr=1,pts=[],mx=-9999,my=-9999,raf=0;
+  function resize(){
+    const r=canvas.getBoundingClientRect();
+    dpr=Math.min(window.devicePixelRatio||1,2);
+    w=Math.max(1,Math.floor(r.width)); h=Math.max(1,Math.floor(r.height));
+    canvas.width=Math.floor(w*dpr); canvas.height=Math.floor(h*dpr);
+    ctx.setTransform(dpr,0,0,dpr,0,0);
+    pts=[];
+    const gap=28;
+    for(let y=18;y<h;y+=gap){for(let x=18;x<w;x+=gap){pts.push({x,y,p:Math.random()*Math.PI*2});}}
+    draw();
+  }
+  function draw(t=0){
+    ctx.clearRect(0,0,w,h);
+    for(const pt of pts){
+      const dx=pt.x-mx,dy=pt.y-my,dist=Math.sqrt(dx*dx+dy*dy);
+      const heat=Math.max(0,1-dist/120);
+      const pulse=(Math.sin((t*.002)+pt.p)+1)*.5;
+      const size=0.95+heat*1.15+pulse*.12;
+      const whiteAlpha=.075+heat*.10;
+      const redAlpha=heat*.10;
+      ctx.beginPath();
+      ctx.fillStyle=heat>.05?`rgba(255,255,255,${whiteAlpha})`:`rgba(255,255,255,.13)`;
+      ctx.shadowColor=`rgba(232,0,13,${redAlpha})`;
+      ctx.shadowBlur=heat*4;
+      ctx.arc(pt.x,pt.y,size,0,Math.PI*2);
+      ctx.fill();
+      ctx.shadowBlur=0;
+    }
+    raf=requestAnimationFrame(draw);
+  }
+  hero.addEventListener('pointermove',e=>{
+    const r=hero.getBoundingClientRect();
+    mx=e.clientX-r.left; my=e.clientY-r.top;
+    hero.style.setProperty('--mx',`${(mx/w)*100}%`); hero.style.setProperty('--my',`${(my/h)*100}%`);
+  },{passive:true});
+  hero.addEventListener('pointerleave',()=>{mx=-9999;my=-9999;hero.style.setProperty('--mx','50%');hero.style.setProperty('--my','50%')},{passive:true});
+  window.addEventListener('resize',resize,{passive:true});
+  resize(); cancelAnimationFrame(raf); raf=requestAnimationFrame(draw);
+}
+initReactiveDots();
+
+/* === FULL SETTINGS LOGIC === */
+const savedSettings=JSON.parse(localStorage.getItem(STORAGE_KEYS.settings)||localStorage.getItem(STORAGE_KEYS.legacySettings)||"{}");
+const defaultSettings={
+  musicVolume:60,bgOpacity:48,videoBrightness:82,videoBlur:0,floatStrength:12,panelOpacity:100,
+  showBgVideo:true,highQualityVideo:true,showFloating:true,showParticles:true,showRgbTrail:true,spinSfx:true,typingSfx:true,
+  hideHeroPanel:false,heroPanelUserSet:false,
+  autoCollect:false,winnerPopups:true,confetti:true,legendaryAlert:true,soundAlerts:true,
+  spinSpeed:"normal",managerName:"Faction Management",madeByText:"Made By Nas",
+  logoUrl:"",bgVideoUrl:"",musicUrl:""
+};
+let appSettings={...defaultSettings,...savedSettings};
+// Fix old saved data that made the hero panel hide automatically.
+// It now stays visible by default, and only hides after the user toggles the setting.
+if(!appSettings.heroPanelUserSet){
+  appSettings.hideHeroPanel=false;
+}
+window.appSettings=appSettings; state.settings=appSettings;
+function saveSettings(){localStorage.setItem(STORAGE_KEYS.settings,JSON.stringify(appSettings))}
+function applyVisualSettings(){
+  const bg=document.getElementById("bgVideo");
+  const ambient=document.querySelector(".ambient");
+  const music=document.getElementById("music");
+  if(music){music.volume=(appSettings.musicVolume||60)/100;syncVolumeUI(appSettings.musicVolume||60)}
+  if(bg){
+    const hq=!!appSettings.highQualityVideo;
+    const brightness=(appSettings.videoBrightness||82)/100;
+    const blur=hq?0:(appSettings.videoBlur||0);
+    bg.style.filter=hq
+      ? `brightness(${Math.max(brightness,.92)}) contrast(1.04) saturate(1.06)`
+      : `brightness(${brightness}) contrast(1.18) saturate(1.12) blur(${blur}px)`;
+    bg.preload='auto';
+    bg.volume=(appSettings.musicVolume||60)/100;
+  }
+  if(ambient){
+    const o=(appSettings.bgOpacity||48)/100;
+    if(document.body.classList.contains('light')){
+      ambient.style.background=`radial-gradient(circle at 38% 0,rgba(232,0,13,.06),transparent 34%),linear-gradient(180deg,rgba(255,255,255,${Math.min(.72,o*.92)}),rgba(238,242,248,${Math.min(.92,o+0.12)}))`;
+    }else if(document.body.classList.contains('dim')){
+      ambient.style.background=`radial-gradient(circle at 40% 0,rgba(232,0,13,.09),transparent 34%),radial-gradient(circle at 100% 45%,rgba(232,0,13,.055),transparent 28%),linear-gradient(180deg,rgba(12,14,21,${o*.68}),rgba(8,10,16,${o*.94}))`;
+    }else{
+      ambient.style.background=`radial-gradient(circle at 40% 0,rgba(232,0,13,.10),transparent 34%),radial-gradient(circle at 100% 45%,rgba(232,0,13,.07),transparent 28%),linear-gradient(180deg,rgba(5,6,10,${o*.72}),rgba(2,3,7,${o}))`;
+    }
+  }
+  document.body.classList.toggle("hideBgVideo",!appSettings.showBgVideo);
+  document.body.classList.toggle("hqBgVideo",!!appSettings.highQualityVideo);
+  document.body.classList.toggle("hideFloating",!appSettings.showFloating);
+  document.body.classList.toggle("hideParticles",!appSettings.showParticles);
+  document.body.classList.toggle("hideRgbTrail",!appSettings.showRgbTrail);
+  document.body.classList.toggle("hideHeroPanel",!!appSettings.hideHeroPanel);
+  document.body.classList.toggle("noConfetti",!appSettings.confetti);
+  document.documentElement.style.setProperty("--floatAmt",(appSettings.floatStrength||12)+"px");
+  const panelRatio=Math.min(1,Math.max(0,(appSettings.panelOpacity??100)/100));
+  document.documentElement.style.setProperty("--panelOpacity",String(panelRatio));
+  document.querySelectorAll(".manager").forEach(el=>{
+    const status=el.querySelector(".status");
+    el.childNodes[0].nodeValue=(appSettings.managerName||"Faction Management")+" ";
+    if(status && !el.contains(status)) el.appendChild(status);
+  });
+  document.querySelectorAll(".welcome b").forEach(el=>el.textContent=appSettings.managerName||"Faction Management");
+  document.querySelectorAll(".madeByNas").forEach(el=>el.textContent=appSettings.madeByText||"Made By Nas");
+  const prev=document.getElementById("previewMadeBy"); if(prev)prev.textContent=appSettings.madeByText||"Made By Nas";
+  const brand=document.querySelector(".brand img");
+  if(brand && appSettings.logoUrl) brand.src=appSettings.logoUrl;
+  if(appSettings.musicUrl){
+    state.usingCustomMusic=true;
+    const source=document.querySelector("#music source");
+    const audio=document.getElementById("music");
+    if(source && audio && source.getAttribute("src")!==appSettings.musicUrl){
+      const resumeTime=Math.max(audio.currentTime||0,bg.currentTime||0);
+      const shouldResume=!audio.paused;
+      source.src=appSettings.musicUrl;
+      audio.load();
+      audio.addEventListener('loadedmetadata',()=>{
+        safeSetCurrentTime(audio,resumeTime);
+        if(shouldResume)resumeMediaPair().catch(()=>{});
+      },{once:true});
+    }
+  }else if(state.usingCustomMusic){
+    state.usingCustomMusic=false;
+    setTrack(state.trackIndex,{autoplay:!music.paused,resetTime:false,keepTime:true});
+  }
+  if(!appSettings.bgVideoUrl && !state.usingCustomVideo)setMediaStatus('');
+  state.settings=appSettings;
+  updateTrackButton();
+  setMuteButton();
+}
+function initSettingsPanel(){
+  if(state.settingsInitialized)return;
+  state.settingsInitialized=true;
+  const byId=id=>document.getElementById(id);
+  [["setBgOpacity","bgOpacity"],["setVideoBrightness","videoBrightness"],["setVideoBlur","videoBlur"],["setFloatStrength","floatStrength"],["setPanelOpacity","panelOpacity"]].forEach(([id,key])=>{
+    const el=byId(id); if(!el)return;
+    el.value=appSettings[key];
+    el.oninput=()=>{appSettings[key]=Number(el.value);saveSettings();applyVisualSettings()};
+  });
+  [["setShowBgVideo","showBgVideo"],["setHighQualityVideo","highQualityVideo"],["setShowFloating","showFloating"],["setShowParticles","showParticles"],["setShowRgbTrail","showRgbTrail"],["setHideHeroPanel","hideHeroPanel"],["setSpinSfx","spinSfx"],["setTypingSfx","typingSfx"],["setAutoCollect","autoCollect"],["setWinnerPopups","winnerPopups"],["setConfetti","confetti"],["setLegendaryAlert","legendaryAlert"],["setSoundAlerts","soundAlerts"]].forEach(([id,key])=>{
+    const el=byId(id); if(!el)return;
+    el.checked=!!appSettings[key];
+    el.onchange=()=>{
+      appSettings[key]=el.checked;
+      if(key==="hideHeroPanel") appSettings.heroPanelUserSet=true;
+      saveSettings();
+      applyVisualSettings();
+    };
+  });
+  const manager=byId("setManagerName"); if(manager){manager.value=appSettings.managerName; manager.oninput=()=>{appSettings.managerName=manager.value||"Faction Management";saveSettings();applyVisualSettings()}}
+  const made=byId("setMadeByText"); if(made){made.value=appSettings.madeByText; made.oninput=()=>{appSettings.madeByText=made.value||"Made By Nas";saveSettings();applyVisualSettings()}}
+  const logo=byId("setLogoUrl"); if(logo){logo.value=appSettings.logoUrl||""}
+  const bgurl=byId("setBgVideoUrl"); if(bgurl){bgurl.value=appSettings.bgVideoUrl||""}
+  const applyAdmin=byId("applyAdminSettings");
+  const exitCustomVideoBtn=byId("exitCustomVideoBtn");
+  if(applyAdmin)applyAdmin.onclick=async()=>{
+    appSettings.logoUrl=logo?.value.trim()||"";
+    const nextCustomVideoUrl=bgurl?.value.trim()||"";
+    saveSettings();applyVisualSettings();
+    if(nextCustomVideoUrl){
+      const applied=await activateCustomVideo(nextCustomVideoUrl);
+      if(applied){
+        appSettings.bgVideoUrl=nextCustomVideoUrl;
+        saveSettings();
+      }else{
+        appSettings.bgVideoUrl="";
+        if(bgurl)bgurl.value=appSettings.bgVideoUrl;
+        saveSettings();
+      }
+    }else{
+      appSettings.bgVideoUrl="";
+      await clearCustomVideoMode();
+      saveSettings();
+    }
+  };
+  if(exitCustomVideoBtn)exitCustomVideoBtn.onclick=async()=>{
+    if(!state.usingCustomVideo){setMediaStatus('Custom video is not active.','error');return}
+    appSettings.bgVideoUrl="";
+    if(bgurl)bgurl.value="";
+    await clearCustomVideoMode();
+    saveSettings();
+  };
+  const volumeSlider=byId("volumeSlider");
+  if(volumeSlider){
+    syncVolumeUI(appSettings.musicVolume??60);
+    volumeSlider.oninput=()=>{
+      const value=Number(volumeSlider.value)||0;
+      appSettings.musicVolume=value;
+      saveSettings();
+      syncVolumeUI(value);
+      const musicEl=document.getElementById("music");
+      const bgEl=document.getElementById("bgVideo");
+      if(musicEl)musicEl.volume=value/100;
+      if(bgEl)bgEl.volume=value/100;
+    };
+  }
+  document.querySelectorAll(".spinSpeed").forEach(btn=>{
+    btn.classList.toggle("active",btn.dataset.speed===appSettings.spinSpeed);
+    btn.onclick=()=>{
+      document.querySelectorAll(".spinSpeed").forEach(b=>b.classList.remove("active"));
+      btn.classList.add("active");
+      appSettings.spinSpeed=btn.dataset.speed;saveSettings();applyVisualSettings();
+    };
+  });
+  const skip=byId("setSkipAnimations");
+  if(skip)skip.onclick=()=>{document.body.classList.toggle("lowMotion");skip.classList.toggle("active")};
+  const sExport=byId("settingsExportHistory"); if(sExport)sExport.onclick=exportCSV;
+  const sClear=byId("settingsClearHistory"); if(sClear)sClear.onclick=async()=>{const ok=await openConfirmDialog({eyebrow:'Clear History',title:'Clear all saved spin history?',message:'Selecting Delete All will permanently remove every saved spin from local history on this device.',details:`${history.length} saved ${history.length===1?'entry':'entries'} will be removed. This cannot be undone.`,confirmText:'Delete All',cancelText:'Cancel',danger:true});if(!ok)return;history=[];localStorage.setItem(STORAGE_KEYS.history,"[]");selectedGroup="all";renderHistory()};
+  const sLocal=byId("settingsClearLocal"); if(sLocal)sLocal.onclick=async()=>{const ok=await openConfirmDialog({eyebrow:'Local Storage',title:'Clear all locally saved app data?',message:'Selecting Clear Data will remove saved history, settings, theme preferences, and media choices stored in this browser.',details:'This affects only the current browser on the current device.',confirmText:'Clear Data',cancelText:'Keep Data',danger:true});if(!ok)return;localStorage.clear();location.reload()};
+  const sReset=byId("settingsReset"); if(sReset)sReset.onclick=async()=>{const ok=await openConfirmDialog({eyebrow:'Reset Settings',title:'Reset the app back to defaults?',message:'Selecting Reset will restore the current app settings to their original defaults.',details:'Saved spin history will stay intact.',confirmText:'Reset',cancelText:'Cancel',danger:false});if(!ok)return;appSettings={...defaultSettings};window.appSettings=appSettings;saveSettings();location.reload()};
+  applyVisualSettings();
+  if(appSettings.bgVideoUrl){activateCustomVideo(appSettings.bgVideoUrl).then(applied=>{if(!applied){appSettings.bgVideoUrl="";saveSettings();if(bgurl)bgurl.value="";}else if(bgurl){bgurl.value=appSettings.bgVideoUrl;}})}
+}
+
+
+/* === GITHUB MEDIA HARD FIX - normal playlist always uses mp3/Music#.mp3 + root/mp4/Music#.mp4 ===
+   Reason fixed: old custom media/localStorage or a failed source could lock the player before the playlist loaded.
+   This resets stale custom media on load and makes the audio the master while the muted MP4 background follows it. */
+(function(){
+  const AUDIO_EXT='audio/mpeg';
+  const VIDEO_EXT='video/mp4';
+  const normalAudioSources=id=>[
+    `mp3/Music${id}.mp3`, `./mp3/Music${id}.mp3`,
+    `mp3/music${id}.mp3`, `./mp3/music${id}.mp3`,
+    `mp3/Music ${id}.mp3`, `./mp3/Music ${id}.mp3`
+  ];
+  const normalVideoSources=id=>[
+    `Music${id}.mp4`, `./Music${id}.mp4`,
+    `mp4/Music${id}.mp4`, `./mp4/Music${id}.mp4`,
+    `music${id}.mp4`, `./music${id}.mp4`,
+    `mp4/music${id}.mp4`, `./mp4/music${id}.mp4`,
+    `Music ${id}.mp4`, `./Music ${id}.mp4`,
+    `mp4/Music ${id}.mp4`, `./mp4/Music ${id}.mp4`
+  ];
+  function addSources(media, urls, type){
+    if(!media)return;
+    media.pause();
+    media.innerHTML='';
+    media.removeAttribute('src');
+    [...new Set(urls)].forEach(url=>{
+      const source=document.createElement('source');
+      source.src=url;
+      source.type=type;
+      media.appendChild(source);
+    });
+    media.dataset.fallbackSources=JSON.stringify([...new Set(urls)]);
+    media.dataset.fallbackIndex='0';
+    try{media.load()}catch(e){}
+  }
+  function chosenTrack(){
+    return MUSIC_TRACKS[((state.trackIndex%MUSIC_TRACKS.length)+MUSIC_TRACKS.length)%MUSIC_TRACKS.length];
+  }
+  // Stale custom URLs saved in the browser were stopping the normal playlist from loading.
+  if(window.appSettings){
+    appSettings.musicUrl='';
+    appSettings.bgVideoUrl='';
+    saveSettings();
+  }
+  state.usingCustomMusic=false;
+  state.usingCustomVideo=false;
+  window.trackAudioSources = trackInfo => normalAudioSources(trackInfo.id);
+  window.trackVideoSources = trackInfo => normalVideoSources(trackInfo.id);
+  trackAudioSources = window.trackAudioSources;
+  trackVideoSources = window.trackVideoSources;
+  setTrack = function(index,{autoplay=false,resetTime=true,keepTime=false}={}){
+    state.usingCustomMusic=false;
+    state.usingCustomVideo=false;
+    state.trackLoadToken=(state.trackLoadToken||0)+1;
+    const loadToken=state.trackLoadToken;
+    state.trackIndex=((index%MUSIC_TRACKS.length)+MUSIC_TRACKS.length)%MUSIC_TRACKS.length;
+    localStorage.setItem(STORAGE_KEYS.track,String(state.trackIndex));
+    const t=chosenTrack();
+    const keep=keepTime?Math.max(music.currentTime||0,bgVideo.currentTime||0):0;
+    addSources(music,normalAudioSources(t.id),AUDIO_EXT);
+    addSources(bgVideo,normalVideoSources(t.id),VIDEO_EXT);
+    bgVideo.muted=true;
+    if(resetTime){safeSetCurrentTime(music,0);safeSetCurrentTime(bgVideo,0)}
+    else if(keepTime){safeSetCurrentTime(music,keep);safeSetCurrentTime(bgVideo,keep)}
+    if(elements.trackName){elements.trackName.textContent=t.name;elements.trackName.title=t.name}
+    updateTrackButton();
+    setMuteButton();
+    if(autoplay){
+      setTimeout(()=>{
+        if(loadToken!==state.trackLoadToken)return;
+        resumeMediaPair().catch(()=>setMediaStatus('Audio was blocked by the browser. Click Play once.','error'));
+      },80);
+    }
+  };
+  previousTrack=function(autoplay=true){setTrack(state.trackIndex-1,{autoplay,resetTime:true})};
+  nextTrack=function(autoplay=true){setTrack(state.trackIndex+1,{autoplay,resetTime:true})};
+  resumeMediaPair=function(){
+    bgVideo.muted=true;
+    return Promise.resolve()
+      .then(()=>music.play())
+      .then(()=>{syncMediaTimes(music,bgVideo);return bgVideo.play().catch(()=>{})})
+      .then(()=>{syncMediaTimes(music,bgVideo);updateTrackButton();setMuteButton();setMediaStatus('')});
+  };
+  pauseMediaPair=function(){music.pause();bgVideo.pause();updateTrackButton();};
+  if(playBtn){
+    playBtn.onclick=()=>{music.paused?resumeMediaPair().catch(()=>setMediaStatus('Browser blocked audio. Click Play again after entering the site.','error')):pauseMediaPair()};
+  }
+  if(elements.nextBtn)elements.nextBtn.onclick=()=>nextTrack(!music.paused);
+  if(elements.prevBtn)elements.prevBtn.onclick=()=>previousTrack(!music.paused);
+  if(muteBtn)muteBtn.onclick=()=>{music.muted=!music.muted;setMuteButton()};
+})();
+
+initSettingsPanel();
+
+setTrack(state.trackIndex,{autoplay:false,resetTime:true});
+setMuteButton();
+render();fillReel(reelItems(ITEMS,ITEMS[0]));
+</script>
+</body>
+</html>
+
