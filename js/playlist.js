@@ -343,7 +343,7 @@ music.addEventListener('pause',()=>{if(!bgVideo.paused)bgVideo.pause();updateTra
 music.addEventListener('seeking',syncBgVideoToMusic);
 music.addEventListener('seeked',syncBgVideoToMusic);
 music.addEventListener('timeupdate',()=>{if(!music.paused)syncBgVideoToMusic()});
-bgVideo.addEventListener('play',()=>{if(state.usingCustomVideo){updateTrackButton();return}if(music.paused&&document.getElementById('gate')?.classList.contains('hide'))syncBgVideoToMusic()});
+bgVideo.addEventListener('play',()=>{if(state.usingCustomVideo){updateTrackButton();return}if(music.paused&&typeof appReady!=='undefined'&&appReady)syncBgVideoToMusic()});
 bgVideo.addEventListener('seeking',()=>{if(music.paused)syncMusicToBgVideo()});
 bgVideo.addEventListener('pause',()=>{if(state.usingCustomVideo)updateTrackButton()});
 bgVideo.addEventListener('ended',()=>{if(state.usingCustomVideo){safeSetCurrentTime(bgVideo,0);bgVideo.play().catch(()=>{});return}if(state.usingCustomMusic){safeSetCurrentTime(bgVideo,0);if(!music.paused)keepVideoPlaying();return}syncBgVideoToMusic();keepVideoPlaying()});

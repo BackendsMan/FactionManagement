@@ -24,7 +24,26 @@ function applyTheme(t,animate=true,clickedBtn=null){
 }
 document.querySelectorAll('.themeBtn').forEach(b=>b.onclick=()=>applyTheme(b.dataset.theme,true,b));applyTheme(localStorage.getItem(STORAGE_KEYS.theme)||localStorage.getItem(STORAGE_KEYS.legacyTheme)||'dark',false);
 
-let txt='ILLEGAL FACTION SPINS',idx=0,title=document.getElementById('typeTitle');let timer=setInterval(()=>{title.textContent=txt.slice(0,++idx);if(idx>=txt.length)clearInterval(timer)},135);const gate=document.getElementById('gate'),gateCode=document.getElementById('gateCode'),gateError=document.getElementById('gateError'),gateEnterBtn=document.getElementById('gateEnterBtn');function enterSpins(){gate.classList.add('hide');waitForMediaReady(music).then(()=>{keepVideoPlaying();syncMusicToBgVideo();if(music){return resumeMediaPair()}}).catch(()=>{})}function submitGateCode(){const code=(gateCode?.value||'').trim().toUpperCase();if(code==='TFBFM22'){if(gateError)gateError.textContent='';enterSpins();return}if(gateError)gateError.textContent='Incorrect passcode';if(gateCode){gateCode.value='';gateCode.focus()}}if(gateEnterBtn)gateEnterBtn.onclick=submitGateCode;if(gateCode)gateCode.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();submitGateCode()}});if(gateCode)window.setTimeout(()=>gateCode.focus(),120);
+// No passcode gate: the app is live immediately. Audio autoplay is still
+// blocked by browsers without a user gesture, so we try to start playback
+// right away and, if that's rejected, fall back to starting on the first
+// interaction anywhere on the page (no visible prompt required).
+let appReady=false;
+function enterSpins(){
+  appReady=true;
+  waitForMediaReady(music).then(()=>{
+    keepVideoPlaying();
+    syncMusicToBgVideo();
+    if(music)return resumeMediaPair();
+  }).catch(()=>{});
+}
+enterSpins();
+function armFirstGestureAudioStart(){
+  if(music && !music.paused)return;
+  const start=()=>{resumeMediaPair().catch(()=>{});};
+  ['pointerdown','keydown'].forEach(evt=>document.addEventListener(evt,start,{once:true,passive:true}));
+}
+window.setTimeout(armFirstGestureAudioStart,300);
 
 function initReactiveDots(){
   const canvas=document.getElementById('dotCanvas');

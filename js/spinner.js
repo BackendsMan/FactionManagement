@@ -288,18 +288,20 @@ async function animateReelToWinner(winnerIndex = WIN_IDX, winnerRarity = '') {
   // Slow start -> fast cruise -> gradual slowdown -> tiny spring overshoot -> exact landing.
   // The winning item's position (targetY) never changes — only how we visually
   // travel there — so the existing weighted-pick/result logic is untouched.
+  // Strictly monotonic vertical descent — every keyframe moves further down
+  // the reel than the last, so the strip never reverses or jumps backward
+  // (that reversal was what read as a "skip"). Accelerate -> fast cruise ->
+  // gradual decelerate -> land exactly on targetY, no overshoot bounce.
   const animation = elements.track.animate(fastForward ? [
       { transform: "translate3d(0,0,0)", offset: 0 },
       { transform: `translate3d(0, ${targetY}px, 0)`, offset: 1 },
     ] : [
       { transform: "translate3d(0,0,0)", offset: 0, easing: "cubic-bezier(.55,0,.85,.35)" },
-      { transform: `translate3d(0, ${targetY * 0.03}px, 0)`, offset: 0.08, easing: "cubic-bezier(.45,0,.4,1)" },
-      { transform: `translate3d(0, ${targetY * 0.20}px, 0)`, offset: 0.24, easing: "linear" },
-      { transform: `translate3d(0, ${targetY * 0.68}px, 0)`, offset: 0.58, easing: "cubic-bezier(.16,.84,.2,1)" },
-      { transform: `translate3d(0, ${targetY * 0.93}px, 0)`, offset: 0.83, easing: "cubic-bezier(.16,.84,.24,1)" },
-      { transform: `translate3d(0, ${targetY - ITEM_H * 0.5}px, 0)`, offset: 0.93, easing: "ease-out" },
-      { transform: `translate3d(0, ${targetY + 18}px, 0)`, offset: 0.97, easing: "cubic-bezier(.34,1.56,.64,1)" },
-      { transform: `translate3d(0, ${targetY}px, 0)`, offset: 1 },
+      { transform: `translate3d(0, ${targetY * 0.05}px, 0)`, offset: 0.08, easing: "cubic-bezier(.45,0,.4,1)" },
+      { transform: `translate3d(0, ${targetY * 0.22}px, 0)`, offset: 0.24, easing: "linear" },
+      { transform: `translate3d(0, ${targetY * 0.70}px, 0)`, offset: 0.58, easing: "cubic-bezier(.16,.84,.2,1)" },
+      { transform: `translate3d(0, ${targetY * 0.94}px, 0)`, offset: 0.84, easing: "cubic-bezier(.16,.84,.28,1)" },
+      { transform: `translate3d(0, ${targetY}px, 0)`, offset: 1, easing: "cubic-bezier(.16,.84,.32,1)" },
     ],
     {
       duration: fastForward?260:SPEEDS[state.settings.spinSpeed],
@@ -366,8 +368,22 @@ async function startSpin() {
     for (let roll = 1; roll <= winningItems.length; roll++) {
       elements.rollText.textContent = `ROLL ${roll} OF ${winningItems.length}`;
 
+      if (roll > 1) {
+        // Fade out before resetting the strip to the top for the next roll,
+        // instead of an instant snap-back, so it reads as one continuous
+        // spin sequence rather than a jarring jump between rolls.
+        const fadeMs = skipRequested ? 0 : 160;
+        if (fadeMs) {
+          elements.track.style.transition = `opacity ${fadeMs}ms ease`;
+          elements.track.style.opacity = "0";
+          await wait(fadeMs);
+        }
+      }
+
       const winner = winningItems[roll - 1];
       fillReel(reelItems(pool, winner));
+      elements.track.style.transition = "";
+      elements.track.style.opacity = "1";
       await animateReelToWinner(WIN_IDX, winner.rarity);
 
       playSpinChime(winner.rarity);
