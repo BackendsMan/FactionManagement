@@ -331,6 +331,57 @@ function applyTier2GroupModifier(pool, groupName, selectedTier) {
   return { pool: adjustedPool, bonusApplies: true, baseLegendaryChance, finalLegendaryChance };
 }
 
+/* -----------------------------------------------------------------------
+   ADMIN CONFIGURATION — Tier 2 gun legendary count bounds
+   -------------------------------------------------------------------------
+   Applies only to Tier 2 GUN spins (state.tier === 't2', state.spinType ===
+   'gun'). Two independent effects, both folded into the same per-roll
+   weighted pick — no second roll, no forced/predetermined items:
+
+   1. maxLegendaryPerSpin — a hard ceiling on how many legendary guns a
+      single spin can produce, for every group. Once a spin has already
+      landed this many legendary results, legendary items are excluded from
+      the pool for its remaining rolls, so the count can never exceed the
+      ceiling. This is neutral: it only ever lowers an already-rare upper
+      tail and applies the same way regardless of group name.
+
+   2. repeatLegendaryBonus — for spins where the Tier 2 group modifier above
+      is active (tier2GroupModifierConfig), each legendary already rolled in
+      the same spin adds a small extra weight bump toward rolling another
+      one on subsequent rolls, still bounded by the ceiling above. This is
+      still a genuine weighted random draw each roll — it does not guarantee
+      a second legendary, it only makes one somewhat more likely once the
+      first has already landed.
+
+   There is intentionally no floor/minimum here: a guaranteed legendary
+   would no longer be a probability, it would be a scripted result.
+   ------------------------------------------------------------------------- */
+const tier2GunLegendaryCapConfig = {
+  maxLegendaryPerSpin: 4,
+  repeatLegendaryBonus: 0.015
+};
+
+// Returns the pool to use for one specific roll within a Tier 2 gun spin,
+// given how many legendary items that spin has already produced so far.
+// For any other tier/spin type this is a no-op and simply returns the
+// pool unchanged.
+function applyTier2GunLegendaryBounds(pool, legendaryCountSoFar, bonusApplies, spinType, tierKey) {
+  if (tierKey !== 't2' || spinType !== 'gun') return pool;
+
+  if (legendaryCountSoFar >= tier2GunLegendaryCapConfig.maxLegendaryPerSpin) {
+    return pool.filter(item => item.rarity !== 'legendary');
+  }
+
+  if (bonusApplies && legendaryCountSoFar >= 1) {
+    const legendaryWeight = pool.filter(item => item.rarity === 'legendary').reduce((sum, item) => sum + item.weight, 0);
+    if (legendaryWeight <= 0) return pool;
+    const scale = 1 + tier2GunLegendaryCapConfig.repeatLegendaryBonus * legendaryCountSoFar;
+    return pool.map(item => item.rarity === 'legendary' ? { ...item, weight: item.weight * scale } : item);
+  }
+
+  return pool;
+}
+
 function weightedPick(pool, previousName) {
   const adjusted = pool.map((item) => ({
     ...item,
@@ -462,11 +513,6 @@ async function startSpin() {
   // one eligible keyword still only applies the bonus a single time.
   const modifierResult = applyTier2GroupModifier(basePool, group, state.tier);
   const pool = modifierResult.pool;
-  state.pendingModifierAudit = {
-    tier2GroupModifierApplied: modifierResult.bonusApplies,
-    baseLegendaryChance: modifierResult.baseLegendaryChance,
-    finalLegendaryChance: modifierResult.finalLegendaryChance
-  };
 
   state.spinning = true;
   state.pending = [];
@@ -474,11 +520,24 @@ async function startSpin() {
   skipRequested = false;
 
   const winningItems = [];
+  let legendaryCountThisSpin = 0;
   for (let roll = 1; roll <= TIERS[state.tier].rewards; roll++) {
     const previousWinner = winningItems[winningItems.length - 1]?.name;
-    winningItems.push(weightedPick(pool, previousWinner));
+    // Re-checked every roll: enforces the Tier 2 gun legendary ceiling and,
+    // for eligible groups only, nudges the odds of landing another
+    // legendary once the spin has already produced one.
+    const rollPool = applyTier2GunLegendaryBounds(pool, legendaryCountThisSpin, modifierResult.bonusApplies, state.spinType, state.tier);
+    const winner = weightedPick(rollPool, previousWinner);
+    if (winner.rarity === 'legendary') legendaryCountThisSpin++;
+    winningItems.push(winner);
   }
   state.pending = [...winningItems];
+  state.pendingModifierAudit = {
+    tier2GroupModifierApplied: modifierResult.bonusApplies,
+    baseLegendaryChance: modifierResult.baseLegendaryChance,
+    finalLegendaryChance: modifierResult.finalLegendaryChance,
+    legendaryCountThisSpin
+  };
 
   elements.dropBtn.disabled = true;
   elements.closeSpin.disabled = true;
@@ -553,8 +612,8 @@ function saveResults(){
     // table or CSV export (both use their own fixed column lists), kept
     // here purely so an admin inspecting the raw saved data can verify
     // whether the Tier 2 group modifier fired on a given spin.
-    const modifierAudit=state.pendingModifierAudit||{tier2GroupModifierApplied:false,baseLegendaryChance:null,finalLegendaryChance:null};
-    const rows=state.pending.map(i=>({id:generateHistoryId(),time:now.toLocaleString(),ts:Date.now(),group:state.pendingGroup,tier:TIERS[state.tier].label,spinType:state.spinType,item:i.name,category:i.category,rank:i.rarity,image:i.image||'',emoji:i.emoji||'',tier2GroupModifierApplied:modifierAudit.tier2GroupModifierApplied,baseLegendaryChance:modifierAudit.baseLegendaryChance,finalLegendaryChance:modifierAudit.finalLegendaryChance}));
+    const modifierAudit=state.pendingModifierAudit||{tier2GroupModifierApplied:false,baseLegendaryChance:null,finalLegendaryChance:null,legendaryCountThisSpin:null};
+    const rows=state.pending.map(i=>({id:generateHistoryId(),time:now.toLocaleString(),ts:Date.now(),group:state.pendingGroup,tier:TIERS[state.tier].label,spinType:state.spinType,item:i.name,category:i.category,rank:i.rarity,image:i.image||'',emoji:i.emoji||'',tier2GroupModifierApplied:modifierAudit.tier2GroupModifierApplied,baseLegendaryChance:modifierAudit.baseLegendaryChance,finalLegendaryChance:modifierAudit.finalLegendaryChance,legendaryCountThisSpin:modifierAudit.legendaryCountThisSpin}));
     history.unshift(...rows);
     persistHistory();
     if(typeof rememberGroup==='function')rememberGroup(state.pendingGroup);
