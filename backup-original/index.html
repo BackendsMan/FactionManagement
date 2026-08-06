@@ -1190,7 +1190,7 @@ body.hideFloating .weaponFloat,body.hideFloating .itemImg,body.hideFloating .thu
           </div>
           <div class="setup">
             <div class="setupBlock"><div class="setupIcon"><img src="./Images/TFB Logo.png" alt="TFB"></div><div><div class="fieldLabel">Select Group</div><input class="groupInput" id="groupInput" placeholder="Type group name"></div></div>
-            <div><div class="fieldLabel">Select Tier</div><div class="tiers" id="tierTabs"><button class="tierTab active" data-tier="test">Test<small>2 Rewards</small></button><button class="tierTab" data-tier="t1">Tier 1<small>4 Rewards</small></button><button class="tierTab" data-tier="t1.5">Tier 1.5<small>5 Rewards</small></button><button class="tierTab" data-tier="t2">Tier 2<small>8 Rewards</small></button></div></div>
+            <div><div class="fieldLabel">Select Tier</div><div class="tiers" id="tierTabs"><button class="tierTab active" data-tier="test">Test<small>4 Rewards</small></button><button class="tierTab" data-tier="t1">Tier 1<small>8 Rewards</small></button><button class="tierTab" data-tier="t1.5">Tier 1.5<small>12 Rewards</small></button><button class="tierTab" data-tier="t2">Tier 2<small>15 Rewards</small></button></div></div>
           </div>
           <div class="sectionHead"><h2>Possible Drops <span id="poolCount">0 items</span></h2><div class="filters" id="filterChips"><button class="chip active" data-filter="all">All</button><button class="chip" data-filter="common">Common</button><button class="chip" data-filter="uncommon">Uncommon</button><button class="chip" data-filter="rare">Rare</button><button class="chip" data-filter="epic">Epic</button><button class="chip" data-filter="legendary">Legendary</button></div></div>
           <div class="rarityPeek" id="rarityPeek"><div class="rarityPeekInner"><div class="rarityPeekLabel"><span id="rarityPeekTitle">All Visible Items</span><span id="rarityPeekCount">0 matches</span></div><div class="rarityPeekList" id="rarityPeekList"></div></div></div>
@@ -1198,7 +1198,7 @@ body.hideFloating .weaponFloat,body.hideFloating .itemImg,body.hideFloating .thu
         </section>
         <aside class="rightPane">
           <div class="panel"><div class="panelTitle"><h3>Spin Type</h3><span class="online">Active</span></div><div class="spinTypes" id="spinTypes"><button class="spinType active" data-type="gun"><b>Gun Spins</b><span>Official illegal faction weapon pool for your tier</span></button><button class="spinType" data-type="bullet"><b>Bullet Spins</b><span>Ammo rewards based on tier access</span></button><button class="spinType" data-type="accessory"><b>Accessory Spin</b><span>Attachments and utility rewards from your tier pool</span></button></div></div>
-          <div class="panel"><div class="panelTitle"><h3>Tier Rules</h3><span class="tiny" id="ruleTier">TEST</span></div><div class="rules"><div class="rule"><b>Test</b><span>Official test pool • 2 rewards</span></div><div class="rule"><b>Tier 1</b><span>Official Tier 1 pool • 4 rewards</span></div><div class="rule"><b>Tier 1.5</b><span>Tier 1.5 pool • 5 rewards</span></div><div class="rule"><b>Tier 2</b><span>Tier 2 pool + all switches • 8 rewards</span></div></div></div>
+          <div class="panel"><div class="panelTitle"><h3>Tier Rules</h3><span class="tiny" id="ruleTier">TEST</span></div><div class="rules"><div class="rule"><b>Test</b><span>Official test pool • 4 rewards</span></div><div class="rule"><b>Tier 1</b><span>Official Tier 1 pool • 8 rewards</span></div><div class="rule"><b>Tier 1.5</b><span>Tier 1.5 pool • 12 rewards</span></div><div class="rule"><b>Tier 2</b><span>Tier 2 pool + all switches • 15 rewards</span></div></div></div>
           <div class="panel" id="appearancePanel"><div class="panelTitle"><h3>Appearance</h3><span class="tiny" id="themeLabel">DARK</span></div><div class="appearance"><button class="themeBtn" data-theme="light">Light</button><button class="themeBtn" data-theme="dim">Dim</button><button class="themeBtn active" data-theme="dark">Dark</button></div></div>
         </aside>
       </div>
@@ -1350,7 +1350,7 @@ body.hideFloating .weaponFloat,body.hideFloating .itemImg,body.hideFloating .thu
   </main>
 </div>
 <canvas id="confettiCanvas"></canvas>
-<div class="modal" id="spinModal"><div class="spinBox"><div class="modalTop"><div><h2>Rolling Drop</h2><div class="tiny" id="rollText">ROLL 1 OF 2</div></div><button class="close" id="closeSpin">Close</button></div><div class="reel"><div class="line"></div><div class="track" id="track"></div></div></div></div>
+<div class="modal" id="spinModal"><div class="spinBox"><div class="modalTop"><div><h2>Rolling Drop</h2><div class="tiny" id="rollText">ROLL 1 OF 4</div></div><button class="close" id="closeSpin">Close</button></div><div class="reel"><div class="line"></div><div class="track" id="track"></div></div></div></div>
 <div class="modal" id="resultModal"><div class="resultBox"><div class="modalTop"><h2>Drops Won</h2><button class="close" id="closeResult">Close</button></div><div class="resultGrid" id="results"></div><button class="collect" id="collectBtn">COLLECT ALL + SAVE HISTORY</button></div></div>
 
 <div class="modal confirmModal" id="confirmModal" aria-hidden="true">
@@ -1464,7 +1464,7 @@ const WEAPON_POOLS={
   "t1.5":new Set(TIER15_GUNS),
   t2:new Set([...new Set([...TIER15_GUNS,"MP20FRT",...SWITCH_GUNS])])
 };
-const TIERS={test:{label:"TEST",rewards:2,rarities:["common","uncommon"]},t1:{label:"TIER 1",rewards:4,rarities:["common","uncommon","rare"]},"t1.5":{label:"TIER 1.5",rewards:5,rarities:["common","uncommon","rare","epic"]},t2:{label:"TIER 2",rewards:8,rarities:["common","uncommon","rare","epic","legendary"]}};
+const TIERS={test:{label:"TEST",rewards:4,rarities:["common","uncommon"]},t1:{label:"TIER 1",rewards:8,rarities:["common","uncommon","rare"]},"t1.5":{label:"TIER 1.5",rewards:12,rarities:["common","uncommon","rare","epic"]},t2:{label:"TIER 2",rewards:15,rarities:["common","uncommon","rare","epic","legendary"]}};
 const MUSIC_TRACKS=[
   {name:"Keke - Headtapp Gz",id:1},
   {name:"Strictly 4 The Fans - Rennytherapper",id:2},
