@@ -426,6 +426,29 @@ function applyTier2GunLegendaryBounds(boostedPool, basePool, legendaryCountSoFar
   return basePool;
 }
 
+/* -----------------------------------------------------------------------
+   ADMIN CONFIGURATION — same-legendary-gun cap
+   -------------------------------------------------------------------------
+   Hard rule, applies to every Tier 2 gun spin regardless of group (the
+   Brower Gang boost above is untouched and still runs first — this only
+   trims the pool afterward): once a specific named legendary gun has been
+   won MAX_SAME_LEGENDARY_GUN_PER_SPIN times in one spin, that one gun is
+   removed from the pool for the rest of the spin, so its own chance drops
+   to zero — a third copy is never possible. Every OTHER legendary gun (and
+   every other rarity) is untouched and keeps its normal relative odds, so
+   the overall legendary/rarity distribution stays a valid weighted draw;
+   only the maxed-out gun's own weight leaves the pool.
+   ------------------------------------------------------------------------- */
+const MAX_SAME_LEGENDARY_GUN_PER_SPIN = 2;
+function excludeMaxedOutLegendaryGuns(pool, legendaryNameCounts, tierKey, spinType) {
+  if (tierKey !== 't2' || spinType !== 'gun') return pool;
+  if (!legendaryNameCounts || !legendaryNameCounts.size) return pool;
+  const filtered = pool.filter(item =>
+    !(item.rarity === 'legendary' && (legendaryNameCounts.get(item.name) || 0) >= MAX_SAME_LEGENDARY_GUN_PER_SPIN)
+  );
+  return filtered.length ? filtered : pool;
+}
+
 function weightedPick(pool, previousName) {
   const adjusted = pool.map((item) => ({
     ...item,
@@ -570,15 +593,23 @@ async function startSpin() {
 
   const winningItems = [];
   let legendaryCountThisSpin = 0;
+  const legendaryNameCountsThisSpin = new Map();
   for (let roll = 1; roll <= TIERS[state.tier].rewards; roll++) {
     const previousWinner = winningItems[winningItems.length - 1]?.name;
     // Re-checked every roll: for Tier 2 gun spins, this both enforces the
     // hard legendary ceiling and — for eligible groups only — decides
     // whether the boost window is still open (closes for the rest of the
     // spin once boostUntilLegendaryCount has been reached).
-    const rollPool = applyTier2GunLegendaryBounds(pool, rebalancedBasePool, legendaryCountThisSpin, modifierResult.bonusApplies, state.spinType, state.tier);
+    const boundedPool = applyTier2GunLegendaryBounds(pool, rebalancedBasePool, legendaryCountThisSpin, modifierResult.bonusApplies, state.spinType, state.tier);
+    // Then, regardless of group/boost, drop any single legendary gun that
+    // has already hit its per-spin cap — keeps the boost intact while
+    // guaranteeing no more than 2 of the same legendary gun ever land.
+    const rollPool = excludeMaxedOutLegendaryGuns(boundedPool, legendaryNameCountsThisSpin, state.tier, state.spinType);
     const winner = weightedPick(rollPool, previousWinner);
-    if (winner.rarity === 'legendary') legendaryCountThisSpin++;
+    if (winner.rarity === 'legendary') {
+      legendaryCountThisSpin++;
+      legendaryNameCountsThisSpin.set(winner.name, (legendaryNameCountsThisSpin.get(winner.name) || 0) + 1);
+    }
     winningItems.push(winner);
   }
   state.pending = [...winningItems];
