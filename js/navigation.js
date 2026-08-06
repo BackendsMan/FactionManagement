@@ -62,7 +62,16 @@ function initReactiveDots(){
     for(let y=18;y<h;y+=gap){for(let x=18;x<w;x+=gap){pts.push({x,y,p:Math.random()*Math.PI*2});}}
     draw();
   }
+  // This canvas only lives inside the Home hero, but requestAnimationFrame
+  // doesn't know that — left unchecked it draws every frame forever, even
+  // while the user is on Tiers/History/Playlist/Settings and the canvas is
+  // invisible. Stop rescheduling as soon as Home isn't the active view, and
+  // let resumeReactiveDots() (called from setView) restart it on return.
   function draw(t=0){
+    if(!hero.closest('.view')?.classList.contains('active')){
+      raf=0;
+      return;
+    }
     ctx.clearRect(0,0,w,h);
     for(const pt of pts){
       const dx=pt.x-mx,dy=pt.y-my,dist=Math.sqrt(dx*dx+dy*dy);
@@ -81,6 +90,7 @@ function initReactiveDots(){
     }
     raf=requestAnimationFrame(draw);
   }
+  window.resumeReactiveDots=()=>{ if(!raf) raf=requestAnimationFrame(draw); };
   hero.addEventListener('pointermove',e=>{
     const r=hero.getBoundingClientRect();
     mx=e.clientX-r.left; my=e.clientY-r.top;

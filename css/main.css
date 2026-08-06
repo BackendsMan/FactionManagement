@@ -760,7 +760,7 @@ body.lowMotion *{animation:none!important;transition:none!important}
 @keyframes fadeIn{from{opacity:0}to{opacity:1}}
 @keyframes clickPulse{50%{transform:scale(.985)}}
 @keyframes weaponFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(calc(var(--floatAmt,12px) * -1))}}
-@keyframes reelBlur{50%{filter:blur(1.2px);opacity:.72}}
+@keyframes reelBlur{50%{opacity:.72}}
 @keyframes winnerLock{50%{transform:scale(1.05);filter:brightness(1.25) drop-shadow(0 0 20px rgba(155,92,255,.44))}100%{transform:none}}
 @media (prefers-reduced-motion: reduce){*,*::before,*::after{animation:none!important;transition:none!important}}
 

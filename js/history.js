@@ -46,6 +46,7 @@ function setView(v){
       if(typeof syncActiveCardIndex==='function'&&typeof SECTION_ORDER!=='undefined'&&typeof activeCardIndex==='number'){
         syncActiveCardIndex(SECTION_ORDER[activeCardIndex]);
       }
+      if(typeof resumeReactiveDots==='function')resumeReactiveDots();
     }
     if(targetView==='playlist'&&typeof updatePlaylistView==='function')updatePlaylistView();
   }
