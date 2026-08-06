@@ -366,6 +366,43 @@ const tier2GunBoostWindowConfig = {
   maxLegendaryPerSpin: 4         // hard ceiling, applies to every group
 };
 
+/* -----------------------------------------------------------------------
+   ADMIN CONFIGURATION — Tier 2 gun legendary reward-count rebalance
+   -------------------------------------------------------------------------
+   The per-roll legendary baseline built into the ITEMS weights (~26% for
+   guns, see computeLegendaryChance) — and everything tuned against it above
+   (tier2GroupModifierConfig, tier2GunBoostWindowConfig) — was calibrated
+   back when Tier 2 generated tier2GunRewardsBaselineRef rolls per spin.
+   Tier 2 now generates TIERS.t2.rewards rolls per spin; at the old per-roll
+   odds, more rolls means a legendary switch — let alone stacking multiple
+   in one spin — becomes silently much easier just from the extra rolls,
+   with no design decision behind that shift.
+   This scales the legendary weight of the pool DOWN by the same ratio the
+   roll count grew, so pulling a switch stays roughly as hard as it was
+   before the reward-count increase (never used to inflate odds — if a tier
+   ever has fewer rolls than the reference, this is a no-op). It runs first,
+   before the Brower Gang group bonus is computed, so that bonus still
+   applies on top of this rebalanced baseline exactly as before — the boost
+   itself is untouched, only the baseline it's added to is corrected.
+   Applies to Tier 2 GUN spins only; bullets/accessories are unaffected.
+   ------------------------------------------------------------------------- */
+const tier2GunRewardsBaselineRef = 8;
+function rebalanceTier2GunLegendaryBaseline(pool, tierKey, spinType) {
+  if (tierKey !== 't2' || spinType !== 'gun') return pool;
+  const scale = tier2GunRewardsBaselineRef / TIERS.t2.rewards;
+  if (!(scale < 1)) return pool;
+
+  const baseLegendaryChance = computeLegendaryChance(pool);
+  const legendaryWeight = pool.filter(item => item.rarity === 'legendary').reduce((sum, item) => sum + item.weight, 0);
+  const otherWeight = pool.reduce((sum, item) => sum + item.weight, 0) - legendaryWeight;
+  if (!baseLegendaryChance || legendaryWeight <= 0) return pool;
+
+  const targetChance = baseLegendaryChance * scale;
+  const targetLegendaryWeight = (targetChance * otherWeight) / (1 - targetChance);
+  const rebalanceScale = targetLegendaryWeight / legendaryWeight;
+  return pool.map(item => item.rarity === 'legendary' ? { ...item, weight: item.weight * rebalanceScale } : item);
+}
+
 // Returns the pool to use for one specific roll within a Tier 2 gun spin.
 // boostedPool is the (possibly modifier-adjusted) pool from
 // applyTier2GroupModifier; basePool is the same pool with no modifier
@@ -516,9 +553,14 @@ async function startSpin() {
     return;
   }
 
+  // Rebalance the legendary baseline for the new reward count BEFORE the
+  // group bonus is computed, so the Brower Gang boost still applies on top
+  // of the corrected baseline exactly as before.
+  const rebalancedBasePool = rebalanceTier2GunLegendaryBaseline(basePool, state.tier, state.spinType);
+
   // Computed once per spin (not per roll), so a group name with more than
   // one eligible keyword still only applies the bonus a single time.
-  const modifierResult = applyTier2GroupModifier(basePool, group, state.tier);
+  const modifierResult = applyTier2GroupModifier(rebalancedBasePool, group, state.tier);
   const pool = modifierResult.pool;
 
   state.spinning = true;
@@ -534,7 +576,7 @@ async function startSpin() {
     // hard legendary ceiling and — for eligible groups only — decides
     // whether the boost window is still open (closes for the rest of the
     // spin once boostUntilLegendaryCount has been reached).
-    const rollPool = applyTier2GunLegendaryBounds(pool, basePool, legendaryCountThisSpin, modifierResult.bonusApplies, state.spinType, state.tier);
+    const rollPool = applyTier2GunLegendaryBounds(pool, rebalancedBasePool, legendaryCountThisSpin, modifierResult.bonusApplies, state.spinType, state.tier);
     const winner = weightedPick(rollPool, previousWinner);
     if (winner.rarity === 'legendary') legendaryCountThisSpin++;
     winningItems.push(winner);
