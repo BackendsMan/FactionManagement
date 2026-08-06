@@ -92,7 +92,7 @@ const WEAPON_POOLS={
   "t1.5":new Set(TIER15_GUNS),
   t2:new Set([...new Set([...TIER15_GUNS,"MP20FRT",...SWITCH_GUNS])])
 };
-const TIERS={test:{label:"TEST",rewards:2,rarities:["common","uncommon"]},t1:{label:"TIER 1",rewards:4,rarities:["common","uncommon","rare"]},"t1.5":{label:"TIER 1.5",rewards:5,rarities:["common","uncommon","rare","epic"]},t2:{label:"TIER 2",rewards:8,rarities:["common","uncommon","rare","epic","legendary"]}};
+const TIERS={test:{label:"TEST",rewards:4,rarities:["common","uncommon"]},t1:{label:"TIER 1",rewards:8,rarities:["common","uncommon","rare"]},"t1.5":{label:"TIER 1.5",rewards:12,rarities:["common","uncommon","rare","epic"]},t2:{label:"TIER 2",rewards:15,rarities:["common","uncommon","rare","epic","legendary"]}};
 const MUSIC_TRACKS=[
   {name:"Keke - Headtapp Gz",id:1},
   {name:"Strictly 4 The Fans - Rennytherapper",id:2},
