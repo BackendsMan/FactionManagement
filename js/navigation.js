@@ -232,18 +232,27 @@ if(playlistMuteBtn)playlistMuteBtn.onclick=()=>muteBtn.click();
   },{passive:false});
 
   // Drag-to-scroll (mouse + touch) with light momentum
-  let dragging=false,startX=0,startScroll=0,lastX=0,lastT=0,velocity=0,momentumRaf=0;
+  let dragging=false,startX=0,startScroll=0,lastX=0,lastT=0,velocity=0,momentumRaf=0,lastGlideT=0;
   const endDrag=()=>{
     if(!dragging)return;
     dragging=false;
     grid.classList.remove('dragging');
     if(motionOk()&&Math.abs(velocity)>0.15){
-      const glide=()=>{
-        velocity*=0.94;
-        grid.scrollLeft-=velocity*16;
+      // Time-based, not frame-count-based: the 0.94 decay and *16 move were
+      // tuned assuming every rAF tick is ~16ms apart (60Hz). Scaling both by
+      // real elapsed time (dt/16) makes the glide feel identical at any
+      // display refresh rate instead of decaying/scrolling faster the more
+      // often rAF fires; at a steady 16ms/tick this is exactly the original
+      // math.
+      const glide=(now)=>{
+        const dt=Math.min(now-lastGlideT,48);
+        lastGlideT=now;
+        velocity*=Math.pow(0.94,dt/16);
+        grid.scrollLeft-=velocity*dt;
         if(Math.abs(velocity)>0.15)momentumRaf=requestAnimationFrame(glide);
       };
       cancelAnimationFrame(momentumRaf);
+      lastGlideT=performance.now();
       momentumRaf=requestAnimationFrame(glide);
     }
   };

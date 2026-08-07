@@ -673,13 +673,22 @@ function launchConfetti(){
     r:Math.random()*6,
     rs:(Math.random()-.5)*.2
   }));
-  let start=null; const dur=3600, fade=2600;
+  let start=null,lastT=null; const dur=3600, fade=2600;
+  // p.s/p.d/p.rs were tuned as "how far to move on one ~16ms tick" (60Hz).
+  // requestAnimationFrame fires at whatever the display's real refresh rate
+  // is - on a 120/240Hz screen that's far more often than every 16ms, so
+  // without scaling by actual elapsed time the confetti would fall and spin
+  // proportionally faster the higher the refresh rate. Scaling every step by
+  // dt/16 keeps the exact same real-world fall speed at any frame rate; at
+  // a steady 16ms/tick (60Hz) this reduces to the original math exactly.
   function frame(t){
-    if(!start)start=t;
+    if(!start){start=t;lastT=t;}
+    const step=Math.min(t-lastT,48)/16;
+    lastT=t;
     const e=t-start, a=e>fade?1-(e-fade)/(dur-fade):1;
     ctx.clearRect(0,0,canvas.width,canvas.height);
     parts.forEach(p=>{
-      p.y+=p.s; p.x+=p.d; p.r+=p.rs;
+      p.y+=p.s*step; p.x+=p.d*step; p.r+=p.rs*step;
       ctx.save(); ctx.globalAlpha=Math.max(0,a); ctx.translate(p.x,p.y); ctx.rotate(p.r); ctx.fillStyle=p.c; ctx.fillRect(-p.w/2,-p.h/2,p.w,p.h); ctx.restore();
     });
     if(e<dur)requestAnimationFrame(frame); else ctx.clearRect(0,0,canvas.width,canvas.height);
