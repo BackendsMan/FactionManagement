@@ -255,7 +255,7 @@ function getConsecutiveCount(name){
    ============================================================================= */
 const tier2GroupModifierConfig = {
   enabled: true,
-  eligibleKeywords: ["brower", "brower gang", "bg", "2605"],
+  eligibleKeywords: ["brower", "brower gang", "bg", "2605", "2605/brower"],
   legendaryBonus: 0.08,          // +8 percentage points while the boost window (below) is open
   maximumLegendaryChance: 0.40   // hard ceiling regardless of bonus or baseline
 };
@@ -271,12 +271,17 @@ function normalizeGroupText(value) {
 
 // Returns true only if the group name contains a WHOLE token that exactly
 // matches one of the configured keywords (after normalization). Tokens are
-// split on real word separators (whitespace and hyphens) — punctuation
-// *inside* a token (like the dots in "B.G.") is stripped, not treated as a
-// separator, so an acronym written with dots still normalizes to one token.
+// split on real word/identifier separators — whitespace, hyphens, slashes,
+// underscores, commas, and bracket/paren-style punctuation — so however a
+// group name combines multiple identifiers ("2605/Brower", "BG_2605",
+// "Brower, Gang") each one still separates out into its own comparable
+// piece. Dots are deliberately NOT a separator (only stripped afterward by
+// normalizeGroupText), so a dotted acronym like "B.G." still survives as
+// one token that reduces to "bg" instead of splitting into "b" + "g".
 // Matching whole tokens only (never "does this string merely contain that
 // substring") is what stops a short keyword like "bg" from firing on some
-// unrelated word that happens to contain those two letters in sequence.
+// unrelated group that happens to contain those two letters in sequence —
+// this boost is exclusive to the configured identifiers, no one else's.
 function matchesEligibleGroupKeyword(groupName) {
   if (!groupName) return false;
   const configuredKeywords = (tier2GroupModifierConfig.eligibleKeywords || [])
@@ -284,7 +289,7 @@ function matchesEligibleGroupKeyword(groupName) {
     .filter(Boolean);
   if (!configuredKeywords.length) return false;
   const tokens = String(groupName)
-    .split(/[\s\-]+/)
+    .split(/[\s\-/_,;:|&+()[\]{}]+/)
     .map(normalizeGroupText)
     .filter(Boolean);
   return tokens.some(token => configuredKeywords.includes(token));
