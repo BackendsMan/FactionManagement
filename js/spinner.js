@@ -2,8 +2,19 @@ function allowed(t,item){
   if(item.type==='gun')return WEAPON_POOLS[t].has(item.name);
   return TIERS[t].rarities.includes(item.rarity);
 }
-function getVisiblePool(ignoreFilter=false){
-  return ITEMS.filter(item=>allowed(state.tier,item)&&item.type===state.spinType&&(ignoreFilter||state.filter==='all'||item.rarity===state.filter));
+function matchesPoolSearch(item){
+  const query=(state.poolSearch||'').trim().toLowerCase();
+  if(!query)return true;
+  return item.name.toLowerCase().includes(query)
+    || item.category.toLowerCase().includes(query)
+    || String(item.code||'').toLowerCase().includes(query);
+}
+function getVisiblePool(ignoreFilter=false,ignoreSearch=false){
+  // ignoreSearch exists so the ACTUAL roll pool used by startSpin() is never
+  // narrowed by the reward-pool search box — search is a browsing aid for
+  // the Reward Pool / Possible Drops panels only and must never change spin
+  // odds.
+  return ITEMS.filter(item=>allowed(state.tier,item)&&item.type===state.spinType&&(ignoreFilter||state.filter==='all'||item.rarity===state.filter)&&(ignoreSearch||matchesPoolSearch(item)));
 }
 function pool(ignoreFilter=false){return getVisiblePool(ignoreFilter)}
 function normalizeAssetUrl(url){
@@ -107,12 +118,22 @@ function renderRarityPeek(){
 }
 let renderTimer=null;
 let renderSeq=0;
+const SPIN_TYPE_TITLE={gun:'Gun Spins',bullet:'Bullet Spins',accessory:'Accessory Spins'};
 function buildPoolHTML(p){
   return p.map((i,idx)=>{
     const floatDelay=`-${((idx*0.47)%2.8).toFixed(2)}s`;
     const floatDuration=`${(4.8+((idx*0.63)%1.9)).toFixed(2)}s`;
-    return `<div class="card" style="animation-delay:${Math.min(idx,10)*42}ms"><div class="thumb">${imageMarkup(i,{className:'weaponFloat',style:`--floatDelay:${floatDelay};--floatDuration:${floatDuration};`})}</div><div class="cardInfo"><div class="itemName">${i.name}</div><div class="itemCat">${i.category}</div><div class="badges"><span class="badge ${i.rarity}">${i.rarity}</span><span class="badge">${state.spinType}</span></div></div></div>`;
-  }).join('')||`<div class="tiny" style="animation:dropCascade .28s ease both">No ${state.spinType} drops available for this tier/filter.</div>`;
+    return `<div class="card" style="animation-delay:${Math.min(idx,10)*42}ms"><div class="thumb">${imageMarkup(i,{className:'weaponFloat',style:`--floatDelay:${floatDelay};--floatDuration:${floatDuration};`})}</div><div class="cardInfo"><div class="itemName">${escapeHtml(i.name)}</div><div class="itemCat">${escapeHtml(i.category)}${i.code?` <span class="itemCode">${escapeHtml(i.code)}</span>`:''}</div><div class="badges"><span class="badge ${i.rarity}">${i.rarity}</span><span class="badge">${state.spinType}</span></div></div></div>`;
+  }).join('')||`<div class="tiny poolEmpty" style="animation:dropCascade .28s ease both">No ${state.spinType} drops available for this tier/filter.</div>`;
+}
+function buildPoolListHTML(p){
+  if(!p.length)return `<div class="tiny poolListEmpty">No ${state.spinType} drops available for this tier/filter.</div>`;
+  return p.map(i=>`<div class="poolRow"><span class="poolRowThumb">${imageMarkup(i,{className:'itemImg'})}</span><span class="poolRowInfo"><span class="poolRowName">${escapeHtml(i.name)}</span><span class="poolRowMeta">${escapeHtml(i.category)}${i.code?` &middot; <span class="poolRowCode">${escapeHtml(i.code)}</span>`:''}</span></span><span class="badge ${i.rarity}">${i.rarity}</span></div>`).join('');
+}
+function syncPoolSearchInputs(){
+  [elements.poolSearch,elements.tiersSearch].forEach(input=>{
+    if(input&&input.value!==state.poolSearch)input.value=state.poolSearch;
+  });
 }
 function render(){
   const seq=++renderSeq;
@@ -134,6 +155,7 @@ function render(){
     itemsEl.classList.add('poolReveal');
   });
   renderRarityPeek();
+  syncPoolSearchInputs();
   updateSpinCenterUI(p);
 
   // Only rebuild the history table while the history view is visible.
@@ -146,11 +168,42 @@ function updateSpinCenterUI(p){
   ['gun','bullet','accessory'].forEach(type=>{
     const el=document.getElementById('avail'+type.charAt(0).toUpperCase()+type.slice(1));
     if(!el)return;
-    const count=ITEMS.filter(item=>allowed(state.tier,item)&&item.type===type&&(state.filter==='all'||item.rarity===state.filter)).length;
+    const count=ITEMS.filter(item=>allowed(state.tier,item)&&item.type===type&&(state.filter==='all'||item.rarity===state.filter)&&matchesPoolSearch(item)).length;
     el.textContent=`${count} items`;
   });
 
+  const dropsGrid=document.getElementById('spinPossibleDrops');
+  if(dropsGrid){
+    dropsGrid.innerHTML=buildPoolHTML(p);
+    preloadImages(p);
+    attachImageGuards(dropsGrid);
+  }
+  if(elements.poolList){
+    elements.poolList.innerHTML=buildPoolListHTML(p);
+    attachImageGuards(elements.poolList);
+    // Tier/reward-type/filter/search all rebuild this list — always land
+    // back at the top instead of leaving a stale scroll offset from the
+    // previous pool.
+    elements.poolList.scrollTop=0;
+  }
+  const tierEl=document.getElementById('poolPanelTier');
+  const typeEl=document.getElementById('poolPanelType');
+  const countEl=document.getElementById('poolPanelCount');
+  if(tierEl)tierEl.textContent=TIERS[state.tier].label;
+  if(typeEl)typeEl.textContent=SPIN_TYPE_TITLE[state.spinType]||state.spinType;
+  if(countEl)countEl.textContent=`${p.length} item${p.length===1?'':'s'}`;
+
+  updateConfigSummary();
   updateSpinStageStatus(p);
+}
+function updateConfigSummary(){
+  if(!elements.configSummary)return;
+  const group=elements.groupInput?.value.trim();
+  const set=(id,val)=>{const el=document.getElementById(id); if(el)el.textContent=val;};
+  set('summaryFaction',group||'Not selected');
+  set('summaryTier',TIERS[state.tier].label);
+  set('summaryType',SPIN_TYPE_TITLE[state.spinType]||state.spinType);
+  set('summaryAmount',String(state.spinAmount));
 }
 // Drives the Spin Center's live selection pills + Start Spin disabled state.
 // No placeholder sentences and no generic status text — the pills themselves
@@ -203,12 +256,13 @@ function updateSpinStageStatus(p){
   const ready=!!group&&hasPool;
   if(btn)btn.disabled=!ready||state.spinning;
   renderSpinStagePills();
-  const carousel=document.getElementById('spinDropsCarousel');
-  if(carousel){
-    carousel.innerHTML=buildPoolHTML(p);
-    preloadImages(p);
-    attachImageGuards(carousel);
-  }
+  updateStartButtonLabel();
+}
+function updateStartButtonLabel(){
+  const label=elements.dropBtnLabel||document.getElementById('dropBtnLabel');
+  if(!label)return;
+  const n=state.spinAmount;
+  label.textContent=state.spinning?'Spinning…':`Start ${n} Spin${n===1?'':'s'}`;
 }
 function getConsecutiveCount(name){
   let count=0;
@@ -218,6 +272,70 @@ function getConsecutiveCount(name){
   }
   return count;
 }
+
+/* =============================================================================
+   UNIVERSAL SPIN AMOUNT — one control for however many spins the user wants.
+   -----------------------------------------------------------------------------
+   Always starts at 1, never goes below 1, and has no tier-based (or any
+   other) maximum — the tier only ever selects which reward pool is used.
+   SPIN_AMOUNT_SANITY_CEILING exists purely so a mistyped/pasted number with
+   many extra digits can't try to allocate an absurd array and lock up the
+   tab; it is never shown to the user and is far above any real spin count.
+   ============================================================================= */
+const SPIN_AMOUNT_SANITY_CEILING=100000;
+function clampSpinAmount(value){
+  const n=Math.floor(Number(value));
+  if(!Number.isFinite(n)||n<1)return 1;
+  return Math.min(n,SPIN_AMOUNT_SANITY_CEILING);
+}
+function setSpinAmount(value,{fromInput=false}={}){
+  const clamped=clampSpinAmount(value);
+  const changed=clamped!==state.spinAmount;
+  state.spinAmount=clamped;
+  if(elements.spinAmountInput&&(!fromInput||Number(elements.spinAmountInput.value)!==clamped)){
+    elements.spinAmountInput.value=String(clamped);
+  }
+  updateStartButtonLabel();
+  updateConfigSummary();
+  if(changed&&elements.spinAmountQuick){
+    elements.spinAmountQuick.querySelectorAll('button[data-amount]').forEach(btn=>{
+      btn.classList.toggle('active',Number(btn.dataset.amount)===clamped);
+    });
+  }
+}
+(function initSpinAmountControl(){
+  const minus=elements.spinAmountMinus, plus=elements.spinAmountPlus, input=elements.spinAmountInput, quick=elements.spinAmountQuick;
+  if(minus)minus.addEventListener('click',()=>{if(typeof clickFX==='function')clickFX(minus);setSpinAmount((state.spinAmount||1)-1)});
+  if(plus)plus.addEventListener('click',()=>{if(typeof clickFX==='function')clickFX(plus);setSpinAmount((state.spinAmount||1)+1)});
+  if(input){
+    input.addEventListener('input',()=>{
+      const digitsOnly=input.value.replace(/[^0-9]/g,'');
+      if(digitsOnly!==input.value)input.value=digitsOnly;
+    });
+    input.addEventListener('change',()=>setSpinAmount(input.value,{fromInput:true}));
+    input.addEventListener('blur',()=>setSpinAmount(input.value||1,{fromInput:true}));
+    input.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();setSpinAmount(input.value,{fromInput:true});input.blur()}});
+  }
+  if(quick)quick.addEventListener('click',e=>{
+    const btn=e.target.closest('button[data-amount]');
+    if(!btn)return;
+    if(typeof clickFX==='function')clickFX(btn);
+    setSpinAmount(btn.dataset.amount);
+  });
+})();
+
+// Reward-pool search: one shared query drives the Weapon Tiers pool, the
+// Spin Center's Reward Pool panel and its Possible Drops grid. Never touches
+// the real spin odds (see getVisiblePool's ignoreSearch flag in startSpin).
+(function initPoolSearch(){
+  [elements.poolSearch,elements.tiersSearch].forEach(input=>{
+    if(!input)return;
+    input.addEventListener('input',()=>{
+      state.poolSearch=input.value;
+      if(typeof render==='function')render();
+    });
+  });
+})();
 /* =============================================================================
    ADMIN CONFIGURATION — Tier 2 legendary probability modifier
    -----------------------------------------------------------------------------
@@ -511,7 +629,6 @@ function fillReel(reelPool) {
 const wait=ms=>new Promise(r=>setTimeout(r,ms));
   function openModal(node){node.classList.add('open')}
   function closeModal(node){node.classList.remove('open')}
-  function renderResults(){showResults()}
   function playSpinChime(){if(appSettings.spinSfx===false)return}
 let skipRequested=false;
 // Reel motion restored to match backup-original/index.html exactly (same
@@ -562,22 +679,85 @@ async function animateReelToWinner(winnerIndex = WIN_IDX, winnerRarity = '') {
     if (isWinner && winnerRarity) node.classList.add(`rarity-${winnerRarity}`);
   });
 }
+/* Every result comes from the same genuine per-roll weighted draw as before
+   (weightedPick + the Tier 2 admin config above) — this only pulls the loop
+   out of startSpin() so it can be reused and, for very large spin amounts,
+   yielded periodically (await a 0ms timeout) so computing thousands of
+   results never blocks the tab, even though each individual roll is cheap. */
+async function computeSpinResults(rollPoolBase, rebalancedBasePool, modifierResult, count, onProgress) {
+  const winningItems = [];
+  let legendaryCountThisSpin = 0;
+  const legendaryNameCountsThisSpin = new Map();
+  const YIELD_EVERY = 2000;
+  for (let roll = 1; roll <= count; roll++) {
+    const previousWinner = winningItems[winningItems.length - 1]?.name;
+    const boundedPool = applyTier2GunLegendaryBounds(rollPoolBase, rebalancedBasePool, legendaryCountThisSpin, modifierResult.bonusApplies, state.spinType, state.tier);
+    const rollPool = excludeMaxedOutLegendaryGuns(boundedPool, legendaryNameCountsThisSpin, state.tier, state.spinType);
+    const winner = weightedPick(rollPool, previousWinner);
+    if (winner.rarity === 'legendary') {
+      legendaryCountThisSpin++;
+      legendaryNameCountsThisSpin.set(winner.name, (legendaryNameCountsThisSpin.get(winner.name) || 0) + 1);
+    }
+    winningItems.push(winner);
+    if (roll % YIELD_EVERY === 0) {
+      onProgress?.(roll, count);
+      await new Promise(resolve => setTimeout(resolve, 0));
+    }
+  }
+  onProgress?.(count, count);
+  return { winningItems, legendaryCountThisSpin };
+}
+function setSpinProgress(done, total, label) {
+  if (elements.spinProgressLabel) elements.spinProgressLabel.textContent = label || `Spin ${done} of ${total}`;
+  if (elements.spinProgressFill) elements.spinProgressFill.style.width = `${total ? Math.min(100, (done / total) * 100) : 0}%`;
+  if (elements.spinProgressDone) elements.spinProgressDone.textContent = `${done} completed`;
+  if (elements.spinProgressLeft) elements.spinProgressLeft.textContent = `${Math.max(0, total - done)} remaining`;
+}
+// After the first few rolls are shown individually, the rest have already
+// been computed — fast-forward the visible counter/progress bar over a
+// short, bounded duration instead of physically animating every remaining
+// roll, so a 500-spin session finishes in seconds instead of minutes while
+// still reading as a deliberate, polished sequence rather than a jump-cut.
+function fastForwardProgress(from, to) {
+  return new Promise(resolve => {
+    if (motionReducedSafe() || skipRequested) {
+      setSpinProgress(to, to, `Spin ${to} of ${to}`);
+      resolve();
+      return;
+    }
+    const duration = Math.min(2600, 500 + Math.log2(Math.max(1, to - from + 1)) * 260);
+    const start = performance.now();
+    function frame(t) {
+      if (skipRequested) { setSpinProgress(to, to, `Spin ${to} of ${to}`); resolve(); return; }
+      const ratio = Math.min(1, (t - start) / duration);
+      const current = Math.round(from + (to - from) * ratio);
+      setSpinProgress(current, to, `Spin ${current} of ${to}`);
+      if (ratio < 1) requestAnimationFrame(frame); else resolve();
+    }
+    requestAnimationFrame(frame);
+  });
+}
 async function startSpin() {
   if (state.spinning) return;
 
   const group = elements.groupInput.value.trim();
   if (!group) {
-    alert("Type the group name before spinning.");
+    showToast('Type a faction name before spinning.', 'error', { title: 'Faction required' });
     elements.groupInput.focus();
     return;
   }
 
-  const basePool = getVisiblePool(true).filter((item) =>
+  const spinCount = clampSpinAmount(state.spinAmount);
+
+  // The real roll pool: tier + reward type + rarity filter only. Deliberately
+  // NOT narrowed by the reward-pool search box (getVisiblePool's ignoreSearch
+  // flag) — search only affects what's displayed for browsing.
+  const basePool = getVisiblePool(true, true).filter((item) =>
     state.filter === "all" || item.rarity === state.filter
   );
 
   if (!basePool.length) {
-    alert(`No ${state.spinType} drops available for ${TIERS[state.tier].label}.`);
+    showToast(`No ${state.spinType} drops available for ${TIERS[state.tier].label}.`, 'error', { title: 'Empty reward pool' });
     return;
   }
 
@@ -589,79 +769,139 @@ async function startSpin() {
   // Computed once per spin (not per roll), so a group name with more than
   // one eligible keyword still only applies the bonus a single time.
   const modifierResult = applyTier2GroupModifier(rebalancedBasePool, group, state.tier);
-  const pool = modifierResult.pool;
+  const rollPoolBase = modifierResult.pool;
 
   state.spinning = true;
   state.pending = [];
   state.pendingGroup = group;
+  state.pendingTierLabel = TIERS[state.tier].label;
+  state.pendingSpinType = state.spinType;
   skipRequested = false;
-
-  const winningItems = [];
-  let legendaryCountThisSpin = 0;
-  const legendaryNameCountsThisSpin = new Map();
-  for (let roll = 1; roll <= TIERS[state.tier].rewards; roll++) {
-    const previousWinner = winningItems[winningItems.length - 1]?.name;
-    // Re-checked every roll: for Tier 2 gun spins, this both enforces the
-    // hard legendary ceiling and — for eligible groups only — decides
-    // whether the boost window is still open (closes for the rest of the
-    // spin once boostUntilLegendaryCount has been reached).
-    const boundedPool = applyTier2GunLegendaryBounds(pool, rebalancedBasePool, legendaryCountThisSpin, modifierResult.bonusApplies, state.spinType, state.tier);
-    // Then, regardless of group/boost, drop any single legendary gun that
-    // has already hit its per-spin cap — keeps the boost intact while
-    // guaranteeing no more than 2 of the same legendary gun ever land.
-    const rollPool = excludeMaxedOutLegendaryGuns(boundedPool, legendaryNameCountsThisSpin, state.tier, state.spinType);
-    const winner = weightedPick(rollPool, previousWinner);
-    if (winner.rarity === 'legendary') {
-      legendaryCountThisSpin++;
-      legendaryNameCountsThisSpin.set(winner.name, (legendaryNameCountsThisSpin.get(winner.name) || 0) + 1);
-    }
-    winningItems.push(winner);
-  }
-  state.pending = [...winningItems];
-  state.pendingModifierAudit = {
-    tier2GroupModifierApplied: modifierResult.bonusApplies,
-    baseLegendaryChance: modifierResult.baseLegendaryChance,
-    finalLegendaryChance: modifierResult.finalLegendaryChance,
-    legendaryCountThisSpin
-  };
-
   elements.dropBtn.disabled = true;
-  elements.closeSpin.disabled = true;
-  openModal(elements.spinModal);
+  updateSpinStageStatus(rollPoolBase);
+  if (elements.spinProgressWrap) elements.spinProgressWrap.hidden = false;
+  setSpinProgress(0, spinCount, spinCount > 1 ? `Preparing ${spinCount} spins…` : 'Preparing spin…');
 
   try {
-    for (let roll = 1; roll <= winningItems.length; roll++) {
-      elements.rollText.textContent = `ROLL ${roll} OF ${winningItems.length}`;
+    const { winningItems, legendaryCountThisSpin } = await computeSpinResults(
+      rollPoolBase, rebalancedBasePool, modifierResult, spinCount,
+      (done, total) => setSpinProgress(done, total, `Preparing ${total} spins…`)
+    );
 
-      const winner = winningItems[roll - 1];
-      fillReel(reelItems(pool, winner));
+    state.pendingModifierAudit = {
+      tier2GroupModifierApplied: modifierResult.bonusApplies,
+      baseLegendaryChance: modifierResult.baseLegendaryChance,
+      finalLegendaryChance: modifierResult.finalLegendaryChance,
+      legendaryCountThisSpin
+    };
+
+    // Animate every roll individually up to a small cap so the user always
+    // sees real reel motion; beyond that, fast-forward (see above) — every
+    // result is still a genuine roll already computed above, none are faked.
+    // Capped at 4 even for a huge session: at the slower spin-speed settings
+    // a single reel animation already takes several seconds, so animating
+    // more than a handful individually would itself become the "excessively
+    // long animation" the large-session path exists to avoid.
+    const ANIMATE_HEAD = Math.min(winningItems.length, 4);
+    for (let i = 0; i < ANIMATE_HEAD; i++) {
+      const winner = winningItems[i];
+      setSpinProgress(i + 1, winningItems.length, `Spin ${i + 1} of ${winningItems.length}`);
+      fillReel(reelItems(rollPoolBase, winner));
       await animateReelToWinner(WIN_IDX, winner.rarity);
 
       playSpinChime(winner.rarity);
       const isHighRarity = winner.rarity === 'legendary' || winner.rarity === 'epic';
-      if (isHighRarity || roll === winningItems.length) launchConfetti(isHighRarity ? 'big' : 'small');
-      await wait(skipRequested ? 40 : 240);
+      if (isHighRarity) launchConfetti(isHighRarity ? 'big' : 'small');
+      if (skipRequested) break;
+      await wait(skipRequested ? 30 : 220);
     }
 
-    state.pending = [...winningItems];
+    if (winningItems.length > ANIMATE_HEAD) {
+      await fastForwardProgress(ANIMATE_HEAD, winningItems.length);
+      const last = winningItems[winningItems.length - 1];
+      fillReel(reelItems(rollPoolBase, last));
+      await animateReelToWinner(WIN_IDX, last.rarity);
+    }
+
+    state.pending = winningItems;
+    saveResults();
     renderResults();
-    closeModal(elements.spinModal);
+    launchConfetti();
+    if (elements.spinProgressWrap) elements.spinProgressWrap.hidden = true;
     openModal(elements.resultModal);
+    if(appSettings.autoCollect){
+      setTimeout(()=>{
+        if(document.getElementById('resultModal')?.classList.contains('open')&&typeof closeResultModal==='function')closeResultModal();
+      },2400);
+    }
   } finally {
     state.spinning = false;
     skipRequested = false;
-    elements.closeSpin.disabled = false;
-    updateSpinStageStatus(pool);
+    if (elements.spinProgressWrap) elements.spinProgressWrap.hidden = true;
+    updateSpinStageStatus(pool());
   }
 }
-document.getElementById('skipSpinBtn')?.addEventListener('click', () => { if (state.spinning) skipRequested = true; });
-function showResults(){document.getElementById('resultModal').classList.remove('open');void document.getElementById('resultModal').offsetWidth;preloadImages(state.pending);document.getElementById('results').innerHTML=state.pending.map(i=>`<div class="resultCard">${visual(i)}<div class="itemName" style="font-size:18px;margin-top:8px">${i.name}</div><div class="tiny">${state.pendingGroup}</div><div class="badges" style="justify-content:center"><span class="badge ${i.rarity}">${i.rarity}</span></div></div>`).join('');attachImageGuards(document.getElementById('results'));document.getElementById('resultModal').classList.add('open')}
+/* =============================================================================
+   RESULTS — grouped by default so even a huge session renders a bounded
+   number of DOM nodes (at most one card per unique item in the pool);
+   "Show Individually" reveals a flat, capped list for smaller sessions.
+   ============================================================================= */
+const RARITY_ORDER=['legendary','epic','rare','uncommon','common'];
+const RESULT_FLAT_LIMIT=300;
+let resultViewMode='grouped';
+function groupResults(items){
+  const map=new Map();
+  items.forEach(item=>{
+    const key=`${item.type||state.pendingSpinType||state.spinType}:${item.name}`;
+    if(!map.has(key))map.set(key,{item,count:0});
+    map.get(key).count++;
+  });
+  return [...map.values()].sort((a,b)=>
+    (RARITY_ORDER.indexOf(a.item.rarity)-RARITY_ORDER.indexOf(b.item.rarity))
+    || b.count-a.count
+    || a.item.name.localeCompare(b.item.name)
+  );
+}
+function resultCardMarkup(item,count){
+  return `<div class="resultCard">${count>1?`<span class="resultCount">&times;${count}</span>`:''}${visual(item)}<div class="itemName" style="font-size:18px;margin-top:8px">${escapeHtml(item.name)}</div><div class="tiny">${escapeHtml(item.category)}</div><div class="badges" style="justify-content:center"><span class="badge ${item.rarity}">${item.rarity}</span></div></div>`;
+}
+function renderResultsView(){
+  const box=document.getElementById('results');
+  if(!box)return;
+  const total=state.pending.length;
+  const metaEl=elements.resultSummaryMeta||document.getElementById('resultSummaryMeta');
+  const toggleBtn=elements.resultToggleView||document.getElementById('resultToggleView');
+  if(metaEl)metaEl.textContent=`${total} item${total===1?'':'s'} for ${state.pendingGroup||'—'} — saved to history`;
+  if(toggleBtn)toggleBtn.hidden=total<=1;
+  if(toggleBtn)toggleBtn.textContent=resultViewMode==='grouped'?'Show Individually':'Show Grouped';
+  if(resultViewMode==='grouped'){
+    const groups=groupResults(state.pending);
+    box.innerHTML=groups.map(({item,count})=>resultCardMarkup(item,count)).join('')||'<div class="tiny">No results.</div>';
+    preloadImages(groups.map(g=>g.item));
+  }else{
+    const shown=state.pending.slice(0,RESULT_FLAT_LIMIT);
+    box.innerHTML=shown.map(i=>resultCardMarkup(i,1)).join('');
+    if(total>RESULT_FLAT_LIMIT)box.innerHTML+=`<div class="resultMoreNote tiny">+ ${total-RESULT_FLAT_LIMIT} more result${total-RESULT_FLAT_LIMIT===1?'':'s'} not shown individually — switch to grouped view for the full breakdown.</div>`;
+    preloadImages(shown);
+  }
+  attachImageGuards(box);
+}
+function toggleResultView(){resultViewMode=resultViewMode==='grouped'?'flat':'grouped';renderResultsView()}
+function resetResultView(){resultViewMode='grouped';state.pending=[]}
+function renderResults(){
+  resultViewMode='grouped';
+  document.getElementById('resultModal').classList.remove('open');
+  void document.getElementById('resultModal').offsetWidth;
+  renderResultsView();
+  document.getElementById('resultModal').classList.add('open');
+}
+function showResults(){renderResults()}
 function launchConfetti(){
   if(window.appSettings && appSettings.confetti===false)return;
   const canvas=document.getElementById('confettiCanvas'); if(!canvas)return;
   const ctx=canvas.getContext('2d');
   canvas.width=innerWidth; canvas.height=innerHeight;
-  const colors=['#9b5cff','#c4a3ff','#ffffff','#0b0b0f','#6d28d9','#d9d9df'];
+  const colors=['#FF6500','#FFB37A','#ffffff','#0b0b0f','#A83E00','#d9d9df'];
   const parts=Array.from({length:190},()=>({
     x:Math.random()*canvas.width,
     y:Math.random()*canvas.height*.38-canvas.height*.22,
@@ -696,9 +936,12 @@ function launchConfetti(){
   requestAnimationFrame(frame);
 }
 let resultsSaving=false;
+// Called automatically once per completed spin sequence (see startSpin) —
+// every result is saved exactly once, with no separate manual "collect"
+// step required. Deliberately does NOT touch the results modal/confetti;
+// those are orchestrated by startSpin so this stays a pure persistence step
+// and stays safely callable exactly once per sequence via the guard below.
 function saveResults(){
-  // Idempotency guard: nothing to save (already saved, or a stray duplicate
-  // click/call) means this is a no-op instead of a duplicate history entry.
   if(resultsSaving||!state.pending.length)return;
   resultsSaving=true;
   try{
@@ -708,15 +951,14 @@ function saveResults(){
     // here purely so an admin inspecting the raw saved data can verify
     // whether the Tier 2 group modifier fired on a given spin.
     const modifierAudit=state.pendingModifierAudit||{tier2GroupModifierApplied:false,baseLegendaryChance:null,finalLegendaryChance:null,legendaryCountThisSpin:null};
-    const rows=state.pending.map(i=>({id:generateHistoryId(),time:now.toLocaleString(),ts:Date.now(),group:state.pendingGroup,tier:TIERS[state.tier].label,spinType:state.spinType,item:i.name,category:i.category,rank:i.rarity,image:i.image||'',emoji:i.emoji||'',tier2GroupModifierApplied:modifierAudit.tier2GroupModifierApplied,baseLegendaryChance:modifierAudit.baseLegendaryChance,finalLegendaryChance:modifierAudit.finalLegendaryChance,legendaryCountThisSpin:modifierAudit.legendaryCountThisSpin}));
+    const tierLabel=state.pendingTierLabel||TIERS[state.tier].label;
+    const spinType=state.pendingSpinType||state.spinType;
+    const rows=state.pending.map(i=>({id:generateHistoryId(),time:now.toLocaleString(),ts:Date.now(),group:state.pendingGroup,tier:tierLabel,spinType,item:i.name,category:i.category,rank:i.rarity,image:i.image||'',emoji:i.emoji||'',tier2GroupModifierApplied:modifierAudit.tier2GroupModifierApplied,baseLegendaryChance:modifierAudit.baseLegendaryChance,finalLegendaryChance:modifierAudit.finalLegendaryChance,legendaryCountThisSpin:modifierAudit.legendaryCountThisSpin}));
     history.unshift(...rows);
     persistHistory();
     if(typeof rememberGroup==='function')rememberGroup(state.pendingGroup);
-    state.pending=[];
-    document.getElementById('resultModal').classList.remove('open');
-    launchConfetti();
-    render();
     if(typeof updateHomeStats==='function')updateHomeStats();
+    if(document.getElementById('historyView')?.classList.contains('active'))renderHistory();
   }finally{
     resultsSaving=false;
   }

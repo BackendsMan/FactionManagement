@@ -82,7 +82,7 @@ function initReactiveDots(){
       const redAlpha=heat*.10;
       ctx.beginPath();
       ctx.fillStyle=heat>.05?`rgba(255,255,255,${whiteAlpha})`:`rgba(255,255,255,.13)`;
-      ctx.shadowColor=`rgba(155,92,255,${redAlpha})`;
+      ctx.shadowColor=`rgba(255,101,0,${redAlpha})`;
       ctx.shadowBlur=heat*4;
       ctx.arc(pt.x,pt.y,size,0,Math.PI*2);
       ctx.fill();
@@ -126,7 +126,7 @@ function updateHomeStats(){
   if(tierLabelEl||tierCountEl||progressFill){
     const tierInfo=TIERS[state.tier];
     const tierPoolSize=getVisiblePool(true).length;
-    if(tierLabelEl)tierLabelEl.textContent=`${tierInfo.label} • ${tierInfo.rewards} rewards per spin`;
+    if(tierLabelEl)tierLabelEl.textContent=tierInfo.label;
     if(tierCountEl)tierCountEl.textContent=`${tierPoolSize} ${state.spinType} weapons available`;
     if(progressFill){
       const maxTierIndex=Object.keys(TIERS).length;
@@ -140,7 +140,7 @@ function updateHomeStats(){
     tiersSub.textContent=`${Object.keys(TIERS).length} tiers • ${gunCount} weapons`;
   }
   const spinSub=document.getElementById('homeSpinSub');
-  if(spinSub)spinSub.textContent=`${TIERS[state.tier].label} • ${TIERS[state.tier].rewards} rewards per spin`;
+  if(spinSub)spinSub.textContent=`${TIERS[state.tier].label} tier selected`;
   const historySub=document.getElementById('homeHistorySub');
   if(historySub)historySub.textContent=history.length?`${history.length} drops saved`:'Review previous results';
   const playlistSub=document.getElementById('homePlaylistSub');

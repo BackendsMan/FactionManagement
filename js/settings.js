@@ -1,7 +1,7 @@
 /* === FULL SETTINGS LOGIC === */
 const savedSettings=JSON.parse(localStorage.getItem(STORAGE_KEYS.settings)||localStorage.getItem(STORAGE_KEYS.legacySettings)||"{}");
 const defaultSettings={
-  musicVolume:60,bgOpacity:74,videoBrightness:34,videoBlur:3,floatStrength:12,panelOpacity:100,
+  musicVolume:60,bgOpacity:82,videoBrightness:22,videoBlur:4,videoVisibility:10,floatStrength:12,panelOpacity:100,
   showBgVideo:true,highQualityVideo:true,showFloating:true,showParticles:true,showRgbTrail:true,spinSfx:true,typingSfx:true,
   hideHeroPanel:false,heroPanelUserSet:false,
   autoCollect:false,winnerPopups:true,confetti:true,legendaryAlert:true,soundAlerts:true,
@@ -31,14 +31,15 @@ function applyVisualSettings(){
     bg.preload='auto';
     bg.volume=(appSettings.musicVolume||60)/100;
   }
+  document.documentElement.style.setProperty("--videoVisibility",String(Math.max(6,Math.min(30,appSettings.videoVisibility??10))/100));
   if(ambient){
     const o=(appSettings.bgOpacity||48)/100;
     if(document.body.classList.contains('light')){
-      ambient.style.background=`radial-gradient(circle at 38% 0,rgba(155,92,255,.06),transparent 34%),linear-gradient(180deg,rgba(255,255,255,${Math.min(.72,o*.92)}),rgba(238,242,248,${Math.min(.92,o+0.12)}))`;
+      ambient.style.background=`radial-gradient(circle at 38% 0,rgba(255,101,0,.06),transparent 34%),linear-gradient(180deg,rgba(255,255,255,${Math.min(.72,o*.92)}),rgba(238,242,248,${Math.min(.92,o+0.12)}))`;
     }else if(document.body.classList.contains('dim')){
-      ambient.style.background=`radial-gradient(circle at 40% 0,rgba(155,92,255,.09),transparent 34%),radial-gradient(circle at 100% 45%,rgba(155,92,255,.055),transparent 28%),linear-gradient(180deg,rgba(12,14,21,${o*.68}),rgba(8,10,16,${o*.94}))`;
+      ambient.style.background=`radial-gradient(circle at 40% 0,rgba(255,101,0,.09),transparent 34%),radial-gradient(circle at 100% 45%,rgba(255,101,0,.055),transparent 28%),linear-gradient(180deg,rgba(12,14,21,${o*.68}),rgba(8,10,16,${o*.94}))`;
     }else{
-      ambient.style.background=`radial-gradient(circle at 40% 0,rgba(155,92,255,.10),transparent 34%),radial-gradient(circle at 100% 45%,rgba(155,92,255,.07),transparent 28%),linear-gradient(180deg,rgba(5,6,10,${o*.72}),rgba(2,3,7,${o}))`;
+      ambient.style.background=`radial-gradient(circle at 40% 0,rgba(255,101,0,.10),transparent 34%),radial-gradient(circle at 100% 45%,rgba(255,101,0,.07),transparent 28%),linear-gradient(180deg,rgba(5,6,10,${o*.72}),rgba(2,3,7,${o}))`;
     }
   }
   document.body.classList.toggle("hideBgVideo",!appSettings.showBgVideo);

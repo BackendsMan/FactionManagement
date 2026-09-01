@@ -353,10 +353,10 @@ music.addEventListener('ended',()=>{if(state.usingCustomMusic){safeSetCurrentTim
 startMediaSyncLoop();
 playBtn.onclick=()=>{
   if(state.usingCustomVideo){
-    if(bgVideo.paused)bgVideo.play().then(()=>updateTrackButton()).catch(()=>alert('Click the intro screen or allow video audio, then press Start Music.'));
+    if(bgVideo.paused)bgVideo.play().then(()=>updateTrackButton()).catch(()=>showToast('Click anywhere on the page, then press Play again.','error',{title:'Playback blocked'}));
     else{bgVideo.pause();updateTrackButton();}
   }else if(music.paused){
-    resumeMediaPair().catch(()=>alert('Click the intro screen or allow audio, then press Start Music.'))
+    resumeMediaPair().catch(()=>showToast('Click anywhere on the page, then press Play again.','error',{title:'Playback blocked'}))
   }else{
     pauseMediaPair();
   }

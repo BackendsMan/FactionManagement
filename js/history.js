@@ -87,26 +87,28 @@ document.addEventListener('click',e=>{
   spawnRipple(t,e.clientX,e.clientY);
 },{passive:true});
 document.getElementById('dropBtn').onclick=startSpin;
-document.getElementById('closeSpin').onclick=()=>{if(!state.spinning)document.getElementById('spinModal').classList.remove('open')};
-document.getElementById('closeResult').onclick=()=>{if(!resultsSaving)document.getElementById('resultModal').classList.remove('open')};
-document.getElementById('collectBtn').onclick=saveResults;
+document.getElementById('skipSpinBtn')?.addEventListener('click',()=>{if(state.spinning)skipRequested=true;});
+function closeResultModal(){
+  if(resultsSaving)return;
+  document.getElementById('resultModal').classList.remove('open');
+  if(typeof resetResultView==='function')resetResultView();
+}
+document.getElementById('closeResult').onclick=closeResultModal;
+document.getElementById('doneBtn').onclick=closeResultModal;
+document.getElementById('viewHistoryBtn').onclick=()=>{closeResultModal();setView('history')};
+document.getElementById('resultToggleView').onclick=()=>{if(typeof toggleResultView==='function')toggleResultView()};
 document.getElementById('clearHistoryBtn').onclick=async()=>{const ok=await openConfirmDialog({eyebrow:'Clear History',title:'Clear all saved spin history?',message:'Selecting Delete All will permanently remove every saved spin from local history on this device.',details:`${history.length} saved ${history.length===1?'entry':'entries'} will be removed. This cannot be undone.`,confirmText:'Delete All',cancelText:'Cancel',danger:true});if(!ok)return;history=[];persistHistory();selectedGroup='all';renderHistory()};
 document.getElementById('exportBtn').onclick=exportCSV;
-// While a spin is in progress (or its result is actively being saved), the
-// spin/result modals must not be dismissible by any means other than the
-// guarded close buttons above — no backdrop click, no Escape.
-document.getElementById('spinModal').addEventListener('mousedown',e=>{
-  if(e.target.id==='spinModal'&&!state.spinning)document.getElementById('spinModal').classList.remove('open');
-});
+// While a result is actively being saved, the results modal must not be
+// dismissible by any means other than the guarded close buttons above — no
+// backdrop click, no Escape.
 document.getElementById('resultModal').addEventListener('mousedown',e=>{
-  if(e.target.id==='resultModal'&&!resultsSaving)document.getElementById('resultModal').classList.remove('open');
+  if(e.target.id==='resultModal')closeResultModal();
 });
 document.addEventListener('keydown',e=>{
   if(e.key!=='Escape')return;
-  const spinModal=document.getElementById('spinModal');
   const resultModal=document.getElementById('resultModal');
-  if(spinModal.classList.contains('open')){if(!state.spinning)spinModal.classList.remove('open');return}
-  if(resultModal.classList.contains('open')){if(!resultsSaving)resultModal.classList.remove('open')}
+  if(resultModal.classList.contains('open'))closeResultModal();
 });
 document.querySelectorAll('.navBtn[data-view],.homeCard[data-view]').forEach(b=>b.onclick=()=>setView(b.dataset.view));
 function clickFX(b){b.classList.remove('clicked');void b.offsetWidth;b.classList.add('clicked');setTimeout(()=>b.classList.remove('clicked'),650)}

@@ -19,7 +19,8 @@
     <div class="topbar">
       <nav class="topNav" aria-label="Primary">
         <span class="navIndicator" id="navIndicator" aria-hidden="true"></span>
-        <button class="navBtn active" data-view="home">Play</button>
+        <button class="navBtn active" data-view="home">Overview</button>
+        <button class="navBtn" data-view="spin">Spin Center</button>
         <button class="navBtn" data-view="tiers">Weapon Tiers</button>
         <button class="navBtn" data-view="history">History</button>
         <button class="navBtn" data-view="playlist">Playlist</button>
@@ -95,67 +96,147 @@
     </section>
 
     <section class="view" id="tiersView">
-      <div class="viewHead">
+      <div class="pageHeader">
+        <div class="pageHeaderMain">
+          <div class="breadcrumb">Management / Weapon Tiers</div>
+          <h1 class="pageTitle">Weapon Tiers</h1>
+          <p class="pageSubtitle">Browse every weapon, ammo and accessory pool in the faction catalog.</p>
+        </div>
         <button class="backBtn" data-view="home" type="button">&larr; Home</button>
-        <div><h2 class="viewTitle">Weapon Tiers</h2><div class="tiny">Browse every weapon pool and rarity in the faction catalog.</div></div>
       </div>
       <div class="tiersToolbar">
-        <div class="tiers" id="tierTabs"><button class="tierTab active" data-tier="test">Test<small>4 Rewards</small></button><button class="tierTab" data-tier="t1">Tier 1<small>8 Rewards</small></button><button class="tierTab" data-tier="t1.5">Tier 1.5<small>12 Rewards</small></button><button class="tierTab" data-tier="t2">Tier 2<small>15 Rewards</small></button></div>
-        <div class="spinTypes tiersCategory" id="tiersCategory"><button class="spinType active" data-type="gun"><b>Guns</b></button><button class="spinType" data-type="bullet"><b>Bullets</b></button><button class="spinType" data-type="accessory"><b>Accessories</b></button></div>
+        <div class="tiers tierCardRow" id="tierTabs">
+          <button class="tierTab tierCard active" data-tier="test" type="button"><span class="tierCardCheck" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></span><span class="tierCardName">Test</span><span class="tierCardMeta">Entry reward pool</span></button>
+          <button class="tierTab tierCard" data-tier="t1" type="button"><span class="tierCardCheck" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></span><span class="tierCardName">Tier 1</span><span class="tierCardMeta">Standard reward pool</span></button>
+          <button class="tierTab tierCard" data-tier="t1.5" type="button"><span class="tierCardCheck" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></span><span class="tierCardName">Tier 1.5</span><span class="tierCardMeta">Elevated reward pool</span></button>
+          <button class="tierTab tierCard" data-tier="t2" type="button"><span class="tierCardCheck" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></span><span class="tierCardName">Tier 2</span><span class="tierCardMeta">Full pool + switches</span></button>
+        </div>
+        <div class="spinTypes tiersCategory" id="tiersCategory"><button class="spinType active" data-type="gun" type="button"><b>Guns</b></button><button class="spinType" data-type="bullet" type="button"><b>Bullets</b></button><button class="spinType" data-type="accessory" type="button"><b>Accessories</b></button></div>
       </div>
-      <div class="sectionHead"><h2>Possible Drops <span id="poolCount">0 items</span></h2><div class="filters" id="filterChips"><button class="chip active" data-filter="all">All</button><button class="chip" data-filter="common">Common</button><button class="chip" data-filter="uncommon">Uncommon</button><button class="chip" data-filter="rare">Rare</button><button class="chip" data-filter="epic">Epic</button><button class="chip" data-filter="legendary">Legendary</button></div></div>
+      <input class="poolSearch" id="tiersSearch" type="search" placeholder="Search this tier's pool" aria-label="Search weapon pool">
+      <div class="sectionHead"><h2>Possible Drops <span id="poolCount">0 items</span></h2><div class="filters" id="filterChips"><button class="chip active" data-filter="all" type="button">All</button><button class="chip" data-filter="common" type="button">Common</button><button class="chip" data-filter="uncommon" type="button">Uncommon</button><button class="chip" data-filter="rare" type="button">Rare</button><button class="chip" data-filter="epic" type="button">Epic</button><button class="chip" data-filter="legendary" type="button">Legendary</button></div></div>
       <div class="rarityPeek" id="rarityPeek"><div class="rarityPeekInner"><div class="rarityPeekLabel"><span id="rarityPeekTitle">All Visible Items</span><span id="rarityPeekCount">0 matches</span></div><div class="rarityPeekList" id="rarityPeekList"></div></div></div>
       <div class="items" id="items"></div>
     </section>
 
     <section class="view" id="spinView">
-      <div class="viewHead">
-        <button class="backBtn" data-view="home" type="button">&larr; Home</button>
-        <div><h2 class="viewTitle">Spin Center</h2><div class="tiny">Pick a group, tier, and spin type, then drop.</div></div>
-      </div>
-      <div class="spinStage">
-        <div class="spinStageBackdrop"></div>
-        <div class="spinStageInfo">
-          <span class="spinStageEyebrow">Spin Center</span>
-          <div class="spinStagePills" id="spinStagePills" aria-live="polite"></div>
+      <div class="pageHeader">
+        <div class="pageHeaderMain">
+          <div class="breadcrumb">Management / Spin Center</div>
+          <h1 class="pageTitle">Spin Center</h1>
+          <p class="pageSubtitle">Configure faction rewards and run a new drop.</p>
         </div>
-        <button class="launchBtn spinStageBtn" id="dropBtn" type="button">
-          <span class="spinStageBtnLabel">START SPIN</span>
-          <span class="spinStageBtnCharge" aria-hidden="true"></span>
+        <button class="backBtn" data-view="home" type="button">&larr; Home</button>
+      </div>
+
+      <div class="fieldLabel">Select Tier</div>
+      <div class="tierCardRow" id="tierCardRow">
+        <button class="tierTab tierCard active" data-tier="test" type="button">
+          <span class="tierCardCheck" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></span>
+          <span class="tierCardName">Test</span>
+          <span class="tierCardMeta">Entry reward pool</span>
+        </button>
+        <button class="tierTab tierCard" data-tier="t1" type="button">
+          <span class="tierCardCheck" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></span>
+          <span class="tierCardName">Tier 1</span>
+          <span class="tierCardMeta">Standard reward pool</span>
+        </button>
+        <button class="tierTab tierCard" data-tier="t1.5" type="button">
+          <span class="tierCardCheck" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></span>
+          <span class="tierCardName">Tier 1.5</span>
+          <span class="tierCardMeta">Elevated reward pool</span>
+        </button>
+        <button class="tierTab tierCard" data-tier="t2" type="button">
+          <span class="tierCardCheck" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></span>
+          <span class="tierCardName">Tier 2</span>
+          <span class="tierCardMeta">Full pool + switches</span>
         </button>
       </div>
 
-      <div class="spinControls">
-        <div class="spinControlBlock">
-          <div class="fieldLabel">Select Group</div>
+      <div class="spinWorkspace">
+        <div class="workspacePanel configurePanel">
+          <div class="panelHeading">Configure Drop</div>
+
+          <div class="fieldLabel">Select Faction</div>
           <div class="groupPicker" id="groupPicker">
             <span class="groupPickerIcon" aria-hidden="true">&#9899;</span>
-            <input class="groupInput" id="groupInput" placeholder="Type or pick a group" autocomplete="off">
+            <input class="groupInput" id="groupInput" placeholder="Type or pick a faction" autocomplete="off" aria-label="Select faction">
             <div class="groupPickerPanel" id="groupPickerPanel">
-              <div class="groupPickerLabel">Recent Groups</div>
+              <div class="groupPickerLabel">Recent Factions</div>
               <div class="groupPickerList" id="groupPickerList"></div>
             </div>
           </div>
-        </div>
-        <div class="spinControlBlock">
-          <div class="fieldLabel">Select Tier</div>
-          <div class="tierPills"><button class="tierTab active" data-tier="test">Test<small>4 Rewards</small></button><button class="tierTab" data-tier="t1">Tier 1<small>8 Rewards</small></button><button class="tierTab" data-tier="t1.5">Tier 1.5<small>12 Rewards</small></button><button class="tierTab" data-tier="t2">Tier 2<small>15 Rewards</small></button></div>
-        </div>
-      </div>
 
-      <div class="spinTypes" id="spinTypes">
-        <button class="spinType active" data-type="gun"><b>Gun Spins</b><span>Official illegal faction weapon pool for your tier</span><em class="spinTypeAvail" id="availGun">0 items</em></button>
-        <button class="spinType" data-type="bullet"><b>Bullet Spins</b><span>Ammo rewards based on tier access</span><em class="spinTypeAvail" id="availBullet">0 items</em></button>
-        <button class="spinType" data-type="accessory"><b>Accessory Spin</b><span>Attachments and utility rewards from your tier pool</span><em class="spinTypeAvail" id="availAccessory">0 items</em></button>
+          <div class="fieldLabel">Reward Type</div>
+          <div class="spinTypes" id="spinTypes">
+            <button class="spinType active" data-type="gun" type="button"><b>Gun Spins</b><span>Weapon pool for the selected tier</span><em class="spinTypeAvail" id="availGun">0 items</em></button>
+            <button class="spinType" data-type="bullet" type="button"><b>Bullet Spins</b><span>Ammo pool for the selected tier</span><em class="spinTypeAvail" id="availBullet">0 items</em></button>
+            <button class="spinType" data-type="accessory" type="button"><b>Accessory Spins</b><span>Attachment pool for the selected tier</span><em class="spinTypeAvail" id="availAccessory">0 items</em></button>
+          </div>
+
+          <div class="fieldLabel">Spin Amount</div>
+          <div class="spinAmountControl">
+            <button class="spinAmountBtn" id="spinAmountMinus" type="button" aria-label="Decrease spin amount">&minus;</button>
+            <input class="spinAmountInput" id="spinAmountInput" type="text" inputmode="numeric" autocomplete="off" value="1" aria-label="Number of spins" maxlength="6">
+            <button class="spinAmountBtn" id="spinAmountPlus" type="button" aria-label="Increase spin amount">+</button>
+          </div>
+          <div class="spinAmountQuick" id="spinAmountQuick">
+            <button type="button" data-amount="1">1</button><button type="button" data-amount="5">5</button><button type="button" data-amount="10">10</button><button type="button" data-amount="25">25</button><button type="button" data-amount="50">50</button><button type="button" data-amount="100">100</button>
+          </div>
+
+          <div class="configSummary" id="configSummary">
+            <div class="configSummaryRow"><span>Faction</span><b id="summaryFaction">Not selected</b></div>
+            <div class="configSummaryRow"><span>Tier</span><b id="summaryTier">Test</b></div>
+            <div class="configSummaryRow"><span>Reward type</span><b id="summaryType">Gun Spins</b></div>
+            <div class="configSummaryRow"><span>Spins selected</span><b id="summaryAmount">1</b></div>
+          </div>
+        </div>
+
+        <div class="workspacePanel reelPanel">
+          <div class="panelHeading">Live Spin</div>
+          <div class="reelPanelHead">
+            <div class="spinStagePills" id="spinStagePills" aria-live="polite"></div>
+          </div>
+          <div class="reel" id="liveReel">
+            <div class="line"></div>
+            <div class="track" id="track"></div>
+          </div>
+          <div class="spinProgressWrap" id="spinProgressWrap" hidden aria-live="polite">
+            <div class="spinProgressTop"><div class="spinProgressLabel" id="spinProgressLabel">Spin 1 of 1</div><button class="skipBtn" id="skipSpinBtn" type="button">Skip</button></div>
+            <div class="spinProgressTrack"><div class="spinProgressFill" id="spinProgressFill"></div></div>
+            <div class="spinProgressMeta"><span id="spinProgressDone">0 completed</span><span id="spinProgressLeft">0 remaining</span></div>
+          </div>
+          <button class="launchBtn spinStageBtn" id="dropBtn" type="button">
+            <span class="spinStageBtnLabel" id="dropBtnLabel">Start 1 Spin</span>
+            <span class="spinStageBtnCharge" aria-hidden="true"></span>
+          </button>
+        </div>
+
+        <div class="workspacePanel poolPanel">
+          <div class="panelHeading">Reward Pool</div>
+          <div class="poolPanelMeta">
+            <span id="poolPanelTier">Test</span><span aria-hidden="true">&middot;</span><span id="poolPanelType">Gun Spins</span><span aria-hidden="true">&middot;</span><span id="poolPanelCount">0 items</span>
+          </div>
+          <input class="poolSearch" id="poolSearch" type="search" placeholder="Search reward pool" aria-label="Search reward pool">
+          <div class="filters poolFilterChips" id="poolFilterChips">
+            <button class="chip active" data-filter="all" type="button">All</button>
+            <button class="chip" data-filter="common" type="button">Common</button>
+            <button class="chip" data-filter="uncommon" type="button">Uncommon</button>
+            <button class="chip" data-filter="rare" type="button">Rare</button>
+            <button class="chip" data-filter="epic" type="button">Epic</button>
+            <button class="chip" data-filter="legendary" type="button">Legendary</button>
+          </div>
+          <div class="poolList" id="poolList"></div>
+        </div>
       </div>
 
       <div class="sectionHead"><h2>Possible Drops <span id="poolCountSpin"></span></h2></div>
-      <div class="dropsCarousel" id="spinDropsCarousel"></div>
+      <div class="items" id="spinPossibleDrops"></div>
 
       <details class="advancedPanel">
         <summary>Tier Rules &amp; Appearance</summary>
         <div class="layout spinLayout">
-          <div class="panel"><div class="panelTitle"><h3>Tier Rules</h3><span class="tiny" id="ruleTier">TEST</span></div><div class="rules"><div class="rule"><b>Test</b><span>Official test pool • 4 rewards</span></div><div class="rule"><b>Tier 1</b><span>Official Tier 1 pool • 8 rewards</span></div><div class="rule"><b>Tier 1.5</b><span>Tier 1.5 pool • 12 rewards</span></div><div class="rule"><b>Tier 2</b><span>Tier 2 pool + all switches • 15 rewards</span></div></div></div>
+          <div class="panel"><div class="panelTitle"><h3>Tier Rules</h3><span class="tiny" id="ruleTier">Test</span></div><div class="rules"><div class="rule"><b>Test</b><span>Entry-level reward pool</span></div><div class="rule"><b>Tier 1</b><span>Standard reward pool</span></div><div class="rule"><b>Tier 1.5</b><span>Elevated reward pool</span></div><div class="rule"><b>Tier 2</b><span>Full reward pool, including switches</span></div></div></div>
           <div class="panel" id="appearancePanel"><div class="panelTitle"><h3>Appearance</h3><span class="tiny" id="themeLabel">DARK</span></div><div class="appearance"><button class="themeBtn" data-theme="light">Light</button><button class="themeBtn" data-theme="dim">Dim</button><button class="themeBtn active" data-theme="dark">Dark</button></div></div>
         </div>
       </details>
@@ -255,7 +336,7 @@
               <label class="toggleSwitch"><input id="setHideHeroPanel" type="checkbox"><span class="toggleKnob"></span></label>
             </div>
             <div class="settingRow">
-              <div class="settingInfo"><b>RGB Border Trail</b><span>Toggle the subtle rainbow reflection around the viewport.</span></div>
+              <div class="settingInfo"><b>Edge Trail</b><span>Toggle the subtle orange reflection around the viewport.</span></div>
               <label class="toggleSwitch"><input id="setShowRgbTrail" type="checkbox" checked><span class="toggleKnob"></span></label>
             </div>
           </div>
@@ -289,7 +370,7 @@
               <button class="settingBtn" id="setSkipAnimations">Skip Animations</button>
             </div>
             <div class="settingRow">
-              <div class="settingInfo"><b>Auto Collect Rewards</b><span>Automatically saves drops after a spin.</span></div>
+              <div class="settingInfo"><b>Auto-Close Results</b><span>Every spin already saves to history automatically — this also dismisses the results popup for you shortly after it opens.</span></div>
               <label class="toggleSwitch"><input id="setAutoCollect" type="checkbox"><span class="toggleKnob"></span></label>
             </div>
           </div>
@@ -352,8 +433,8 @@
   </main>
 </div>
 <canvas id="confettiCanvas"></canvas>
-<div class="modal" id="spinModal"><div class="spinBox"><div class="modalTop"><div><h2>Rolling Drop</h2><div class="tiny" id="rollText">ROLL 1 OF 4</div></div><div class="spinModalActions"><button class="close" id="skipSpinBtn" type="button">Skip</button><button class="close" id="closeSpin">Close</button></div></div><div class="reel"><div class="line"></div><div class="track" id="track"></div></div></div></div>
-<div class="modal" id="resultModal"><div class="resultBox"><div class="modalTop"><h2>Drops Won</h2><button class="close" id="closeResult">Close</button></div><div class="resultGrid" id="results"></div><button class="collect" id="collectBtn">COLLECT ALL + SAVE HISTORY</button></div></div>
+<div class="toastStack" id="toastStack" aria-live="polite" aria-atomic="false"></div>
+<div class="modal" id="resultModal"><div class="resultBox"><div class="modalTop"><div><h2>Drops Won</h2><div class="tiny" id="resultSummaryMeta">0 items</div></div><div class="spinModalActions"><button class="close" id="resultToggleView" type="button">Show Individually</button><button class="close" id="closeResult" type="button" aria-label="Close">Close</button></div></div><div class="resultGrid" id="results"></div><div class="resultActions"><button class="settingBtn" id="viewHistoryBtn" type="button">View History</button><button class="collect" id="doneBtn" type="button">Done</button></div></div></div>
 
 <div class="modal confirmModal" id="confirmModal" aria-hidden="true">
   <div class="confirmBox" role="dialog" aria-modal="true" aria-labelledby="confirmTitle" aria-describedby="confirmMessage">

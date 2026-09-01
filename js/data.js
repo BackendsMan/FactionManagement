@@ -92,7 +92,80 @@ const WEAPON_POOLS={
   "t1.5":new Set(TIER15_GUNS),
   t2:new Set([...new Set([...TIER15_GUNS,"MP20FRT",...SWITCH_GUNS])])
 };
-const TIERS={test:{label:"TEST",rewards:4,rarities:["common","uncommon"]},t1:{label:"TIER 1",rewards:8,rarities:["common","uncommon","rare"]},"t1.5":{label:"TIER 1.5",rewards:12,rarities:["common","uncommon","rare","epic"]},t2:{label:"TIER 2",rewards:15,rarities:["common","uncommon","rare","epic","legendary"]}};
+const TIERS={test:{label:"Test",rewards:4,rarities:["common","uncommon"]},t1:{label:"Tier 1",rewards:8,rarities:["common","uncommon","rare"]},"t1.5":{label:"Tier 1.5",rewards:12,rarities:["common","uncommon","rare","epic"]},t2:{label:"Tier 2",rewards:15,rarities:["common","uncommon","rare","epic","legendary"]}};
+/* =============================================================================
+   CENTRALIZED ITEM REGISTRY — single source of truth for display name, image,
+   tier, category and rarity across Spin Center, Weapon Tiers and History.
+   -----------------------------------------------------------------------------
+   `TIERS[x].rewards` above is kept ONLY as a historical calibration constant
+   that the Tier 2 legendary-weight math in js/spinner.js references (see the
+   comments around rebalanceTier2GunLegendaryBaseline there). It no longer
+   controls how many rolls a spin performs — spin count is user-selected and
+   unlimited (state.spinAmount in js/app.js). Nothing in the UI displays
+   `.rewards` as an allowance/maximum.
+
+   normalizeDisplayName() is a defensive fallback: every item in ITEMS above
+   already ships with a clean, real display name (e.g. "P80", not
+   "weapon_p80"), so this never runs against the shipped catalog. It exists so
+   that any future item added with a raw code/filename as its `name` (or any
+   malformed legacy history row — see sanitizeHistoryRows) still renders a
+   readable label instead of a raw filename, underscore, or "undefined".
+   ============================================================================= */
+const WEAPON_CODE_OVERRIDES={
+  p80:"P80",g17:"G17",g19:"G19",g20:"G20",g22:"G22",g23:"G23",g24:"G24",g31:"G31",g45:"G45",
+  fn502t:"FN502 Tactical",fn57:"FN57",kg43x:"KG43X",sd40t:"SD40 Tactical",mp920:"M&P 9 2.0",
+  mp20frt:"MP20FRT",t850:"T850",tg2c:"G2C",p226:"P226",p320sig:"P320 SIG",
+  psadhalfnhalf:"PSAD Half N Half",psafn57:"PSA FN57",psap80g19switch:"PSA P80 G19 Switch",
+  ar:"AR",utg:"UTG"
+};
+function normalizeDisplayName(rawCode){
+  if(rawCode===null||rawCode===undefined)return "Unknown Item";
+  let code=String(rawCode).trim();
+  if(!code)return "Unknown Item";
+  const stem=code.replace(/^\.?\/?(?:.*\/)?/,'').replace(/\.[a-z0-9]{2,4}$/i,'');
+  const key=stem.toLowerCase().replace(/^weapon[_-]?/,'').replace(/[^a-z0-9]/g,'');
+  if(WEAPON_CODE_OVERRIDES[key])return WEAPON_CODE_OVERRIDES[key];
+  const cleaned=stem.replace(/^weapon[_-]?/i,'').replace(/[_-]+/g,' ').trim();
+  if(!cleaned)return "Unknown Item";
+  return cleaned.split(' ').map(word=>{
+    if(/^[a-z0-9]+$/i.test(word)&&/[0-9]/.test(word))return word.toUpperCase();
+    if(word.length<=3&&/^[a-z]+$/i.test(word))return word.toUpperCase();
+    return word.charAt(0).toUpperCase()+word.slice(1).toLowerCase();
+  }).join(' ');
+}
+/* Every catalog item's real internal identifier (its image filename, minus
+   path/extension) — this project has no separate "spawn code" system, so the
+   asset filename IS the internal code (e.g. WEAPON_P80, ammo-9,
+   at_blackpistolgrip). Shown as small muted text in item cards/pool rows. */
+ITEMS.forEach(item=>{
+  if(!item.code){
+    const match=String(item.image||'').match(/([^/]+)\.[a-z0-9]+$/i);
+    item.code=match?match[1]:'';
+  }
+  if(!item.name||/^(undefined|null)$/i.test(item.name))item.name=normalizeDisplayName(item.code||item.image);
+});
+const WEAPON_REGISTRY=new Map(ITEMS.map(item=>[`${item.type}:${item.name}`,item]));
+/* Dev-console diagnostic only — never shown in the UI. Confirms every item
+   has a name/image, and flags duplicate type+name pairs or duplicate image
+   files, which would otherwise silently shadow one item with another. */
+function auditItemRegistry(){
+  const issues=[];
+  const imageOwners=new Map();
+  ITEMS.forEach(item=>{
+    if(!item.name||/^(undefined|null|)$/i.test(item.name))issues.push(`Missing/invalid display name for item with image ${item.image}`);
+    if(!item.image)issues.push(`Missing image for item "${item.name}"`);
+    const key=`${item.type}:${item.name}`;
+    const owners=imageOwners.get(item.image)||[];
+    owners.push(key);
+    imageOwners.set(item.image,owners);
+  });
+  imageOwners.forEach((owners,image)=>{
+    if(owners.length>1)issues.push(`Duplicate image "${image}" used by: ${owners.join(', ')}`);
+  });
+  if(issues.length)console.warn('[Item Registry Audit]',issues);
+  return issues;
+}
+if(typeof window!=='undefined'){window.WEAPON_REGISTRY=WEAPON_REGISTRY;window.auditItemRegistry=auditItemRegistry;auditItemRegistry();}
 const MUSIC_TRACKS=[
   {name:"Keke - Headtapp Gz",id:1},
   {name:"Strictly 4 The Fans - Rennytherapper",id:2},
