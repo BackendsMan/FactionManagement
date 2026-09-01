@@ -475,18 +475,19 @@ function applyTier2GroupModifier(pool, groupName, selectedTier) {
    - The moment that count reaches boostUntilLegendaryCount, the boost turns
      off for the REST of that spin — remaining rolls use the plain,
      unmodified pool, identical to what a non-eligible group would get.
-   - maxLegendaryPerSpin is a separate, neutral hard ceiling that applies to
-     EVERY group regardless of eligibility: once a spin has produced this
-     many legendary results, legendary items are excluded from the pool for
-     its remaining rolls, so no spin — boosted or not — can ever exceed it.
+   There is no separate total ceiling on legendary count per spin — spin
+   amounts are unlimited and user-chosen, so a flat "stop after N
+   legendary" rule would silently zero legendary out for the rest of any
+   large session. The 8% per-roll target (rebalanceGunPoolBalance) and the
+   same-gun cap (MAX_SAME_GUN_PER_SPIN) are what keep it hard without ever
+   fully shutting it off.
 
    Every roll is still a genuine weighted random draw. There is no floor or
    guaranteed-minimum anywhere in this file — a guaranteed legendary would
    no longer be a probability, it would be a scripted result.
    ------------------------------------------------------------------------- */
 const tier2GunBoostWindowConfig = {
-  boostUntilLegendaryCount: 2,   // boost applies until the spin has this many legendary guns, then turns off
-  maxLegendaryPerSpin: 4         // hard ceiling, applies to every group
+  boostUntilLegendaryCount: 2   // boost applies until the spin has this many legendary guns, then turns off
 };
 
 /* -----------------------------------------------------------------------
@@ -500,66 +501,85 @@ const tier2GunBoostWindowConfig = {
    uncommon result far too often for gun pools that are supposed to feel
    like a real step up. This resets every rarity in each tier's GUN pool to
    a fixed target share of the total so every roll is honestly balanced,
-   on purpose, with a clear progression between the two tiers:
-     - Tier 1.5: rare is the normal result, epic ("Tier 1.5-caliber") is a
-       solid secondary chance, uncommon still happens but isn't the norm.
-     - Tier 2: epic is the single most likely result — a Tier 2 pull
-       reliably feels like at least a Tier 1.5 gun — rare is a strong
-       middle result, uncommon is a small minority, and legendary
-       (switches) is a real but deliberately hard chance.
-   Weights WITHIN a rarity keep their existing relative proportions (e.g.
+   on purpose, with a clear progression between the two tiers. Weights
+   WITHIN a rarity keep their existing relative proportions (e.g.
    MP20FRT stays a little more likely than the plain Gen 4 switches) — only
    each rarity's total share of the pool is reset. Runs before the Brower
-   Gang group bonus, so that bonus (and the boost-window/legendary-cap
+   Gang group bonus, so that bonus (and the boost-window/same-gun-cap
    logic below) still layers on top of this balanced baseline exactly as
    before. Applies to Tier 1.5 and Tier 2 GUN spins only; bullets/
    accessories, and Test/Tier 1 odds, are untouched.
+
+   Rare is the backbone of both tiers on purpose — a "good gun" (Tier 1
+   caliber) is the normal, expected result. Epic and legendary are real
+   but deliberately uncommon highlights on top of that, not the default:
+     - Tier 2: rare 55% (the reliable baseline), epic 22% (a genuine but
+       harder-to-get bonus), legendary 8% (hard, but always possible),
+       uncommon 15% (keeps some low-end variety, never dominant).
+     - Tier 1.5: the same shape, dialed down a step — rare 55%, epic 15%
+       (about a third softer than Tier 2's), uncommon 30% (no legendary
+       exists at this tier).
    ------------------------------------------------------------------------- */
 const GUN_RARITY_TARGETS_BY_TIER = {
-  't1.5': { uncommon: 0.20, rare: 0.50, epic: 0.30 },
-  t2: { uncommon: 0.07, rare: 0.35, epic: 0.50, legendary: 0.08 }
+  't1.5': { uncommon: 0.30, rare: 0.55, epic: 0.15 },
+  t2: { uncommon: 0.15, rare: 0.55, epic: 0.22, legendary: 0.08 }
 };
-function rebalanceGunPoolBalance(pool, tierKey, spinType) {
+// nameCounts (optional) is the same per-spin name-count tracker the
+// same-gun cap below uses. Passing it here means a maxed-out item's
+// weight is redistributed to the OTHER still-available items of its OWN
+// rarity, not silently leaked into other rarities — without this, a
+// rarity with many distinct items (e.g. the 9 different legendary
+// switches) would keep contributing weight long after a rarity with
+// fewer items (e.g. the 4 epic guns) had all of its items capped out and
+// excluded, which skewed the actual session-long rarity mix far from the
+// targets above. Every rarity's total share of the pool stays locked at
+// its target for as long as at least one item of that rarity is still
+// available.
+//
+// Different rarities need very different numbers of rolls to exhaust
+// (legendary's 9 items × the cap take far longer to all hit the cap, at
+// legendary's low per-roll odds, than rare's 6 items do at rare's much
+// higher odds) — a single "reset everything once the WHOLE pool is
+// maxed" rule (as used for tiers with no rarity targets, below) would
+// leave fast-exhausting rarities completely starved for a long stretch
+// while waiting on the slowest one, which badly distorted results in
+// testing. So each rarity gets its OWN independent reset the moment
+// every one of ITS items is maxed, decoupled from every other rarity.
+function rebalanceGunPoolBalance(pool, tierKey, spinType, nameCounts) {
   const targets = spinType === 'gun' ? GUN_RARITY_TARGETS_BY_TIER[tierKey] : null;
   if (!targets) return pool;
 
   const totalWeight = pool.reduce((sum, item) => sum + item.weight, 0);
   if (!totalWeight) return pool;
 
-  const rarityTotals = {};
-  pool.forEach(item => { rarityTotals[item.rarity] = (rarityTotals[item.rarity] || 0) + item.weight; });
+  const isMaxed = item => !!nameCounts && (nameCounts.get(item.name) || 0) >= MAX_SAME_GUN_PER_SPIN;
+
+  if (nameCounts) {
+    const namesByRarity = {};
+    pool.forEach(item => { (namesByRarity[item.rarity] = namesByRarity[item.rarity] || []).push(item.name); });
+    Object.entries(namesByRarity).forEach(([rarity, names]) => {
+      if (!targets[rarity]) return;
+      const allMaxed = names.every(name => (nameCounts.get(name) || 0) >= MAX_SAME_GUN_PER_SPIN);
+      if (allMaxed) names.forEach(name => nameCounts.delete(name));
+    });
+  }
+
+  const rarityAvailableTotals = {};
+  pool.forEach(item => {
+    if (isMaxed(item)) return;
+    rarityAvailableTotals[item.rarity] = (rarityAvailableTotals[item.rarity] || 0) + item.weight;
+  });
 
   return pool.map(item => {
     const targetShare = targets[item.rarity];
-    const rarityTotal = rarityTotals[item.rarity];
-    if (!targetShare || !rarityTotal) return item;
+    if (!targetShare) return item;
+    if (isMaxed(item)) return { ...item, weight: 0 };
+    const availableTotal = rarityAvailableTotals[item.rarity];
+    if (!availableTotal) return item;
     const desiredRarityWeight = targetShare * totalWeight;
-    const scale = desiredRarityWeight / rarityTotal;
+    const scale = desiredRarityWeight / availableTotal;
     return { ...item, weight: item.weight * scale };
   });
-}
-
-/* -----------------------------------------------------------------------
-   ADMIN CONFIGURATION — repeat epic ("Tier 1.5-caliber") gun soft cap
-   -------------------------------------------------------------------------
-   Applies to Tier 1.5 and Tier 2 GUN spins. Once a specific epic gun (e.g.
-   "G21 Gflex") has already landed REPEAT_EPIC_GUN_SOFT_CAP times in the
-   same spin, its own weight is cut down for the rest of that spin — not
-   excluded outright, a further copy is still possible, just considerably
-   less likely — so one lucky epic gun can't crowd out the rest of the
-   balanced pool over a long multi-spin session. Every other item,
-   including every other epic gun, is completely unaffected.
-   ------------------------------------------------------------------------- */
-const REPEAT_EPIC_GUN_SOFT_CAP = 2;
-const REPEAT_EPIC_GUN_PENALTY = 0.25;
-function dampenRepeatEpicGuns(pool, epicNameCounts, tierKey, spinType) {
-  if (spinType !== 'gun' || (tierKey !== 't1.5' && tierKey !== 't2')) return pool;
-  if (!epicNameCounts || !epicNameCounts.size) return pool;
-  return pool.map(item =>
-    (item.rarity === 'epic' && (epicNameCounts.get(item.name) || 0) >= REPEAT_EPIC_GUN_SOFT_CAP)
-      ? { ...item, weight: item.weight * REPEAT_EPIC_GUN_PENALTY }
-      : item
-  );
 }
 
 // Returns the pool to use for one specific roll within a Tier 2 gun spin.
@@ -572,40 +592,52 @@ function dampenRepeatEpicGuns(pool, epicNameCounts, tierKey, spinType) {
 function applyTier2GunLegendaryBounds(boostedPool, basePool, legendaryCountSoFar, bonusApplies, spinType, tierKey) {
   if (tierKey !== 't2' || spinType !== 'gun') return boostedPool;
 
-  if (legendaryCountSoFar >= tier2GunBoostWindowConfig.maxLegendaryPerSpin) {
-    return basePool.filter(item => item.rarity !== 'legendary');
-  }
-
   if (bonusApplies && legendaryCountSoFar < tier2GunBoostWindowConfig.boostUntilLegendaryCount) {
     return boostedPool;
   }
 
   // Not eligible, or the boost window has already closed for this spin —
-  // regular, fully unmodified odds.
+  // regular, fully unmodified odds. Legendary itself is never excluded
+  // here: the per-roll 8% target (rebalanceGunPoolBalance) plus the
+  // same-gun cap already keep it honestly rare without a separate total
+  // ceiling — a flat "stop after N legendary" ceiling doesn't make sense
+  // once sessions can be arbitrarily long (it silently zeroed legendary
+  // out for the rest of any session past ~50 rolls, which is exactly the
+  // "switches should stay a real possibility" guarantee this app promises).
   return basePool;
 }
 
 /* -----------------------------------------------------------------------
-   ADMIN CONFIGURATION — same-legendary-gun cap
+   ADMIN CONFIGURATION — same-gun cap (variety guarantee)
    -------------------------------------------------------------------------
-   Hard rule, applies to every Tier 2 gun spin regardless of group (the
-   Brower Gang boost above is untouched and still runs first — this only
-   trims the pool afterward): once a specific named legendary gun has been
-   won MAX_SAME_LEGENDARY_GUN_PER_SPIN times in one spin, that one gun is
-   removed from the pool for the rest of the spin, so its own chance drops
-   to zero — a third copy is never possible. Every OTHER legendary gun (and
-   every other rarity) is untouched and keeps its normal relative odds, so
-   the overall legendary/rarity distribution stays a valid weighted draw;
-   only the maxed-out gun's own weight leaves the pool.
+   Hard rule, applies to every GUN spin in every tier (the Brower Gang
+   boost and the Tier 2 legendary boost-window above are untouched and
+   still run first — this only trims the pool afterward): once a specific
+   named gun — any gun, any rarity, not just legendary — has landed
+   MAX_SAME_GUN_PER_SPIN times without a fresh variety window opening (see
+   below), that exact gun is removed from the pool, so its own chance
+   drops to zero — no 3rd copy back-to-back. Every OTHER gun is completely
+   untouched and keeps its normal relative odds, so the overall rarity
+   distribution from rebalanceGunPoolBalance() above stays intact — only
+   the maxed-out gun's own weight leaves the pool.
+
+   Spin amounts are unlimited, so for any sufficiently large session EVERY
+   gun in the pool will eventually hit the cap at the same time (pool size
+   × 2 rolls in, guaranteed). When that happens this opens a fresh variety
+   window — clearing every count back to zero — instead of silently
+   dropping the cap for the rest of the session; the pigeonhole limit is
+   what makes "no more than 2 of the same gun in a row" a real, ongoing
+   guarantee rather than a one-time rule that stops mattering past ~2×
+   the pool size.
    ------------------------------------------------------------------------- */
-const MAX_SAME_LEGENDARY_GUN_PER_SPIN = 2;
-function excludeMaxedOutLegendaryGuns(pool, legendaryNameCounts, tierKey, spinType) {
-  if (tierKey !== 't2' || spinType !== 'gun') return pool;
-  if (!legendaryNameCounts || !legendaryNameCounts.size) return pool;
-  const filtered = pool.filter(item =>
-    !(item.rarity === 'legendary' && (legendaryNameCounts.get(item.name) || 0) >= MAX_SAME_LEGENDARY_GUN_PER_SPIN)
-  );
-  return filtered.length ? filtered : pool;
+const MAX_SAME_GUN_PER_SPIN = 2;
+function excludeMaxedOutGuns(pool, nameCounts, spinType) {
+  if (spinType !== 'gun') return pool;
+  if (!nameCounts || !nameCounts.size) return pool;
+  const filtered = pool.filter(item => (nameCounts.get(item.name) || 0) < MAX_SAME_GUN_PER_SPIN);
+  if (filtered.length) return filtered;
+  nameCounts.clear();
+  return pool;
 }
 
 function weightedPick(pool, previousName) {
@@ -719,26 +751,47 @@ async function animateReelToWinner(winnerIndex = WIN_IDX, winnerRarity = '') {
    (weightedPick + the Tier 2 admin config above) — this only pulls the loop
    out of startSpin() so it can be reused and, for very large spin amounts,
    yielded periodically (await a 0ms timeout) so computing thousands of
-   results never blocks the tab, even though each individual roll is cheap. */
-async function computeSpinResults(rollPoolBase, rebalancedBasePool, modifierResult, count, onProgress) {
+   results never blocks the tab, even though each individual roll is cheap.
+
+   rebalanceGunPoolBalance() and applyTier2GroupModifier() are both
+   recomputed fresh EVERY roll (not once up front) from basePool + the
+   live nameCountsThisSpin — cheap (basePool is ~10-45 items) and
+   necessary: the rarity targets have to be re-solved against whichever
+   specific items are still under the same-gun cap right now, or the
+   target shares would drift as items get excluded (see the comment on
+   rebalanceGunPoolBalance). */
+async function computeSpinResults(basePool, tierKey, spinType, group, count, onProgress) {
   const winningItems = [];
   let legendaryCountThisSpin = 0;
-  const legendaryNameCountsThisSpin = new Map();
-  const epicNameCountsThisSpin = new Map();
+  let firstRollModifierResult = null;
+  const nameCountsThisSpin = new Map();
+  // Belt-and-suspenders on top of excludeMaxedOutGuns/rebalanceGunPoolBalance's
+  // per-spin cap: those two can legitimately reset a name's count back to 0
+  // once its whole rarity has cycled through (see the comment on
+  // rebalanceGunPoolBalance), which — immediately after a reset — could let
+  // the very same gun win again right away and stack up more than
+  // MAX_SAME_GUN_PER_SPIN in an unbroken row. consecutiveStreak is tracked
+  // completely independently of that reset logic and hard-blocks the
+  // previous winner the moment it's already won this many times IN A ROW,
+  // so "no more than 2 of the same gun back-to-back" holds absolutely,
+  // regardless of any reset timing.
+  let consecutiveStreak = 0;
   const YIELD_EVERY = 2000;
   for (let roll = 1; roll <= count; roll++) {
     const previousWinner = winningItems[winningItems.length - 1]?.name;
-    const boundedPool = applyTier2GunLegendaryBounds(rollPoolBase, rebalancedBasePool, legendaryCountThisSpin, modifierResult.bonusApplies, state.spinType, state.tier);
-    const cappedPool = excludeMaxedOutLegendaryGuns(boundedPool, legendaryNameCountsThisSpin, state.tier, state.spinType);
-    const rollPool = dampenRepeatEpicGuns(cappedPool, epicNameCountsThisSpin, state.tier, state.spinType);
+    const rebalancedPool = rebalanceGunPoolBalance(basePool, tierKey, spinType, nameCountsThisSpin);
+    const modifierResult = applyTier2GroupModifier(rebalancedPool, group, tierKey);
+    if (roll === 1) firstRollModifierResult = modifierResult;
+    const boundedPool = applyTier2GunLegendaryBounds(modifierResult.pool, rebalancedPool, legendaryCountThisSpin, modifierResult.bonusApplies, spinType, tierKey);
+    let rollPool = excludeMaxedOutGuns(boundedPool, nameCountsThisSpin, spinType);
+    if (previousWinner && consecutiveStreak >= MAX_SAME_GUN_PER_SPIN) {
+      const withoutPreviousWinner = rollPool.filter(item => item.name !== previousWinner);
+      if (withoutPreviousWinner.length) rollPool = withoutPreviousWinner;
+    }
     const winner = weightedPick(rollPool, previousWinner);
-    if (winner.rarity === 'legendary') {
-      legendaryCountThisSpin++;
-      legendaryNameCountsThisSpin.set(winner.name, (legendaryNameCountsThisSpin.get(winner.name) || 0) + 1);
-    }
-    if (winner.rarity === 'epic') {
-      epicNameCountsThisSpin.set(winner.name, (epicNameCountsThisSpin.get(winner.name) || 0) + 1);
-    }
+    consecutiveStreak = winner.name === previousWinner ? consecutiveStreak + 1 : 1;
+    if (winner.rarity === 'legendary') legendaryCountThisSpin++;
+    nameCountsThisSpin.set(winner.name, (nameCountsThisSpin.get(winner.name) || 0) + 1);
     winningItems.push(winner);
     if (roll % YIELD_EVERY === 0) {
       onProgress?.(roll, count);
@@ -746,7 +799,7 @@ async function computeSpinResults(rollPoolBase, rebalancedBasePool, modifierResu
     }
   }
   onProgress?.(count, count);
-  return { winningItems, legendaryCountThisSpin };
+  return { winningItems, legendaryCountThisSpin, modifierResult: firstRollModifierResult };
 }
 function setSpinProgress(done, total, label) {
   if (elements.spinProgressLabel) elements.spinProgressLabel.textContent = label || `Spin ${done} of ${total}`;
@@ -802,15 +855,11 @@ async function startSpin() {
     return;
   }
 
-  // Rebalance Tier 1.5 / Tier 2 gun rarity shares BEFORE the group bonus is
-  // computed, so the Brower Gang boost still applies on top of the
-  // balanced baseline exactly as before.
-  const rebalancedBasePool = rebalanceGunPoolBalance(basePool, state.tier, state.spinType);
-
-  // Computed once per spin (not per roll), so a group name with more than
-  // one eligible keyword still only applies the bonus a single time.
-  const modifierResult = applyTier2GroupModifier(rebalancedBasePool, group, state.tier);
-  const rollPoolBase = modifierResult.pool;
+  // A one-off preview pool purely for the reel's visual filler cards and
+  // the pool-status display below — NOT what odds are computed from. The
+  // real per-roll pool (rebalanced against the live same-gun cap) is
+  // computed fresh inside computeSpinResults() for every individual roll.
+  const previewPool = rebalanceGunPoolBalance(basePool, state.tier, state.spinType, null);
 
   state.spinning = true;
   state.pending = [];
@@ -819,13 +868,13 @@ async function startSpin() {
   state.pendingSpinType = state.spinType;
   skipRequested = false;
   elements.dropBtn.disabled = true;
-  updateSpinStageStatus(rollPoolBase);
+  updateSpinStageStatus(previewPool);
   if (elements.spinProgressWrap) elements.spinProgressWrap.hidden = false;
   setSpinProgress(0, spinCount, spinCount > 1 ? `Preparing ${spinCount} spins…` : 'Preparing spin…');
 
   try {
-    const { winningItems, legendaryCountThisSpin } = await computeSpinResults(
-      rollPoolBase, rebalancedBasePool, modifierResult, spinCount,
+    const { winningItems, legendaryCountThisSpin, modifierResult } = await computeSpinResults(
+      basePool, state.tier, state.spinType, group, spinCount,
       (done, total) => setSpinProgress(done, total, `Preparing ${total} spins…`)
     );
 
@@ -847,7 +896,7 @@ async function startSpin() {
     for (let i = 0; i < ANIMATE_HEAD; i++) {
       const winner = winningItems[i];
       setSpinProgress(i + 1, winningItems.length, `Spin ${i + 1} of ${winningItems.length}`);
-      fillReel(reelItems(rollPoolBase, winner));
+      fillReel(reelItems(previewPool, winner));
       await animateReelToWinner(WIN_IDX, winner.rarity);
 
       playSpinChime(winner.rarity);
@@ -860,7 +909,7 @@ async function startSpin() {
     if (winningItems.length > ANIMATE_HEAD) {
       await fastForwardProgress(ANIMATE_HEAD, winningItems.length);
       const last = winningItems[winningItems.length - 1];
-      fillReel(reelItems(rollPoolBase, last));
+      fillReel(reelItems(previewPool, last));
       await animateReelToWinner(WIN_IDX, last.rarity);
     }
 
