@@ -10,7 +10,8 @@ const ITEMS=[
 {name:"KG43X",rarity:"rare",category:"tier 1 pistols",type:"gun",image:"./Images/WEAPON_KG43X.png",weight:10},
 {name:"G45 CAMO",rarity:"uncommon",category:"tier 1 pistols",type:"gun",image:"./Images/WEAPON_G45CAMO.png",weight:12},
 {name:"G19X COYOTE",rarity:"uncommon",category:"tier 1 pistols",type:"gun",image:"./Images/WEAPON_G19XCOYOTE.png",weight:11},
-{name:"M&P 9 2.0",rarity:"rare",category:"tier 1 pistols",type:"gun",image:"./Images/WEAPON_MP920.png",weight:9},
+{name:"M&P 9 2.0",rarity:"rare",category:"tier 1 pistols",type:"gun",image:"./Images/WEAPON_MP20FRT.png",weight:9},
+{name:"G21 Gflex",rarity:"epic",category:"tier 1.5 pistols",type:"gun",image:"./Images/WEAPON_MP920.png",weight:7},
 {name:"SD40 TACTICAL",rarity:"rare",category:"tier 1 pistols",type:"gun",image:"./Images/WEAPON_SD40T.png",weight:9},
 {name:"G17 BINARY",rarity:"rare",category:"tier 1 pistols",type:"gun",image:"./Images/WEAPON_G17BINARY.png",weight:8},
 {name:"PSAD Half N Half",rarity:"epic",category:"tier 1.5 pistols",type:"gun",image:"./Images/WEAPON_PSADHALFNHALF.png",weight:8},
@@ -84,7 +85,7 @@ const ITEMS=[
 ];
 const TEST_GUNS=["T850","G2C","P226","P80","P320 SIG","G17G3 P80"];
 const TIER1_GUNS=[...TEST_GUNS,"FN502 Tactical","G45 AV","KG43X","G45 CAMO","G19X COYOTE","M&P 9 2.0","SD40 TACTICAL","G17 BINARY"];
-const TIER15_GUNS=["P320 SIG","G17G3 P80","FN502 Tactical","G45 AV","KG43X","G45 CAMO","G19X COYOTE","M&P 9 2.0","SD40 TACTICAL","G17 BINARY","PSAD Half N Half","PSA FN57","G20 CGFLEX"];
+const TIER15_GUNS=["P320 SIG","G17G3 P80","FN502 Tactical","G45 AV","KG43X","G45 CAMO","G19X COYOTE","M&P 9 2.0","SD40 TACTICAL","G17 BINARY","PSAD Half N Half","PSA FN57","G20 CGFLEX","G21 Gflex"];
 const SWITCH_GUNS=["G19 Gen 5 MOS Switch","G23 Gen 5 Switch","G24 Switch","G22 Gen 4 Switch Blue","G22 Gen 4 Switch Green","G22 Gen 4 Switch Pink","G22 Gen 4 Switch Red","G31 Gen 5 Gold Switch","PSA P80 G19 Switch"];
 const WEAPON_POOLS={
   test:new Set(TEST_GUNS),

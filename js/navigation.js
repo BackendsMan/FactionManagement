@@ -82,7 +82,7 @@ function initReactiveDots(){
       const redAlpha=heat*.10;
       ctx.beginPath();
       ctx.fillStyle=heat>.05?`rgba(255,255,255,${whiteAlpha})`:`rgba(255,255,255,.13)`;
-      ctx.shadowColor=`rgba(255,101,0,${redAlpha})`;
+      ctx.shadowColor=`rgba(228,19,42,${redAlpha})`;
       ctx.shadowBlur=heat*4;
       ctx.arc(pt.x,pt.y,size,0,Math.PI*2);
       ctx.fill();

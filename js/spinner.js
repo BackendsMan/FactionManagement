@@ -349,18 +349,18 @@ function setSpinAmount(value,{fromInput=false}={}){
    that matches one of the keywords below, the legendary drop chance for
    that spin gets a small, fixed bump, capped at maximumLegendaryChance.
 
-   Current Tier 2 legendary baselines (computed from the live item weights,
-   see js/data.js): guns ~26.16%, bullets ~2.97%, accessories ~3.62%.
+   Current Tier 2 legendary baselines: guns are held at a fixed 12% per
+   roll by rebalanceTier2GunPoolBalance() below (see that function for why);
+   bullets/accessories are unrebalanced and computed from the live item
+   weights in js/data.js (~2.97% and ~3.62% respectively).
 
    For GUNS specifically, this bonus works together with the boost-window
    logic further down (tier2GunBoostWindowConfig): while a spin's legendary
    count is still under the window's threshold, each roll uses this boosted
-   chance instead of the baseline. Simulated over 200k trials, a gun spin at
-   the boosted chance below reaches 2+ legendary results about 82% of the
-   time, versus about 66% of the time at the unmodified baseline — a real
-   lift, but still well short of certain (roughly 1 in 5 boosted spins still
-   fall short of 2). The 40% ceiling only matters as a safety bound; the
-   configured bonus keeps the actual boosted chance around 34%.
+   chance (12% baseline + 8pp = 20% per roll, verified by simulation) instead
+   of the baseline — a real lift while it's open, well short of guaranteed,
+   and never near the 40% ceiling (that cap is only a safety bound, not the
+   normal operating point).
 
    How it's applied: this does NOT run a second/separate roll and does NOT
    force, predetermine, or reroll an outcome. It scales the weight of the
@@ -490,40 +490,48 @@ const tier2GunBoostWindowConfig = {
 };
 
 /* -----------------------------------------------------------------------
-   ADMIN CONFIGURATION — Tier 2 gun legendary reward-count rebalance
+   ADMIN CONFIGURATION — Tier 2 gun rarity balance
    -------------------------------------------------------------------------
-   The per-roll legendary baseline built into the ITEMS weights (~26% for
-   guns, see computeLegendaryChance) — and everything tuned against it above
-   (tier2GroupModifierConfig, tier2GunBoostWindowConfig) — was calibrated
-   back when Tier 2 generated tier2GunRewardsBaselineRef rolls per spin.
-   Tier 2 now generates TIERS.t2.rewards rolls per spin; at the old per-roll
-   odds, more rolls means a legendary switch — let alone stacking multiple
-   in one spin — becomes silently much easier just from the extra rolls,
-   with no design decision behind that shift.
-   This scales the legendary weight of the pool DOWN by the same ratio the
-   roll count grew, so pulling a switch stays roughly as hard as it was
-   before the reward-count increase (never used to inflate odds — if a tier
-   ever has fewer rolls than the reference, this is a no-op). It runs first,
-   before the Brower Gang group bonus is computed, so that bonus still
-   applies on top of this rebalanced baseline exactly as before — the boost
-   itself is untouched, only the baseline it's added to is corrected.
-   Applies to Tier 2 GUN spins only; bullets/accessories are unaffected.
+   Spin count is now unlimited and user-chosen (no fixed "rolls per spin"
+   per tier any more), so odds are tuned per INDIVIDUAL ROLL, not against
+   some assumed session length. Tier 2's raw catalog weights (see ITEMS in
+   data.js) skew toward "uncommon" pistols just from how many of them exist
+   in the pool, which made a Tier 2 gun spin land a merely-uncommon result
+   far too often for what is supposed to be the top gun tier. This resets
+   every rarity in the Tier 2 GUN pool to a fixed target share of the total
+   so every roll is honestly balanced, on purpose:
+     - legendary (switches): hard to get, but always a real chance.
+     - epic (Tier 1.5-caliber): the single most likely non-legendary result,
+       so a Tier 2 pull reliably feels like at least a Tier 1.5 gun.
+     - rare: a solid, common middle result.
+     - uncommon: still possible, but a minority outcome — Tier 2 no longer
+       hands out mostly "bad" pistols.
+   Weights WITHIN a rarity keep their existing relative proportions (e.g.
+   MP20FRT stays a little more likely than the plain Gen 4 switches) — only
+   each rarity's total share of the pool is reset. Runs before the Brower
+   Gang group bonus, so that bonus (and the boost-window/legendary-cap
+   logic below) still layers on top of this balanced baseline exactly as
+   before. Applies to Tier 2 GUN spins only; bullets/accessories, and every
+   other tier's odds, are untouched.
    ------------------------------------------------------------------------- */
-const tier2GunRewardsBaselineRef = 8;
-function rebalanceTier2GunLegendaryBaseline(pool, tierKey, spinType) {
+const tier2GunRarityTargets = { uncommon: 0.09, rare: 0.33, epic: 0.46, legendary: 0.12 };
+function rebalanceTier2GunPoolBalance(pool, tierKey, spinType) {
   if (tierKey !== 't2' || spinType !== 'gun') return pool;
-  const scale = tier2GunRewardsBaselineRef / TIERS.t2.rewards;
-  if (!(scale < 1)) return pool;
 
-  const baseLegendaryChance = computeLegendaryChance(pool);
-  const legendaryWeight = pool.filter(item => item.rarity === 'legendary').reduce((sum, item) => sum + item.weight, 0);
-  const otherWeight = pool.reduce((sum, item) => sum + item.weight, 0) - legendaryWeight;
-  if (!baseLegendaryChance || legendaryWeight <= 0) return pool;
+  const totalWeight = pool.reduce((sum, item) => sum + item.weight, 0);
+  if (!totalWeight) return pool;
 
-  const targetChance = baseLegendaryChance * scale;
-  const targetLegendaryWeight = (targetChance * otherWeight) / (1 - targetChance);
-  const rebalanceScale = targetLegendaryWeight / legendaryWeight;
-  return pool.map(item => item.rarity === 'legendary' ? { ...item, weight: item.weight * rebalanceScale } : item);
+  const rarityTotals = {};
+  pool.forEach(item => { rarityTotals[item.rarity] = (rarityTotals[item.rarity] || 0) + item.weight; });
+
+  return pool.map(item => {
+    const targetShare = tier2GunRarityTargets[item.rarity];
+    const rarityTotal = rarityTotals[item.rarity];
+    if (!targetShare || !rarityTotal) return item;
+    const desiredRarityWeight = targetShare * totalWeight;
+    const scale = desiredRarityWeight / rarityTotal;
+    return { ...item, weight: item.weight * scale };
+  });
 }
 
 // Returns the pool to use for one specific roll within a Tier 2 gun spin.
@@ -764,7 +772,7 @@ async function startSpin() {
   // Rebalance the legendary baseline for the new reward count BEFORE the
   // group bonus is computed, so the Brower Gang boost still applies on top
   // of the corrected baseline exactly as before.
-  const rebalancedBasePool = rebalanceTier2GunLegendaryBaseline(basePool, state.tier, state.spinType);
+  const rebalancedBasePool = rebalanceTier2GunPoolBalance(basePool, state.tier, state.spinType);
 
   // Computed once per spin (not per roll), so a group name with more than
   // one eligible keyword still only applies the bonus a single time.
@@ -901,7 +909,7 @@ function launchConfetti(){
   const canvas=document.getElementById('confettiCanvas'); if(!canvas)return;
   const ctx=canvas.getContext('2d');
   canvas.width=innerWidth; canvas.height=innerHeight;
-  const colors=['#FF6500','#FFB37A','#ffffff','#0b0b0f','#A83E00','#d9d9df'];
+  const colors=['#E4132A','#FF9DA6','#ffffff','#0b0b0f','#7A0012','#d9d9df'];
   const parts=Array.from({length:190},()=>({
     x:Math.random()*canvas.width,
     y:Math.random()*canvas.height*.38-canvas.height*.22,

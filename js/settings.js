@@ -35,11 +35,11 @@ function applyVisualSettings(){
   if(ambient){
     const o=(appSettings.bgOpacity||48)/100;
     if(document.body.classList.contains('light')){
-      ambient.style.background=`radial-gradient(circle at 38% 0,rgba(255,101,0,.06),transparent 34%),linear-gradient(180deg,rgba(255,255,255,${Math.min(.72,o*.92)}),rgba(238,242,248,${Math.min(.92,o+0.12)}))`;
+      ambient.style.background=`radial-gradient(circle at 38% 0,rgba(228,19,42,.06),transparent 34%),linear-gradient(180deg,rgba(255,255,255,${Math.min(.72,o*.92)}),rgba(238,242,248,${Math.min(.92,o+0.12)}))`;
     }else if(document.body.classList.contains('dim')){
-      ambient.style.background=`radial-gradient(circle at 40% 0,rgba(255,101,0,.09),transparent 34%),radial-gradient(circle at 100% 45%,rgba(255,101,0,.055),transparent 28%),linear-gradient(180deg,rgba(12,14,21,${o*.68}),rgba(8,10,16,${o*.94}))`;
+      ambient.style.background=`radial-gradient(circle at 40% 0,rgba(228,19,42,.09),transparent 34%),radial-gradient(circle at 100% 45%,rgba(228,19,42,.055),transparent 28%),linear-gradient(180deg,rgba(12,14,21,${o*.68}),rgba(8,10,16,${o*.94}))`;
     }else{
-      ambient.style.background=`radial-gradient(circle at 40% 0,rgba(255,101,0,.10),transparent 34%),radial-gradient(circle at 100% 45%,rgba(255,101,0,.07),transparent 28%),linear-gradient(180deg,rgba(5,6,10,${o*.72}),rgba(2,3,7,${o}))`;
+      ambient.style.background=`radial-gradient(circle at 40% 0,rgba(228,19,42,.10),transparent 34%),radial-gradient(circle at 100% 45%,rgba(228,19,42,.07),transparent 28%),linear-gradient(180deg,rgba(5,6,10,${o*.72}),rgba(2,3,7,${o}))`;
     }
   }
   document.body.classList.toggle("hideBgVideo",!appSettings.showBgVideo);

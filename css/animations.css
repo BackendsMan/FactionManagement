@@ -67,7 +67,7 @@ button:active,.card:active,.groupRow:active,.toggleKnob:active{transform:scale(.
   height:3px;
   border-radius:999px;
   background:linear-gradient(90deg,transparent,#fff,var(--red),#fff,transparent);
-  box-shadow:0 0 14px rgba(255,101,0,.9);
+  box-shadow:0 0 14px rgba(228,19,42,.9);
   transform:scaleX(0);
   transform-origin:left;
   opacity:0;
@@ -163,7 +163,7 @@ button:active,.card:active,.groupRow:active,.toggleKnob:active{transform:scale(.
 .track{will-change:transform;transform:translate3d(0,0,0);backface-visibility:hidden}
 .reelItem{backface-visibility:hidden;transform:translateZ(0);will-change:transform,filter,opacity}
 .track.spinMotion{
-  filter:drop-shadow(0 0 12px rgba(255,101,0,.18));
+  filter:drop-shadow(0 0 12px rgba(228,19,42,.18));
 }
 .track.spinMotion .reelItem{
   animation:reelMotionBlur .12s linear infinite!important;
@@ -196,8 +196,8 @@ button:active,.card:active,.groupRow:active,.toggleKnob:active{transform:scale(.
 }
 @keyframes shineSweep{to{transform:translateX(125%)}}
 @keyframes underlineGlow{
-  0%,100%{filter:brightness(1);box-shadow:0 0 10px rgba(255,101,0,.7)}
-  50%{filter:brightness(1.35);box-shadow:0 0 22px rgba(255,101,0,1),0 0 8px rgba(255,255,255,.55)}
+  0%,100%{filter:brightness(1);box-shadow:0 0 10px rgba(228,19,42,.7)}
+  50%{filter:brightness(1.35);box-shadow:0 0 22px rgba(228,19,42,1),0 0 8px rgba(255,255,255,.55)}
 }
 @keyframes itemCascade{
   0%{opacity:0;transform:translate3d(0,-34px,0) rotateX(-10deg) scale(.96);filter:blur(7px)}
@@ -233,7 +233,7 @@ button:active,.card:active,.groupRow:active,.toggleKnob:active{transform:scale(.
 }
 @keyframes winnerLock{
   0%{filter:brightness(1);transform:scale(.96)}
-  55%{filter:brightness(1.55) drop-shadow(0 0 18px rgba(255,101,0,.75));transform:scale(1.08)}
+  55%{filter:brightness(1.55) drop-shadow(0 0 18px rgba(228,19,42,.75));transform:scale(1.08)}
   100%{filter:brightness(1.1);transform:scale(1)}
 }
 @keyframes themeSmoothSwitch{
@@ -242,9 +242,9 @@ button:active,.card:active,.groupRow:active,.toggleKnob:active{transform:scale(.
   100%{opacity:1;transform:translate3d(0,0,0) scale(1);filter:blur(0)}
 }
 @keyframes themeButtonBlink{
-  0%{box-shadow:0 0 0 rgba(255,101,0,0);filter:brightness(1)}
-  50%{box-shadow:0 0 16px rgba(255,101,0,.28);filter:brightness(1.16)}
-  100%{box-shadow:0 0 16px rgba(255,101,0,.22);filter:brightness(1)}
+  0%{box-shadow:0 0 0 rgba(228,19,42,0);filter:brightness(1)}
+  50%{box-shadow:0 0 16px rgba(228,19,42,.28);filter:brightness(1.16)}
+  100%{box-shadow:0 0 16px rgba(228,19,42,.22);filter:brightness(1)}
 }
 
 /* Keep weak PCs / accessibility safe */
