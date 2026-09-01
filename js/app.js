@@ -21,7 +21,6 @@ const elements={
   nextBtn:document.getElementById('nextBtn'),
   muteBtn:document.getElementById('muteBtn'),
   trackName:document.getElementById('trackName'),
-  closeResult:document.getElementById('closeResult'),
   doneBtn:document.getElementById('doneBtn'),
   viewHistoryBtn:document.getElementById('viewHistoryBtn'),
   resultToggleView:document.getElementById('resultToggleView'),

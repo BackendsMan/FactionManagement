@@ -93,23 +93,14 @@ function closeResultModal(){
   document.getElementById('resultModal').classList.remove('open');
   if(typeof resetResultView==='function')resetResultView();
 }
-document.getElementById('closeResult').onclick=closeResultModal;
 document.getElementById('doneBtn').onclick=closeResultModal;
 document.getElementById('viewHistoryBtn').onclick=()=>{closeResultModal();setView('history')};
 document.getElementById('resultToggleView').onclick=()=>{if(typeof toggleResultView==='function')toggleResultView()};
 document.getElementById('clearHistoryBtn').onclick=async()=>{const ok=await openConfirmDialog({eyebrow:'Clear History',title:'Clear all saved spin history?',message:'Selecting Delete All will permanently remove every saved spin from local history on this device.',details:`${history.length} saved ${history.length===1?'entry':'entries'} will be removed. This cannot be undone.`,confirmText:'Delete All',cancelText:'Cancel',danger:true});if(!ok)return;history=[];persistHistory();selectedGroup='all';renderHistory()};
 document.getElementById('exportBtn').onclick=exportCSV;
-// While a result is actively being saved, the results modal must not be
-// dismissible by any means other than the guarded close buttons above — no
-// backdrop click, no Escape.
-document.getElementById('resultModal').addEventListener('mousedown',e=>{
-  if(e.target.id==='resultModal')closeResultModal();
-});
-document.addEventListener('keydown',e=>{
-  if(e.key!=='Escape')return;
-  const resultModal=document.getElementById('resultModal');
-  if(resultModal.classList.contains('open'))closeResultModal();
-});
+// The results modal is intentionally sticky: it must stay on screen until
+// the player clicks Done or View History — no backdrop-click dismiss, no
+// Escape-to-close — so a completed drop is never accidentally missed.
 document.querySelectorAll('.navBtn[data-view],.homeCard[data-view]').forEach(b=>b.onclick=()=>setView(b.dataset.view));
 function clickFX(b){b.classList.remove('clicked');void b.offsetWidth;b.classList.add('clicked');setTimeout(()=>b.classList.remove('clicked'),650)}
 let tierSwitching=false;
