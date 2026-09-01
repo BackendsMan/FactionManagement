@@ -610,10 +610,12 @@ function applyTier2GunLegendaryBounds(boostedPool, basePool, legendaryCountSoFar
 /* -----------------------------------------------------------------------
    ADMIN CONFIGURATION — same-gun cap (variety guarantee)
    -------------------------------------------------------------------------
-   Hard rule, applies to every GUN spin in every tier (the Brower Gang
-   boost and the Tier 2 legendary boost-window above are untouched and
-   still run first — this only trims the pool afterward): once a specific
-   named gun — any gun, any rarity, not just legendary — has landed
+   Hard rule, applies to Tier 2 GUN spins ONLY — Test, Tier 1, and Tier 1.5
+   are untouched (Tier 1.5 gets its own rebalanced rarity shares from
+   rebalanceGunPoolBalance() above, but not this cap). The Brower Gang
+   boost and the legendary boost-window above are also untouched and still
+   run first — this only trims the pool afterward: once a specific named
+   gun — any gun, any rarity, not just legendary — has landed
    MAX_SAME_GUN_PER_SPIN times without a fresh variety window opening (see
    below), that exact gun is removed from the pool, so its own chance
    drops to zero — no 3rd copy back-to-back. Every OTHER gun is completely
@@ -631,8 +633,8 @@ function applyTier2GunLegendaryBounds(boostedPool, basePool, legendaryCountSoFar
    the pool size.
    ------------------------------------------------------------------------- */
 const MAX_SAME_GUN_PER_SPIN = 2;
-function excludeMaxedOutGuns(pool, nameCounts, spinType) {
-  if (spinType !== 'gun') return pool;
+function excludeMaxedOutGuns(pool, nameCounts, spinType, tierKey) {
+  if (spinType !== 'gun' || tierKey !== 't2') return pool;
   if (!nameCounts || !nameCounts.size) return pool;
   const filtered = pool.filter(item => (nameCounts.get(item.name) || 0) < MAX_SAME_GUN_PER_SPIN);
   if (filtered.length) return filtered;
@@ -764,7 +766,14 @@ async function computeSpinResults(basePool, tierKey, spinType, group, count, onP
   const winningItems = [];
   let legendaryCountThisSpin = 0;
   let firstRollModifierResult = null;
-  const nameCountsThisSpin = new Map();
+  // The same-gun cap (and its nameCounts tracking) is Tier 2 only — Test,
+  // Tier 1, and Tier 1.5 always draw from the plain, uncapped pool (Tier
+  // 1.5 still gets its own rebalanced rarity shares from
+  // rebalanceGunPoolBalance, just not this cap). Only passing nameCounts
+  // through when it's actually t2 keeps rebalanceGunPoolBalance's maxed-
+  // item handling inert everywhere else too.
+  const capApplies = spinType === 'gun' && tierKey === 't2';
+  const nameCountsThisSpin = capApplies ? new Map() : null;
   // Belt-and-suspenders on top of excludeMaxedOutGuns/rebalanceGunPoolBalance's
   // per-spin cap: those two can legitimately reset a name's count back to 0
   // once its whole rarity has cycled through (see the comment on
@@ -774,7 +783,7 @@ async function computeSpinResults(basePool, tierKey, spinType, group, count, onP
   // completely independently of that reset logic and hard-blocks the
   // previous winner the moment it's already won this many times IN A ROW,
   // so "no more than 2 of the same gun back-to-back" holds absolutely,
-  // regardless of any reset timing.
+  // regardless of any reset timing. Scoped to Tier 2 only, same as the cap.
   let consecutiveStreak = 0;
   const YIELD_EVERY = 2000;
   for (let roll = 1; roll <= count; roll++) {
@@ -783,15 +792,15 @@ async function computeSpinResults(basePool, tierKey, spinType, group, count, onP
     const modifierResult = applyTier2GroupModifier(rebalancedPool, group, tierKey);
     if (roll === 1) firstRollModifierResult = modifierResult;
     const boundedPool = applyTier2GunLegendaryBounds(modifierResult.pool, rebalancedPool, legendaryCountThisSpin, modifierResult.bonusApplies, spinType, tierKey);
-    let rollPool = excludeMaxedOutGuns(boundedPool, nameCountsThisSpin, spinType);
-    if (previousWinner && consecutiveStreak >= MAX_SAME_GUN_PER_SPIN) {
+    let rollPool = excludeMaxedOutGuns(boundedPool, nameCountsThisSpin, spinType, tierKey);
+    if (capApplies && previousWinner && consecutiveStreak >= MAX_SAME_GUN_PER_SPIN) {
       const withoutPreviousWinner = rollPool.filter(item => item.name !== previousWinner);
       if (withoutPreviousWinner.length) rollPool = withoutPreviousWinner;
     }
     const winner = weightedPick(rollPool, previousWinner);
     consecutiveStreak = winner.name === previousWinner ? consecutiveStreak + 1 : 1;
     if (winner.rarity === 'legendary') legendaryCountThisSpin++;
-    nameCountsThisSpin.set(winner.name, (nameCountsThisSpin.get(winner.name) || 0) + 1);
+    if (nameCountsThisSpin) nameCountsThisSpin.set(winner.name, (nameCountsThisSpin.get(winner.name) || 0) + 1);
     winningItems.push(winner);
     if (roll % YIELD_EVERY === 0) {
       onProgress?.(roll, count);
