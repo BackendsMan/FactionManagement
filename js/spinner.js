@@ -373,7 +373,7 @@ function setSpinAmount(value,{fromInput=false}={}){
    ============================================================================= */
 const tier2GroupModifierConfig = {
   enabled: true,
-  eligibleKeywords: ["brower", "brower gang", "bg", "2605", "2605/brower"],
+  eligibleKeywords: ["bussdown", "buss down", "bd", "Blamms", "Blammas"],
   legendaryBonus: 0.08,          // +8 percentage points while the boost window (below) is open
   maximumLegendaryChance: 0.40   // hard ceiling regardless of bonus or baseline
 };
