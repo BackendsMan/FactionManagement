@@ -17,6 +17,13 @@ function getVisiblePool(ignoreFilter=false,ignoreSearch=false){
   return ITEMS.filter(item=>allowed(state.tier,item)&&item.type===state.spinType&&(ignoreFilter||state.filter==='all'||item.rarity===state.filter)&&(ignoreSearch||matchesPoolSearch(item)));
 }
 function pool(ignoreFilter=false){return getVisiblePool(ignoreFilter)}
+const DISPLAY_RARITY_ORDER=['common','uncommon','rare','epic','legendary'];
+function sortPoolForDisplay(items){
+  return [...items].sort((a,b)=>{
+    const rarityDifference=DISPLAY_RARITY_ORDER.indexOf(a.rarity)-DISPLAY_RARITY_ORDER.indexOf(b.rarity);
+    return rarityDifference || a.name.localeCompare(b.name);
+  });
+}
 function normalizeAssetUrl(url){
   if(!url)return '';
   const cleaned=String(url).trim().replace(/\\/g,'/');
@@ -112,7 +119,7 @@ function renderRarityPeek(){
   const peekPool=getVisiblePool(true).filter(item=>state.rarityPeekFilter==='all'||item.rarity===state.rarityPeekFilter);
   elements.rarityPeekTitle.textContent=state.rarityPeekFilter==='all'?'All Visible Items':`${state.rarityPeekFilter} Items`;
   elements.rarityPeekCount.textContent=`${peekPool.length} match${peekPool.length===1?'':'es'}`;
-  elements.rarityPeekList.innerHTML=peekPool.map(item=>`<div class="rarityPeekCard">${visual(item)}<div class="rarityPeekText"><strong>${escapeHtml(item.name)}</strong><span>${escapeHtml(item.category)}</span></div></div>`).join('')||'<div class="tiny">No matching items for this rarity.</div>';
+  elements.rarityPeekList.innerHTML=sortPoolForDisplay(peekPool).map(item=>`<div class="rarityPeekCard">${visual(item)}<div class="rarityPeekText"><strong>${escapeHtml(item.name)}</strong><span>${escapeHtml(item.category)}</span></div></div>`).join('')||'<div class="tiny">No matching items for this rarity.</div>';
   attachImageGuards(elements.rarityPeekList);
   elements.rarityPeek.classList.add('open');
 }
@@ -120,7 +127,7 @@ let renderTimer=null;
 let renderSeq=0;
 const SPIN_TYPE_TITLE={gun:'Gun Spins',bullet:'Bullet Spins',accessory:'Accessory Spins'};
 function buildPoolHTML(p){
-  return p.map((i,idx)=>{
+  return sortPoolForDisplay(p).map((i,idx)=>{
     const floatDelay=`-${((idx*0.47)%2.8).toFixed(2)}s`;
     const floatDuration=`${(4.8+((idx*0.63)%1.9)).toFixed(2)}s`;
     return `<div class="card" style="animation-delay:${Math.min(idx,10)*42}ms"><div class="thumb">${imageMarkup(i,{className:'weaponFloat',style:`--floatDelay:${floatDelay};--floatDuration:${floatDuration};`})}</div><div class="cardInfo"><div class="itemName">${escapeHtml(i.name)}</div><div class="itemCat">${escapeHtml(i.category)}${i.code?` <span class="itemCode">${escapeHtml(i.code)}</span>`:''}</div><div class="badges"><span class="badge ${i.rarity}">${i.rarity}</span><span class="badge">${state.spinType}</span></div></div></div>`;
@@ -128,7 +135,7 @@ function buildPoolHTML(p){
 }
 function buildPoolListHTML(p){
   if(!p.length)return `<div class="tiny poolListEmpty">No ${state.spinType} drops available for this tier/filter.</div>`;
-  return p.map(i=>`<div class="poolRow"><span class="poolRowThumb">${imageMarkup(i,{className:'itemImg'})}</span><span class="poolRowInfo"><span class="poolRowName">${escapeHtml(i.name)}</span><span class="poolRowMeta">${escapeHtml(i.category)}${i.code?` &middot; <span class="poolRowCode">${escapeHtml(i.code)}</span>`:''}</span></span><span class="badge ${i.rarity}">${i.rarity}</span></div>`).join('');
+  return sortPoolForDisplay(p).map(i=>`<div class="poolRow"><span class="poolRowThumb">${imageMarkup(i,{className:'itemImg'})}</span><span class="poolRowInfo"><span class="poolRowName">${escapeHtml(i.name)}</span><span class="poolRowMeta">${escapeHtml(i.category)}${i.code?` &middot; <span class="poolRowCode">${escapeHtml(i.code)}</span>`:''}</span></span><span class="badge ${i.rarity}">${i.rarity}</span></div>`).join('');
 }
 function syncPoolSearchInputs(){
   [elements.poolSearch,elements.tiersSearch].forEach(input=>{
@@ -349,7 +356,7 @@ function setSpinAmount(value,{fromInput=false}={}){
    that matches one of the keywords below, the legendary drop chance for
    that spin gets a small, fixed bump, capped at maximumLegendaryChance.
 
-   Current Tier 2 legendary baseline: guns are held at a fixed 8% per roll
+  Current Tier 2 legendary baseline: guns are held at a fixed 10% per roll
    by rebalanceGunPoolBalance() below (see that function for why);
    bullets/accessories are unrebalanced and computed from the live item
    weights in js/data.js (~2.97% and ~3.62% respectively).
@@ -357,7 +364,7 @@ function setSpinAmount(value,{fromInput=false}={}){
    For GUNS specifically, this bonus works together with the boost-window
    logic further down (tier2GunBoostWindowConfig): while a spin's legendary
    count is still under the window's threshold, each roll uses this boosted
-   chance (8% baseline + 8pp = 16% per roll, verified by simulation) instead
+  chance (10% baseline + 8pp = 18% per roll, verified by simulation) instead
    of the baseline — a real lift while it's open, well short of guaranteed,
    and never near the 40% ceiling (that cap is only a safety bound, not the
    normal operating point).
@@ -478,7 +485,7 @@ function applyTier2GroupModifier(pool, groupName, selectedTier) {
    There is no separate total ceiling on legendary count per spin — spin
    amounts are unlimited and user-chosen, so a flat "stop after N
    legendary" rule would silently zero legendary out for the rest of any
-   large session. The 8% per-roll target (rebalanceGunPoolBalance) and the
+  large session. The 10% per-roll target (rebalanceGunPoolBalance) and the
    same-gun cap (MAX_SAME_GUN_PER_SPIN) are what keep it hard without ever
    fully shutting it off.
 
@@ -506,23 +513,20 @@ const tier2GunBoostWindowConfig = {
    MP20FRT stays a little more likely than the plain Gen 4 switches) — only
    each rarity's total share of the pool is reset. Runs before the Brower
    Gang group bonus, so that bonus (and the boost-window/same-gun-cap
-   logic below) still layers on top of this balanced baseline exactly as
-   before. Applies to Tier 1.5 and Tier 2 GUN spins only; bullets/
-   accessories, and Test/Tier 1 odds, are untouched.
+  logic below) still layers on top of this balanced baseline exactly as
+  before. Applies to GUN spins in every playable tier; bullets and
+  accessories keep their catalog weights.
 
    Rare is the backbone of both tiers on purpose — a "good gun" (Tier 1
    caliber) is the normal, expected result. Epic and legendary are real
    but deliberately uncommon highlights on top of that, not the default:
-     - Tier 2: rare 55% (the reliable baseline), epic 22% (a genuine but
-       harder-to-get bonus), legendary 8% (hard, but always possible),
-       uncommon 15% (keeps some low-end variety, never dominant).
-     - Tier 1.5: the same shape, dialed down a step — rare 55%, epic 15%
-       (about a third softer than Tier 2's), uncommon 30% (no legendary
-       exists at this tier).
+     - Tier 2: common 30%, uncommon 25%, rare 20%, epic 15%, legendary 10%.
+     - Tier 1.5: common 30%, uncommon 25%, rare 25%, epic 15%, legendary 5%.
    ------------------------------------------------------------------------- */
 const GUN_RARITY_TARGETS_BY_TIER = {
-  't1.5': { uncommon: 0.30, rare: 0.55, epic: 0.15 },
-  t2: { uncommon: 0.15, rare: 0.55, epic: 0.22, legendary: 0.08 }
+  t1: { uncommon: 0.35, rare: 0.55, epic: 0.10 },
+  't1.5': { common: 0.30, uncommon: 0.25, rare: 0.25, epic: 0.15, legendary: 0.05 },
+  t2: { common: 0.30, uncommon: 0.25, rare: 0.20, epic: 0.15, legendary: 0.10 }
 };
 // nameCounts (optional) is the same per-spin name-count tracker the
 // same-gun cap below uses. Passing it here means a maxed-out item's
@@ -598,7 +602,7 @@ function applyTier2GunLegendaryBounds(boostedPool, basePool, legendaryCountSoFar
 
   // Not eligible, or the boost window has already closed for this spin —
   // regular, fully unmodified odds. Legendary itself is never excluded
-  // here: the per-roll 8% target (rebalanceGunPoolBalance) plus the
+  // here: the per-roll 10% target (rebalanceGunPoolBalance) plus the
   // same-gun cap already keep it honestly rare without a separate total
   // ceiling — a flat "stop after N legendary" ceiling doesn't make sense
   // once sessions can be arbitrarily long (it silently zeroed legendary
